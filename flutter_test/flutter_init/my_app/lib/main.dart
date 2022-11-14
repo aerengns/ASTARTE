@@ -1,8 +1,8 @@
 // Copyright 2018 The Flutter team. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,46 +13,62 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    Widget titleSection = Container(
-      padding: const EdgeInsets.all(32),
-      child: Row(
+    Widget titleSection = Column(children: [
+      Row(
         children: [
           Expanded(
             /*1*/
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 /*2*/
                 Container(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: const Text(
-                    'Oeschinen Lake Campground',
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    'ASTARTE',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Text(
-                  'Kandersteg, Switzerland',
-                  style: TextStyle(
-                    color: Colors.grey[500],
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red[700],
+                        fontSize: 35),
                   ),
                 ),
               ],
             ),
           ),
-          /*3*/
-          Icon(
-            Icons.star,
-            color: Colors.red[500],
-          ),
-          const Text('41'),
         ],
       ),
-    );
+      Row(
+        children: [
+          Expanded(
+              child: Container(
+                  padding: const EdgeInsets.only(top: 30, left: 80),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Sign In',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                            fontSize: 25),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Text(
+                          'Hi there! Nice to see you again.',
+                          style:
+                          TextStyle(color: Colors.grey[500], fontSize: 15),
+                        ),
+                      )
+                    ],
+                  )))
+        ],
+      )
+    ]);
 
-    Color color = Theme.of(context).primaryColor;
+    Color color = Theme
+        .of(context)
+        .primaryColor;
 
     Widget buttonSection = Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -63,61 +79,215 @@ class MyApp extends StatelessWidget {
       ],
     );
 
-    Widget textSection = const Padding(
-      padding: EdgeInsets.all(32),
-      child: Text(
-        'Lake Oeschinen lies at the foot of the Blüemlisalp in the Bernese '
-            'Alps. Situated 1,578 meters above sea level, it is one of the '
-            'larger Alpine Lakes. A gondola ride from Kandersteg, followed by a '
-            'half-hour walk through pastures and pine forest, leads you to the '
-            'lake, which warms to 20 degrees Celsius in the summer. Activities '
-            'enjoyed here include rowing, and riding the summer toboggan run.',
-        softWrap: true,
-      ),
+    Widget credentialsSection = Container(
+      padding: const EdgeInsets.only(top: 20, left: 80),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Text(
+              'Email',
+              style: TextStyle(
+                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                'example@email.com',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Container(
+                height: 2.0,
+                width: 300.0,
+                color: Colors.grey,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
+                'Password',
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              width: 300,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      '********************',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Icon(
+                    Icons.remove_red_eye_sharp,
+                    color: Colors.black26,
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Container(
+                height: 2.0,
+                width: 300.0,
+                color: Colors.grey,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: 300,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  'Sign In',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              width: 300,
+              padding: const EdgeInsets.only(top: 30),
+              child: Text(
+                'or use one of your social profiles',
+                style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              width: 300,
+              padding: const EdgeInsets.only(top: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    height: 50,
+                    width: 140,
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Icon(
+                          FontAwesomeIcons.twitter,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Twitter',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    width: 140,
+                    decoration: const BoxDecoration(
+                      color: Colors.indigo,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          // Use the FaIcon Widget + FontAwesomeIcons class for the IconData
+                            icon: const FaIcon(
+                              FontAwesomeIcons.facebook,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              print("Pressed");
+                            }),
+                        const Text(
+                          'Facebook',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(top: 60),
+              width: 300,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17),
+                  ),
+                  Text(
+                    'Sign Up',
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17),
+                  ),
+                ],
+              ),
+            ),
+          ]),
     );
+
 
     return MaterialApp(
       title: 'Flutter Layout Demo',
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Layout Demo'),
-        ),
         body: ListView(
           children: [
             Image.asset(
-                'assets/images/lake.jpg',
-                width: 600,
-                height: 240,
-                fit: BoxFit.cover,
-                ),
+              'assets/images/astarte.jpg',
+              width: 100,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
             titleSection,
-            buttonSection,
-            textSection
+            credentialsSection,
           ],
         ),
       ),
     );
   }
-
-  Column _buildButtonColumn(Color color, IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: color),
-        Container(
-          margin: const EdgeInsets.only(top: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: color,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
+  
