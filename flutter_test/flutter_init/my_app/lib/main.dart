@@ -66,19 +66,6 @@ class MyApp extends StatelessWidget {
       )
     ]);
 
-    Color color = Theme
-        .of(context)
-        .primaryColor;
-
-    Widget buttonSection = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildButtonColumn(color, Icons.call, 'CALL'),
-        _buildButtonColumn(color, Icons.near_me, 'ROUTE'),
-        _buildButtonColumn(color, Icons.share, 'SHARE'),
-      ],
-    );
-
     Widget credentialsSection = Container(
       padding: const EdgeInsets.only(top: 20, left: 80),
       child: Column(
@@ -290,4 +277,5 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-  
+
+}
