@@ -8,6 +8,92 @@ void main() {
   runApp(const MyApp());
 }
 
+class SignInForm extends StatefulWidget {
+  const SignInForm({super.key});
+
+  @override
+  State<SignInForm> createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  bool _isHidden = true;
+
+  void _handleTap() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        const SizedBox(
+          width: 300,
+          child: TextField(
+            obscureText: false,
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelStyle: TextStyle(
+                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+              labelText: 'Email',
+              hintText: 'example@email.com',
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 300,
+          child: SizedBox(
+            width: 300,
+            child: TextField(
+              obscureText: _isHidden,
+              decoration: InputDecoration(
+                border: const UnderlineInputBorder(),
+                labelStyle: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+                labelText: 'Password',
+                suffix: IconButton(
+                  onPressed: _handleTap,
+                  icon: const Icon(
+                    Icons.remove_red_eye_sharp,
+                    color: Colors.black26,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 30),
+          child: TextButton(
+            onPressed: () {},
+            child: Container(
+              alignment: Alignment.center,
+              height: 50,
+              width: 300,
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'Sign In',
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -23,7 +109,7 @@ class MyApp extends StatelessWidget {
               children: [
                 /*2*/
                 Container(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 8, bottom: 30),
                   child: Text(
                     'ASTARTE',
                     style: TextStyle(
@@ -41,7 +127,7 @@ class MyApp extends StatelessWidget {
         children: [
           Expanded(
               child: Container(
-                  padding: const EdgeInsets.only(top: 30, left: 80),
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -57,7 +143,7 @@ class MyApp extends StatelessWidget {
                         child: Text(
                           'Hi there! Nice to see you again.',
                           style:
-                          TextStyle(color: Colors.grey[500], fontSize: 15),
+                              TextStyle(color: Colors.grey[500], fontSize: 15),
                         ),
                       )
                     ],
@@ -67,93 +153,14 @@ class MyApp extends StatelessWidget {
     ]);
 
     Widget credentialsSection = Container(
-      padding: const EdgeInsets.only(top: 20, left: 80),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text(
-              'Email',
-              style: TextStyle(
-                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Text(
-                'example@email.com',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Container(
-                height: 2.0,
-                width: 300.0,
-                color: Colors.grey,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: Text(
-                'Password',
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
-              width: 300,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      '********************',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Icon(
-                    Icons.remove_red_eye_sharp,
-                    color: Colors.black26,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Container(
-                height: 2.0,
-                width: 300.0,
-                color: Colors.grey,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Container(
-                alignment: Alignment.center,
-                height: 50,
-                width: 300,
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
-              ),
-            ),
+            const SignInForm(),
+
             Container(
               alignment: Alignment.center,
               width: 300,
@@ -182,21 +189,24 @@ class MyApp extends StatelessWidget {
                         Radius.circular(10),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const [
-                        Icon(
-                          FontAwesomeIcons.twitter,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          'Twitter',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.white),
-                        ),
-                      ],
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          Icon(
+                            FontAwesomeIcons.twitter,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            'Twitter',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Container(
@@ -208,25 +218,24 @@ class MyApp extends StatelessWidget {
                         Radius.circular(10),
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          // Use the FaIcon Widget + FontAwesomeIcons class for the IconData
-                            icon: const FaIcon(
-                              FontAwesomeIcons.facebook,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              print("Pressed");
-                            }),
-                        const Text(
-                          'Facebook',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.white),
-                        ),
-                      ],
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          FaIcon(
+                            FontAwesomeIcons.facebook,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            'Facebook',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -237,20 +246,26 @@ class MyApp extends StatelessWidget {
               width: 300,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17),
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17),
+                    ),
                   ),
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17),
+                    ),
                   ),
                 ],
               ),
