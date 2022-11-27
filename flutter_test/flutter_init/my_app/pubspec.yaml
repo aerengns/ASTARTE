@@ -38,6 +38,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   english_words: ^4.0.0
   font_awesome_flutter: ^10.2.1
+  firebase_core: ^2.3.0
+  firebase_analytics: ^10.0.6
+  firebase_auth: ^4.1.4
 
 dev_dependencies:
   flutter_test:
