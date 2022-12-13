@@ -72,6 +72,34 @@ Widget sideBar(BuildContext context) {
             ],
           ),
         ),
+        RawMaterialButton(
+          textStyle: const TextStyle(color: Colors.grey),
+          onPressed: () {
+            Navigator.pushNamed(context, '/sign_in');
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Icon(Icons.home_filled),
+              Text("Sign In"),
+              Icon(Icons.arrow_forward_ios_rounded)
+            ],
+          ),
+        ),
+        RawMaterialButton(
+          textStyle: const TextStyle(color: Colors.grey),
+          onPressed: () {
+            Navigator.pushNamed(context, '/sign_up');
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Icon(Icons.home_filled),
+              Text("Sign Up"),
+              Icon(Icons.arrow_forward_ios_rounded)
+            ],
+          ),
+        ),
         const SizedBox(height: 420,),
         RawMaterialButton(
           textStyle: const TextStyle(color: Colors.grey),
