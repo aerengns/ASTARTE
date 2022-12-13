@@ -14,6 +14,7 @@ void main() => runApp(MaterialApp(
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
+  String message = "Not calculated yet";
 }
 
 class _HomeState extends State<Home> {
@@ -105,6 +106,14 @@ class _HomeState extends State<Home> {
               },
               child: Text('Upload Photo'),
             ),
+            ElevatedButton(
+              child: Text('Get the percentage of growth!'),
+              onPressed: () {
+                print('Hello');
+                uploadImage();
+              },
+            ),
+            Text(widget.message),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -119,13 +128,6 @@ class _HomeState extends State<Home> {
                       );
                     }),
               ),
-            ),
-            ElevatedButton(
-              child: Text('Press me!'),
-              onPressed: () {
-                print('Hello');
-                uploadImage();
-              },
             ),
           ],
         ),
@@ -175,7 +177,14 @@ class _HomeState extends State<Home> {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
+        String new_message = await response.stream.bytesToString();
+        List<String> m_list = new_message.split(",");
+        new_message = m_list.join("\n");
+        setState(() {
+          widget.message = new_message;
+        });
+        // widget.message = await response.stream.bytesToString();
+        //print(widget.message);
       } else {
         print(response.reasonPhrase);
       }
