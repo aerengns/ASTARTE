@@ -18,7 +18,7 @@ result = inference_detector(model, img)
 # plt.figure(figsize = (10,15))
 # plt.imshow(image, aspect='auto')
 
-show_result_pyplot(model, img, result)
+show_result_pyplot(model, img, result, score_thr=0.7)
 
 
 ripening_dict = {0: 1,
@@ -38,12 +38,12 @@ number_of_tomatoes_dict = {0: 0,
 total_detection = 0
 total_ripness = 0
 for i, row in enumerate(result[0]):
-    num_of_tomato = len(row)
+    num_of_tomato = len(row[row[:,-1]>0.7])
     total_detection += num_of_tomato
     total_ripness += num_of_tomato*ripening_dict[i]
     number_of_tomatoes_dict[i] += num_of_tomato
 
-print(f'Percentage of ripness: {100*total_ripness/total_detection:.2f}% \n \
-total number of fully rippened tomatoes: {number_of_tomatoes_dict[0] + number_of_tomatoes_dict[3]}\n \
-total number of half rippened tomatoes: {number_of_tomatoes_dict[1] + number_of_tomatoes_dict[4]}\n \
+print(f'Percentage of ripeness: {100*total_ripness/total_detection:.2f}% \n \
+total number of fully ripened tomatoes: {number_of_tomatoes_dict[0] + number_of_tomatoes_dict[3]}\n \
+total number of half ripened tomatoes: {number_of_tomatoes_dict[1] + number_of_tomatoes_dict[4]}\n \
 total number of green tomatoes: {number_of_tomatoes_dict[2] + number_of_tomatoes_dict[5]}')
