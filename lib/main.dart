@@ -3,6 +3,7 @@ import 'package:astarte/homepage.dart';
 import 'package:astarte/reports.dart';
 import 'package:astarte/workers.dart';
 import 'package:astarte/farms.dart';
+import 'package:astarte/photo_upload.dart';
 
 void main() => runApp(const Astarte());
 
@@ -21,6 +22,7 @@ class Astarte extends StatelessWidget {
         '/reports': (context) => const Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
+        '/photo-upload': (context) => PhotoUpload(),
       },
     );
   }
