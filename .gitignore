@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+uploads/*
+backendcore/mmdetection
+db.sqlite3
+backendapp/.env
