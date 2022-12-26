@@ -86,6 +86,20 @@ Widget sideBar(BuildContext context) {
             ],
           ),
         ),
+        RawMaterialButton(
+          textStyle: const TextStyle(color: Colors.grey),
+          onPressed: () {
+            Navigator.pushNamed(context, '/heatmap');
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Icon(Icons.map),
+              Text("Heatmap"),
+              Icon(Icons.arrow_forward_ios_rounded)
+            ],
+          ),
+        ),
         const SizedBox(height: 420,),
         RawMaterialButton(
           textStyle: const TextStyle(color: Colors.grey),
