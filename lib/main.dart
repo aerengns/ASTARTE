@@ -5,6 +5,8 @@ import 'package:astarte/workers.dart';
 import 'package:astarte/farms.dart';
 import 'package:astarte/photo_upload.dart';
 
+import 'heatmap.dart';
+
 void main() => runApp(const Astarte());
 
 class Astarte extends StatelessWidget {
@@ -22,6 +24,7 @@ class Astarte extends StatelessWidget {
         '/reports': (context) => const Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
+        '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
       },
     );
