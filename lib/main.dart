@@ -21,7 +21,7 @@ class Astarte extends StatelessWidget {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const HomePage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/reports': (context) => const Reports(),
+        '/reports': (context) => Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
         '/heatmap': (context) => const Heatmap(),
