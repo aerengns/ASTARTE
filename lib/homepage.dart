@@ -20,15 +20,51 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _totalNotifications = 0;
+
+    checkForInitialMessage();
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      PushNotification notification = PushNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+      );
+      setState(() {
+        _notificationInfo = notification;
+        _totalNotifications++;
+      });
+    });
     super.initState();
   }
 
+  // For handling notification when the app is in terminated state
+  checkForInitialMessage() async {
+    await Firebase.initializeApp();
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      PushNotification notification = PushNotification(
+        title: initialMessage.notification?.title,
+        body: initialMessage.notification?.body,
+        dataTitle: initialMessage.data['title'],
+        dataBody: initialMessage.data['body'],
+      );
+      setState(() {
+        _notificationInfo = notification;
+        _totalNotifications++;
+      });
+    }
+  }
+
+  Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    print("Handling a background message: ${message.messageId}");
+  }
+
   void registerNotification() async {
-    // 1. Initialize the Firebase app
     await Firebase.initializeApp();
 
-    // 2. Instantiate Firebase Messaging
     _messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // 3. On iOS, this helps to take the user permissions
     NotificationSettings settings = await _messaging.requestPermission(
@@ -43,7 +79,6 @@ class _HomePageState extends State<HomePage> {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
 
         if (_notificationInfo != null) {
-          // For displaying the notification as an overlay
           showSimpleNotification(
             Text(_notificationInfo!.title!),
             leading: NotificationBadge(totalNotifications: _totalNotifications),
@@ -130,9 +165,13 @@ class PushNotification {
   PushNotification({
     this.title,
     this.body,
+    this.dataTitle,
+    this.dataBody,
   });
   String? title;
   String? body;
+  String? dataTitle;
+  String? dataBody;
 }
 
 
