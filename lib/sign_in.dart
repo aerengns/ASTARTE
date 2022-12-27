@@ -222,7 +222,7 @@ class MyApp extends StatelessWidget {
                 children: [
                   Container(
                     height: 50,
-                    width: 140,
+                    width: 120,
                     decoration: const BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.all(
@@ -251,7 +251,7 @@ class MyApp extends StatelessWidget {
                   ),
                   Container(
                     height: 50,
-                    width: 140,
+                    width: 120,
                     decoration: const BoxDecoration(
                       color: Colors.indigo,
                       borderRadius: BorderRadius.all(
