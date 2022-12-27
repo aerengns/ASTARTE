@@ -9,6 +9,8 @@ import 'package:astarte/photo_upload.dart';
 import 'package:astarte/sign_in.dart';
 import 'package:astarte/sign_up.dart';
 
+import 'heatmap.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,6 +36,7 @@ class Astarte extends StatelessWidget {
         '/reports': (context) => const Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
+        '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
       },
     );
