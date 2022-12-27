@@ -1,11 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
 import 'package:astarte/reports.dart';
 import 'package:astarte/workers.dart';
 import 'package:astarte/farms.dart';
 import 'package:astarte/photo_upload.dart';
+import 'package:astarte/sign_in.dart';
+import 'package:astarte/sign_up.dart';
 
-void main() => runApp(const Astarte());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const Astarte());
+}
 
 class Astarte extends StatelessWidget {
   const Astarte({super.key});
@@ -14,10 +24,12 @@ class Astarte extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ASTARTE',
-      initialRoute: '/',
+      initialRoute: '/sign_in',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const HomePage(),
+        '/sign_in': (context) => const MyApp(),
+        '/sign_up': (context) => const SignUp(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/reports': (context) => const Reports(),
         '/workers': (context) => const Workers(),

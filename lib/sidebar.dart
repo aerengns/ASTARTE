@@ -86,7 +86,7 @@ Widget sideBar(BuildContext context) {
             ],
           ),
         ),
-        const SizedBox(height: 420,),
+        const SizedBox(height: 380,),
         RawMaterialButton(
           textStyle: const TextStyle(color: Colors.grey),
           onPressed: () {

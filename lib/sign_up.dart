@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:astarte/validator.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class SignInForm extends StatefulWidget {
-  const SignInForm({super.key});
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  State<SignUpForm> createState() => _SignUpFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignUpFormState extends State<SignUpForm> {
   bool _isHidden = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -82,7 +81,7 @@ class _SignInFormState extends State<SignInForm> {
               child: TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _signInWithEmailAndPassword();
+                    _register();
                   }
                 },
                 child: Container(
@@ -96,12 +95,20 @@ class _SignInFormState extends State<SignInForm> {
                     ),
                   ),
                   child: const Text(
-                    'Sign In',
+                    'Sign Up',
                     style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
               ),
             ),
+            Container(
+              alignment: Alignment.center,
+              child: TextButton(onPressed: (){
+                Navigator.pushNamed(context, '/sign_in');
+              },
+                child: const Text("Already have an account?"),
+              ),
+            )
           ],
         ));
   }
@@ -113,9 +120,9 @@ class _SignInFormState extends State<SignInForm> {
     super.dispose();
   }
 
-  void _signInWithEmailAndPassword() async {
+  void _register() async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    final User? user = (await auth.signInWithEmailAndPassword(
+    final User? user = (await auth.createUserWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     ))
@@ -125,8 +132,10 @@ class _SignInFormState extends State<SignInForm> {
       setState(() {
         _success = true;
         _userEmail = user.email!;
-        Navigator.popUntil(context, ModalRoute.withName('/'));
+
       });
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+
     } else {
       setState(() {
         _success = false;
@@ -135,8 +144,8 @@ class _SignInFormState extends State<SignInForm> {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SignUp extends StatelessWidget {
+  const SignUp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +182,7 @@ class MyApp extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Sign In',
+                        'Sign Up',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -182,9 +191,9 @@ class MyApp extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.only(top: 15),
                         child: Text(
-                          'Hi there! Nice to see you again.',
+                          'Welcome to Astarte, please sign up to continue.',
                           style:
-                          TextStyle(color: Colors.grey[500], fontSize: 15),
+                              TextStyle(color: Colors.grey[500], fontSize: 15),
                         ),
                       )
                     ],
@@ -199,119 +208,8 @@ class MyApp extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SignInForm(),
-            Container(
-              alignment: Alignment.center,
-              width: 300,
-              padding: const EdgeInsets.only(top: 30),
-              child: Text(
-                'or use one of your social profiles',
-                style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              width: 300,
-              padding: const EdgeInsets.only(top: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    height: 50,
-                    width: 140,
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Icon(
-                            FontAwesomeIcons.twitter,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            'Twitter',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 140,
-                    decoration: const BoxDecoration(
-                      color: Colors.indigo,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          FaIcon(
-                            FontAwesomeIcons.facebook,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            'Facebook',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.only(top: 60),
-              width: 300,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/sign_up');
-                    },
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          children: const [
+            SignUpForm(),
           ]),
     );
 
