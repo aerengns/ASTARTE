@@ -46,7 +46,7 @@ class Reports extends StatelessWidget {
           ),
         ],
       ),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 }

@@ -11,7 +11,7 @@ class Workers extends StatelessWidget {
         title: const Text('Workers'),
       ),
       body: Container(),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 }
