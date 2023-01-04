@@ -37,7 +37,7 @@ class Astarte extends StatelessWidget {
         '/reports': (context) => const Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
-        '/farm_data_form': (context) => const FarmDataForm(),
+        '/farm_data_form': (context) => const FarmData(),
         '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
       },
