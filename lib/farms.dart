@@ -16,7 +16,7 @@ class _FarmsState extends State<Farms> {
         title: const Text('Farms'),
       ),
       body: Container(),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 }

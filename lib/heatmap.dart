@@ -84,7 +84,7 @@ class _HeatmapState extends State<Heatmap> {
           '''
         ),
       ),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 

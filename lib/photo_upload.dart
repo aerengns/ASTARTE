@@ -130,7 +130,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
           ],
         ),
       ),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 
@@ -139,7 +139,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
     var stream = http.ByteStream(DelegatingStream.typed(image.openRead()));
     var length = await image.length();
 
-    var uri = Uri.parse('http://192.168.1.97:8000/app/hello');
+    var uri = Uri.parse('http://192.168.77.225:8000/app/hello');
 
     var request = http.MultipartRequest("POST", uri);
     var multipartFile = http.MultipartFile('file', stream, length,
@@ -163,7 +163,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
       // your endpoint and request method
       File selectedImage = File(imageFileList![0].path);
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://192.168.1.97:8000/app/hello'));
+          'POST', Uri.parse('http://192.168.77.225:8000/app/hello'));
 
       request.fields.addAll({
         'yourFieldNameKey1': 'yourFieldNameValue1',

@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        drawer: sideBar(context));
+        drawer: NavBar(context));
   }
 }
 
