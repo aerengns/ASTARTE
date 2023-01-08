@@ -13,6 +13,7 @@ class _NavBarState extends State<NavBar> {
   Widget build(context) {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
       child: ListView(
         // Remove padding
         padding: EdgeInsets.zero,
@@ -74,6 +75,12 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/heatmap'),
           ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month_rounded),
+            title: const Text('Calendar'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/calendar'),
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings_rounded),
@@ -102,3 +109,22 @@ class _NavBarState extends State<NavBar> {
   }
 }
 
+class AstarteAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const AstarteAppBar({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
+}

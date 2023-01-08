@@ -8,6 +8,7 @@ import 'package:astarte/farms.dart';
 import 'package:astarte/photo_upload.dart';
 import 'package:astarte/sign_in.dart';
 import 'package:astarte/sign_up.dart';
+import 'package:astarte/calendar.dart';
 
 import 'heatmap.dart';
 
@@ -38,6 +39,7 @@ class Astarte extends StatelessWidget {
         '/farms': (context) => const Farms(),
         '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
+        '/calendar': (context) => Calendar(),
       },
     );
   }
