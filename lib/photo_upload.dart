@@ -91,9 +91,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Upload Image'),
-      ),
+      appBar: const AstarteAppBar(title: 'Upload Image'),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

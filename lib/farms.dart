@@ -12,9 +12,7 @@ class _FarmsState extends State<Farms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Farms'),
-      ),
+      appBar: const AstarteAppBar(title: 'Farms'),
       body: Container(),
       drawer: NavBar(context),
     );

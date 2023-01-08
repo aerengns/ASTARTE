@@ -22,9 +22,7 @@ class _HeatmapState extends State<Heatmap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Heatmap'),
-      ),
+      appBar: const AstarteAppBar(title: 'Heatmap'),
       body: Center(
         child: Echarts(
           option: '''

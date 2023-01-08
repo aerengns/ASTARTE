@@ -12,9 +12,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('ASTARTE'),
-        ),
+        appBar: const AstarteAppBar(title: 'ASTARTE'),
         body: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

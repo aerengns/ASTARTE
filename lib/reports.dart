@@ -7,9 +7,7 @@ class Reports extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reports'),
-      ),
+      appBar: const AstarteAppBar(title: 'Reports',),
       body: Column(
         children: [
           Image.asset(
