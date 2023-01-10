@@ -1,127 +1,130 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-Widget sideBar(BuildContext context) {
-  return Drawer(
-    width: MediaQuery.of(context).size.width * 0.5,
-    child: Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: Column(
-        children: <Widget>[
-          // Add items to the sidebar here
-          Container(
-            height: 200,
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-                onPressed: () {},
-                color: Colors.grey,
-                icon: const Icon(Icons.account_circle_rounded, size: 50)),
-          ),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.home_filled),
-                Text("Home"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.pushNamed(context, '/reports');
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.add_chart),
-                Text("Reports"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.pushNamed(context, '/workers');
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.people_alt_rounded),
-                Text("Workers"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.pushNamed(context, '/farms');
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.warehouse_rounded),
-                Text("Farms"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.pushNamed(context, '/photo-upload');
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.camera_alt_rounded),
-                Text("Photo Upload"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          RawMaterialButton(
-            textStyle: const TextStyle(color: Colors.grey),
-            onPressed: () {
-              Navigator.pushNamed(context, '/heatmap');
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Icon(Icons.map),
-                Text("Heatmap"),
-                Icon(Icons.arrow_forward_ios_rounded)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: RawMaterialButton(
-                textStyle: const TextStyle(color: Colors.grey),
-                onPressed: () {
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const [
-                    Icon(Icons.settings),
-                    Padding(
-                        padding: EdgeInsets.only(left: 30),
-                        child: Text("Settings")),
-                  ],
+class NavBar extends StatefulWidget {
+  const NavBar(BuildContext context, {Key? key}) : super(key: key);
+
+  @override
+  State<NavBar> createState() => _NavBarState();
+}
+
+class _NavBarState extends State<NavBar> {
+  @override
+  Widget build(context) {
+    return Drawer(
+      width: MediaQuery.of(context).size.width * 0.7,
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
+      child: ListView(
+        // Remove padding
+        padding: EdgeInsets.zero,
+        children: [
+          UserAccountsDrawerHeader(
+            accountName: const Text('Someone'),
+            accountEmail: const Text('example@gmail.com'),
+            currentAccountPicture: CircleAvatar(
+              child: ClipOval(
+                child: Image.network(
+                  'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
+                  fit: BoxFit.cover,
+                  width: 90,
+                  height: 90,
                 ),
               ),
             ),
+            decoration: const BoxDecoration(
+              color: Colors.blue,
+              image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(
+                      'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home_filled),
+            title: const Text("Home"),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.popUntil(context, ModalRoute.withName('/')),
+          ),
+          ListTile(
+            leading: const Icon(Icons.addchart),
+            title: const Text('Reports'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/reports'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.people_alt_rounded),
+            title: const Text('Workers'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/workers'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.warehouse_rounded),
+            title: const Text('Farms'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/farms'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt_rounded),
+            title: const Text('Photo Upload'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/photo-upload'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.map_rounded),
+            title: const Text('Heatmap'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/heatmap'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month_rounded),
+            title: const Text('Calendar'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/calendar'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.settings_rounded),
+            title: const Text('Settings'),
+            onTap: () => null,
+          ),
+          ListTile(
+            leading: const Icon(Icons.description_rounded),
+            title: const Text('Policies'),
+            onTap: () => null,
+          ),
+          const Divider(),
+          ListTile(
+            title: const Text('Sign Out'),
+            leading: const Icon(Icons.logout_rounded),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              if (!mounted) return;
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.popAndPushNamed(context, '/sign_in');
+            },
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+}
+
+class AstarteAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const AstarteAppBar({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
 }

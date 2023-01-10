@@ -9,7 +9,7 @@ import 'package:astarte/photo_upload.dart';
 import 'package:astarte/sign_in.dart';
 import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
-
+import 'package:astarte/calendar.dart';
 import 'heatmap.dart';
 
 void main() async {
@@ -40,6 +40,7 @@ class Astarte extends StatelessWidget {
         '/farm_data_form': (context) => const FarmData(),
         '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
+        '/calendar': (context) => Calendar(),
       },
     );
   }

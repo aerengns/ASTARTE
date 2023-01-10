@@ -7,11 +7,9 @@ class Workers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Workers'),
-      ),
+      appBar: const AstarteAppBar(title: 'Workers'),
       body: Container(),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 }
