@@ -7,11 +7,9 @@ class FarmData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Farm Data'),
-      ),
+      appBar: const AstarteAppBar(title: 'Farm Data'),
       body: const FarmDataForm(),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 }
@@ -124,7 +122,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                         );
                       }
                     },
-                    child: Text('Submit Data', style: TextStyle(fontSize: 16)),
+                    child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
