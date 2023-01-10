@@ -34,7 +34,7 @@ class Astarte extends StatelessWidget {
         '/sign_in': (context) => const MyApp(),
         '/sign_up': (context) => const SignUp(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/reports': (context) => const Reports(),
+        '/reports': (context) => Reports(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
         '/heatmap': (context) => const Heatmap(),
