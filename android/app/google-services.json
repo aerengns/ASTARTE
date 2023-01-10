@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "799945981526",
+    "project_id": "astarte-odtu",
+    "storage_bucket": "astarte-odtu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799945981526:android:bac719d79a9c18ecda45f7",
+        "android_client_info": {
+          "package_name": "app.astarte.astarte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "799945981526-41p4sbfrn3j96m6dg41hencnf6n541n3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaulmdKFCqLB-eK5L3EIIASJAx6haGCb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "799945981526-41p4sbfrn3j96m6dg41hencnf6n541n3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "799945981526-a5fn4nvko84igb3ni2298hqgael31vgj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.astarte.astarte"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -62,7 +62,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                       selectImages(ImageSource.gallery);
                     },
                     child: Row(
-                      children: [
+                      children: const [
                         Icon(Icons.image),
                         Text('From Gallery'),
                       ],
@@ -75,7 +75,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                       selectImages(ImageSource.camera);
                     },
                     child: Row(
-                      children: [
+                      children: const [
                         Icon(Icons.camera),
                         Text('From Camera'),
                       ],
@@ -91,9 +91,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Upload Image'),
-      ),
+      appBar: const AstarteAppBar(title: 'Upload Image'),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +115,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
                 padding: const EdgeInsets.all(8.0),
                 child: GridView.builder(
                     itemCount: imageFileList!.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3),
                     itemBuilder: (BuildContext context, int index) {
                       return Image.file(
@@ -130,7 +128,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
           ],
         ),
       ),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 
@@ -139,7 +137,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
     var stream = http.ByteStream(DelegatingStream.typed(image.openRead()));
     var length = await image.length();
 
-    var uri = Uri.parse('http://127.0.0.1:8000/app/hello');
+    var uri = Uri.parse('http://192.168.77.225:8000/app/hello');
 
     var request = http.MultipartRequest("POST", uri);
     var multipartFile = http.MultipartFile('file', stream, length,
@@ -163,7 +161,7 @@ class _PhotoUploadState extends State<PhotoUpload> {
       // your endpoint and request method
       File selectedImage = File(imageFileList![0].path);
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/app/hello'));
+          'POST', Uri.parse('http://192.168.77.225:8000/app/hello'));
 
       request.fields.addAll({
         'yourFieldNameKey1': 'yourFieldNameValue1',

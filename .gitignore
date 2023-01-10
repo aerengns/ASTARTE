@@ -32,6 +32,8 @@ migrate_working_dir/
 .pub/
 /build/
 .metadata
+pubspec.lockgit add
+ios/Podfile.lockgit
 
 # Symbolication related
 app.*.symbols

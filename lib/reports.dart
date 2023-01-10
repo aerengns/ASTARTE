@@ -33,13 +33,11 @@ class _ReportsState extends State<Reports> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reports'),
-      ),
+      appBar: const AstarteAppBar(title: 'Reports',),
       body: Column(
         children: _widgets,
       ),
-      drawer: sideBar(context),
+      drawer: NavBar(context),
     );
   }
 
