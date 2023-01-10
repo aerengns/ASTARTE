@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # External
     'rest_framework',
     'corsheaders',
+    'reports',
 ]
 
 MIDDLEWARE = [

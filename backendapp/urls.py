@@ -21,5 +21,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('app/', include('backendcore.urls'))
+    path('app/', include('backendcore.urls')),
+    path('app/', include('reports.urls'))
 ]
