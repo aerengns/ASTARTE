@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
-import 'package:astarte/reports.dart';
+import 'package:astarte/humidity_report.dart';
+import 'package:astarte/npk_values_report.dart';
+import 'package:astarte/temperature_report.dart';
 import 'package:astarte/workers.dart';
 import 'package:astarte/farms.dart';
 import 'package:astarte/photo_upload.dart';
@@ -34,7 +36,9 @@ class Astarte extends StatelessWidget {
         '/sign_in': (context) => const MyApp(),
         '/sign_up': (context) => const SignUp(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/reports': (context) => Reports(),
+        '/humidity_report': (context) => HumidityReport(),
+        '/npk_report': (context) => NPKReport(),
+        '/temperature_report': (context) => TemperatureReport(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
         '/heatmap': (context) => const Heatmap(),

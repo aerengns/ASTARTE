@@ -45,12 +45,27 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.popUntil(context, ModalRoute.withName('/')),
           ),
-          ListTile(
-            leading: const Icon(Icons.addchart),
-            title: const Text('Reports'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/reports'),
-          ),
+          ExpansionTile(
+              title: Text('Reports'),
+              leading: const Icon(Icons.addchart),
+              children: <Widget>[
+                ListTile(
+                  title: const Text('Humidity Reports'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () => Navigator.pushNamed(context, '/humidity_report'),
+                ),
+                ListTile(
+                  title: const Text('NPK Values Report'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () => Navigator.pushNamed(context, '/npk_report'),
+                ),
+                ListTile(
+                  title: const Text('Temperatures Report'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/temperature_report'),
+                ),
+              ]),
           ListTile(
             leading: const Icon(Icons.people_alt_rounded),
             title: const Text('Workers'),
