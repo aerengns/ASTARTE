@@ -4,6 +4,10 @@
         android:label="astarte"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+       <meta-data
+           android:name="com.google.firebase.messaging.default_notification_icon"
+           android:resource="@drawable/astarte_transparent_background"
+           />
         <activity
             android:name=".MainActivity"
             android:exported="true"
