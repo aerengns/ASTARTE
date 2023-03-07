@@ -9,3 +9,27 @@ Steps to set up the Backend
 - cd mmdetection
 - pip install -v -e .
 - Finally, create a .env file under backendapp and ask for a secret key from those who have it
+
+---
+### Running app with docker
+
+If you want to run project without creating an environment, you can use
+
+`docker login --username astarteapp`
+
+`docker run astarteapp/backend_main:latest`
+
+### Creating docker image after backend changes
+
+To create the docker image after your changes to code use the command below in the directory where Dockerfile exists,
+
+`docker build . -t astarteapp/backend_main:latest`
+latest can be your version
+
+In order to publish your image, you should have a docker hub account.
+
+`docker push astarteapp/backend_main:latest`
+latest can be your version
+
+
+
