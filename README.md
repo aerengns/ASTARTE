@@ -17,7 +17,7 @@ If you want to run project without creating an environment, you can use
 
 `docker login --username astarteapp`
 
-`docker run astarteapp/backend_main:latest`
+`docker run -p 8000:8000  astarteapp/backend_main:latest`
 
 ### Creating docker image after backend changes
 
@@ -30,6 +30,4 @@ In order to publish your image, you should have a docker hub account.
 
 `docker push astarteapp/backend_main:latest`
 latest can be your version
-
-
 
