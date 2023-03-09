@@ -48,6 +48,7 @@ class _NavBarState extends State<NavBar> {
           ExpansionTile(
               title: Text('Reports'),
               leading: const Icon(Icons.addchart),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded),
               children: <Widget>[
                 ListTile(
                   title: const Text('Humidity Reports'),
