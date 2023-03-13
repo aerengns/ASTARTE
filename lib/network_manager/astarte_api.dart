@@ -14,6 +14,7 @@ abstract class AstarteApi extends ChopperService {
   static AstarteApi create() {
     final client = ChopperClient(
       baseUrl: 'http://localhost:8000/' as Uri,
+      interceptors: [HeaderInterceptor(), HttpLoggingInterceptor()],
       services: [
         _$AstarteApi(),
       ],
