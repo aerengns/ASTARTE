@@ -1,3 +1,11 @@
-Install firebase from https://firebase.google.com/docs/flutter/setup?platform=ios
-Then install analytics and authorization plugins too
-Do not forget to do pub outdated, pub upgrade, pub clean, pub get
+Steps to set up the Backend
+- Clone the backend to project folder looking like this -> ASTARTE : app, backend (While cloning be careful since both the app and backend is named astarte in the repo)
+- After creating a virtual environment write 'pip install -r requirements.txt'
+- Install mmdetection from gitHub and put it in backendcore
+- Open a checkpoints folder under mmdetection
+- conda install pytorch torchvision OR pip install pytorch torchvision -> In case of an unkown pytorch error use torch instead
+- pip install -U openmim
+- mim install mmcv-full
+- cd mmdetection
+- pip install -v -e .
+- Finally, create a .env file under backendapp and ask for a secret key from those who have it
