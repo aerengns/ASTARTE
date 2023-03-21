@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:astarte/homepage.dart';
 import 'package:astarte/humidity_report.dart';
 import 'package:astarte/npk_values_report.dart';
@@ -42,8 +41,6 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  _setupLogging();
-
   runApp(const Astarte());
 }
 
@@ -77,11 +74,4 @@ class Astarte extends StatelessWidget {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-}
-
-void _setupLogging() {
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((rec) {
-    print('${rec.level.name}: ${rec.time}: ${rec.message}');
-  });
 }
