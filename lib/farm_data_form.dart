@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 
+import 'network_manager/services/sensor_data_service.dart';
+
 class FarmData extends StatelessWidget {
   const FarmData({Key? key}) : super(key: key);
 
@@ -23,6 +25,7 @@ class FarmDataForm extends StatefulWidget {
 
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
+  final sensorDataService = SensorDataService.create();
 
   @override
   Widget build(BuildContext context) {
@@ -115,12 +118,19 @@ class _FarmDataFormState extends State<FarmDataForm> {
                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Saving Your Data')),
-                        );
-                      }
+                    onPressed: () async {
+                      final response = await sensorDataService.saveSensorData(
+                        {
+                          'farmName': 'name',
+                          'formDate': 'date',
+                          'moisture': '0.0',
+                          'phosphorus': '0.0',
+                          'potassium': '0.0',
+                          'nitrogen': '0.0',
+                        }
+                      );
+
+                      print(response.body);
                     },
                     child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),

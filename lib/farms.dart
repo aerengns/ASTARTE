@@ -1,3 +1,4 @@
+import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 
