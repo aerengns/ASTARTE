@@ -4,3 +4,4 @@ uploads/*
 backendcore/mmdetection
 db.sqlite3
 backendapp/.env
+**/__pycache__
