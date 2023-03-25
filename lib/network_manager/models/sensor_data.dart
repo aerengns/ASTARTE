@@ -1,23 +1,23 @@
 import 'dart:ffi';
 
-import 'package:json_annotation/json_annotation.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
+import 'package:built_collection/built_collection.dart';
 
-// command to generate the file: flutter pub run build_runner build
 part 'sensor_data.g.dart';
 
-@JsonSerializable()
-class SensorData {
-  String farmName;
-  String formDate;
-  Float moisture;
-  Float phosphorus;
-  Float potassium;
-  Float nitrogen;
+abstract class SensorData implements Built<SensorData, SensorDataBuilder> {
 
-  SensorData({required this.farmName, required this.formDate, required this.moisture,
-    required this.phosphorus, required this.potassium, required this.nitrogen});
+  String get farmName;
+  String get formDate;
+  double get moisture;
+  double get phosphorus;
+  double get potassium;
+  double get nitrogen;
 
-  factory SensorData.fromJson(Map<String, dynamic> json) => _$SensorDataFromJson(json);
+  SensorData._();
 
-  Map<String, dynamic> toJson() => _$SensorDataToJson(this);
+  factory SensorData([updates(SensorDataBuilder b)]) = _$SensorData;
+
+  static Serializer<SensorData> get serializer => _$sensorDataSerializer;
 }
