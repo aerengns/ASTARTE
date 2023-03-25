@@ -17,29 +17,29 @@ class _$SensorDataService extends SensorDataService {
   final definitionType = SensorDataService;
 
   @override
-  Future<Response<dynamic>> getSensorData() {
+  Future<Response<BuiltList<SensorData>>> getSensorData() {
     final Uri $url = Uri.parse('/reports');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<BuiltList<SensorData>, SensorData>($request);
   }
 
   @override
-  Future<Response<dynamic>> getFarmSensorData(String farmName) {
+  Future<Response<SensorData>> getFarmSensorData(String farmName) {
     final Uri $url = Uri.parse('/reports/${farmName}');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<SensorData, SensorData>($request);
   }
 
   @override
-  Future<Response<dynamic>> saveSensorData(Map<String, dynamic> data) {
+  Future<Response<dynamic>> saveSensorData(SensorData data) {
     final Uri $url = Uri.parse('/reports');
     final $body = data;
     final Request $request = Request(

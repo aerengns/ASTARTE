@@ -1,5 +1,8 @@
-import "dart:async";
+import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:chopper/chopper.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
+
 
 part "sensor_data_service.chopper.dart";
 
@@ -7,14 +10,14 @@ part "sensor_data_service.chopper.dart";
 abstract class SensorDataService extends ChopperService {
 
   @Get()
-  Future<Response> getSensorData();
+  Future<Response<BuiltList<SensorData>>> getSensorData();
 
   @Get(path: '/{name}')
-  Future<Response> getFarmSensorData(@Path('name') String farmName);
+  Future<Response<SensorData>> getFarmSensorData(@Path('name') String farmName);
 
   @Post()
   Future<Response> saveSensorData(
-      @Body() Map<String, dynamic> data
+      @Body() SensorData data
       );
 
   static SensorDataService create() {
@@ -23,7 +26,11 @@ abstract class SensorDataService extends ChopperService {
         services: [
           _$SensorDataService(),
         ],
-        converter: JsonConverter(),
+        converter: BuiltValueConverter(),
+        interceptors: [
+          // HeadersInterceptor({'token': 'token'}),
+          HttpLoggingInterceptor(),
+        ]
     );
     return _$SensorDataService(client);
   }
