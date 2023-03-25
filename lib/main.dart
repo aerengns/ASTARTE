@@ -1,4 +1,3 @@
-import 'package:astarte/network_manager/services/hello_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
