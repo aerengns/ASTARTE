@@ -1,3 +1,4 @@
+import 'package:astarte/farm_detail.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
@@ -63,6 +64,7 @@ class Astarte extends StatelessWidget {
         '/temperature_report': (context) => TemperatureReport(),
         '/workers': (context) => const Workers(),
         '/farms': (context) => const Farms(),
+        '/farm_detail': (context) => const FarmDetail(),
         '/farm_data_form': (context) => const FarmData(),
         '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),

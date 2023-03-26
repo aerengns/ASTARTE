@@ -79,6 +79,12 @@ class _NavBarState extends State<NavBar> {
             onTap: () => Navigator.pushNamed(context, '/farms'),
           ),
           ListTile(
+            leading: const Icon(Icons.warehouse_rounded),
+            title: const Text('Farm Detail'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/farm_detail'),
+          ),
+          ListTile(
             leading: const Icon(Icons.camera_alt_rounded),
             title: const Text('Photo Upload'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
