@@ -27,6 +27,11 @@ class FarmDataForm extends StatefulWidget {
 
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
+  String _farmName = '';
+  String _date = '';
+  String _moisture = '';
+  String _phosphorus = '';
+  String _potassium = '';
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +47,15 @@ class _FarmDataFormState extends State<FarmDataForm> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextFormField(
+                  validator: (value) {
+                    if (value?.isEmpty == true) {
+                      return 'Please enter a value';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    _farmName = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -53,6 +67,15 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  validator: (value) {
+                    if (value?.isEmpty == true) {
+                      return 'Please enter a value';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    _date = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -64,6 +87,12 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _moisture = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -74,6 +103,12 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _phosphorus = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -84,6 +119,12 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _potassium = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -94,6 +135,12 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _potassium = value;
+                  },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
@@ -120,18 +167,37 @@ class _FarmDataFormState extends State<FarmDataForm> {
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                     ),
                     onPressed: () async {
+                      if (_formKey.currentState?.validate() != true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please fill in all fields'),
+                          ),
+                        );
+                      }
                       final response = await Provider.of<SensorDataService>(context, listen: false).saveSensorData(
-                        // TODO: replace with data written in form text fields
                         SensorData(
                                 (b) => b
-                          ..farmName = 'Farm 1'
-                          ..formDate = '2021-09-01'
-                          ..moisture = 0.5
-                          ..phosphorus = 0.5
-                          ..potassium = 0.5
-                          ..nitrogen = 0.5
+                          ..farmName = _farmName
+                          ..formDate = _date
+                          ..moisture = double.parse(_moisture)
+                          ..phosphorus = double.parse(_phosphorus)
+                          ..potassium = double.parse(_potassium)
+                          ..nitrogen = double.parse(_potassium)
                       ));
-                      print(response.body);
+                      if (response.isSuccessful) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Data Saved Successfully'),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Your data was not saved. Please try again.'),
+                          ),
+                        );
+                      }
                     },
                     child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),
@@ -143,4 +209,13 @@ class _FarmDataFormState extends State<FarmDataForm> {
       ],
     );
   }
+}
+
+String? _validateNumericalField(String? value) {
+  if (value?.isEmpty == true) {
+    return 'Please enter a value';
+  } else if (double.tryParse(value!) == null) {
+    return 'Please enter a valid number';
+  }
+  return null;
 }
