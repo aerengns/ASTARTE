@@ -2,6 +2,7 @@ import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:provider/provider.dart';
+import 'package:astarte/farms.dart';
 
 import 'network_manager/services/sensor_data_service.dart';
 
@@ -10,16 +11,28 @@ class FarmData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formData = ModalRoute.of(context)?.settings.arguments as FormData?;
     return Scaffold(
-      appBar: const AstarteAppBar(title: 'Farm Data'),
-      body: const FarmDataForm(),
+      appBar: AppBar(
+        title: const Text('Farm Data'),
+        backgroundColor: Colors.red,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ),
+      body: FarmDataForm(formData: formData),
       drawer: NavBar(context),
     );
   }
 }
 
 class FarmDataForm extends StatefulWidget {
-  const FarmDataForm({Key? key}) : super(key: key);
+  final FormData? formData;
+
+  const FarmDataForm({Key? key, this.formData}) : super(key: key);
 
   @override
   State<FarmDataForm> createState() => _FarmDataFormState();
@@ -27,11 +40,24 @@ class FarmDataForm extends StatefulWidget {
 
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
-  String _farmName = '';
-  String _date = '';
-  String _moisture = '';
-  String _phosphorus = '';
-  String _potassium = '';
+
+  late String _farmName;
+  late String _date;
+  late String _moisture;
+  late String _phosphorus;
+  late String _potassium;
+  late String _nitrogen;
+
+  @override
+  void initState() {
+    super.initState();
+    _farmName = widget.formData?.farmName ?? '';
+    _date = widget.formData?.date ?? '';
+    _moisture = widget.formData?.moisture.toString() ?? '';
+    _phosphorus = widget.formData?.phosphorus.toString() ?? '';
+    _potassium = widget.formData?.potassium.toString() ?? '';
+    _nitrogen = widget.formData?.nitrogen.toString() ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +73,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _farmName,
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter a value';
@@ -67,6 +95,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _date,
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter a value';
@@ -87,6 +117,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _moisture,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -103,6 +135,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _phosphorus,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -119,6 +153,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _potassium,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -135,11 +171,13 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _nitrogen,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
                   onChanged: (value) {
-                    _potassium = value;
+                    _nitrogen = value;
                   },
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -150,7 +188,9 @@ class _FarmDataFormState extends State<FarmDataForm> {
                     labelText: 'Nitrogen',
                   ),
                 ),
-                Padding(
+                Visibility(
+                  visible: widget.formData == null,
+                  child: Padding(
                   padding: const EdgeInsets.all(30.0),
                   child: ElevatedButton(
                     style: ButtonStyle(
@@ -175,15 +215,15 @@ class _FarmDataFormState extends State<FarmDataForm> {
                         );
                       }
                       final response = await Provider.of<SensorDataService>(context, listen: false).saveSensorData(
-                        SensorData(
-                                (b) => b
-                          ..farmName = _farmName
-                          ..formDate = _date
-                          ..moisture = double.parse(_moisture)
-                          ..phosphorus = double.parse(_phosphorus)
-                          ..potassium = double.parse(_potassium)
-                          ..nitrogen = double.parse(_potassium)
-                      ));
+                          SensorData(
+                                  (b) => b
+                                ..farmName = _farmName
+                                ..formDate = _date
+                                ..moisture = double.parse(_moisture)
+                                ..phosphorus = double.parse(_phosphorus)
+                                ..potassium = double.parse(_potassium)
+                                ..nitrogen = double.parse(_nitrogen)
+                          ));
                       if (response.isSuccessful) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -201,6 +241,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                     },
                     child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),
+                ),
                 ),
               ],
             ),
