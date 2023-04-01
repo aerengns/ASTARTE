@@ -1,6 +1,7 @@
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:astarte/sidebar.dart';
 
 class Farms extends StatefulWidget {
@@ -29,7 +30,7 @@ class _FarmsState extends State<Farms> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               height: MediaQuery.of(context).size.height * 0.5,
-              child: DataList(),
+              child: const DataList(),
             )
           ),
           Align(
@@ -66,36 +67,39 @@ class _FarmsState extends State<Farms> {
 }
 
 class DataList extends StatelessWidget {
-  List<FormData> data = [
-    FormData("Astarte Farm", "09.12.2023", 0.7, 0.5, 0.2, 0.1),
-    FormData("Next Farm", "10.12.2023", 0.3, 0.1, 0.6, 0.5),
-  ];
-  DataList({Key? key}) : super(key: key);
+  const DataList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-        itemCount: data.length,
-        prototypeItem: const ListTile(
-          leading: Icon(Icons.newspaper),
-          title: Text('Farm Name'),
-          subtitle: Text('Date'),
-        ),
-        itemBuilder: (context, index) {
-          return ListTile(
-            // TODO: change with form data response
-            leading: const Icon(Icons.newspaper),
-            title: Text(data[index].farmName),
-            subtitle: Text(data[index].date),
-            onTap: () {
-              Navigator.pushNamed(context, '/farm_data_form', arguments: data[index]);
+    return FutureBuilder<List<SensorData>>(
+      future: Provider.of<SensorDataService>(context, listen: false).getSensorData().then((response) => response.body!.toList()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final data = snapshot.data!;
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: const Icon(Icons.newspaper),
+                title: Text(data[index].farmName),
+                subtitle: Text(data[index].formDate),
+                onTap: () {
+                  Navigator.pushNamed(context, '/farm_data_form', arguments: data[index]);
+                },
+              );
             },
           );
-        },
+        }
+      },
     );
   }
 }
+
 
 class FormData {
   String farmName;
