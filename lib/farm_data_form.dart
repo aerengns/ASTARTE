@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
@@ -15,7 +16,7 @@ class FarmData extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Farm Data'),
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -40,6 +41,7 @@ class FarmDataForm extends StatefulWidget {
 
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _dateController = TextEditingController(text: _date);
 
   late String _farmName;
   late String _date;
@@ -57,6 +59,35 @@ class _FarmDataFormState extends State<FarmDataForm> {
     _phosphorus = widget.formData?.phosphorus.toString() ?? '';
     _potassium = widget.formData?.potassium.toString() ?? '';
     _nitrogen = widget.formData?.nitrogen.toString() ?? '';
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2022),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color.fromRGBO(211, 47, 47, 1),
+              onPrimary: Colors.white,
+              surface:Color.fromRGBO(211, 47, 47, 1),
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      final formatter = DateFormat('dd-MM-yyyy');
+      setState(() {
+        _date = formatter.format(picked);
+      });
+    }
   }
 
   @override
@@ -95,8 +126,14 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
+                  onTap: () async {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    _selectDate().then((value) {
+                      _dateController.text = _date;
+                    });
+                  },
+                  controller: _dateController,
                   enabled: widget.formData == null,
-                  initialValue: _date,
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter a value';
@@ -197,14 +234,14 @@ class _FarmDataFormState extends State<FarmDataForm> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0),
-                              side: const BorderSide(color: Colors.red)
+                              side: const BorderSide(color: Color.fromRGBO(211, 47, 47, 1))
                           )
                       ),
                       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                           const EdgeInsets.all(12.0)
                       ),
                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                      backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
                     ),
                     onPressed: () async {
                       if (_formKey.currentState?.validate() != true) {
