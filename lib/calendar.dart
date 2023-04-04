@@ -23,6 +23,8 @@ class _CalendarState extends State<Calendar> {
     super.initState();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    // TODO: instead of print it should refresh the calendar
+    getCalendarData().whenComplete(() => print('Done'));
   }
 
   @override
@@ -108,7 +110,7 @@ class _CalendarState extends State<Calendar> {
                           width: 8, // for horizontal axis
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: eventMarkerColor(date, events[index])
+                              color: eventMarkerColor(events[index])
                           ),
                         ),
                       );
@@ -135,7 +137,7 @@ class _CalendarState extends State<Calendar> {
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0), // TODO: Color the boxes according to event type
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: value[index].get(),
                     );
