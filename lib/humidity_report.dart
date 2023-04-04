@@ -1,3 +1,4 @@
+import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -86,7 +87,7 @@ class _ReportsState extends State<HumidityReport> {
       };
       // your endpoint and request method
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/app/humidity_report'));
+          'POST', Uri.parse('${GENERAL_URL}app/humidity_report'));
 
       request.headers.addAll(headers);
 
