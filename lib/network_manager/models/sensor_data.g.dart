@@ -36,6 +36,12 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
       'nitrogen',
       serializers.serialize(object.nitrogen,
           specifiedType: const FullType(double)),
+      'latitude',
+      serializers.serialize(object.latitude,
+          specifiedType: const FullType(double)),
+      'longitude',
+      serializers.serialize(object.longitude,
+          specifiedType: const FullType(double)),
     ];
 
     return result;
@@ -76,6 +82,14 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
           result.nitrogen = serializers.deserialize(value,
               specifiedType: const FullType(double))! as double;
           break;
+        case 'latitude':
+          result.latitude = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
+        case 'longitude':
+          result.longitude = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
       }
     }
 
@@ -96,6 +110,10 @@ class _$SensorData extends SensorData {
   final double potassium;
   @override
   final double nitrogen;
+  @override
+  final double latitude;
+  @override
+  final double longitude;
 
   factory _$SensorData([void Function(SensorDataBuilder)? updates]) =>
       (new SensorDataBuilder()..update(updates))._build();
@@ -106,7 +124,9 @@ class _$SensorData extends SensorData {
       required this.moisture,
       required this.phosphorus,
       required this.potassium,
-      required this.nitrogen})
+      required this.nitrogen,
+      required this.latitude,
+      required this.longitude})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(farmName, r'SensorData', 'farmName');
     BuiltValueNullFieldError.checkNotNull(formDate, r'SensorData', 'formDate');
@@ -116,6 +136,9 @@ class _$SensorData extends SensorData {
     BuiltValueNullFieldError.checkNotNull(
         potassium, r'SensorData', 'potassium');
     BuiltValueNullFieldError.checkNotNull(nitrogen, r'SensorData', 'nitrogen');
+    BuiltValueNullFieldError.checkNotNull(latitude, r'SensorData', 'latitude');
+    BuiltValueNullFieldError.checkNotNull(
+        longitude, r'SensorData', 'longitude');
   }
 
   @override
@@ -134,7 +157,9 @@ class _$SensorData extends SensorData {
         moisture == other.moisture &&
         phosphorus == other.phosphorus &&
         potassium == other.potassium &&
-        nitrogen == other.nitrogen;
+        nitrogen == other.nitrogen &&
+        latitude == other.latitude &&
+        longitude == other.longitude;
   }
 
   @override
@@ -146,6 +171,8 @@ class _$SensorData extends SensorData {
     _$hash = $jc(_$hash, phosphorus.hashCode);
     _$hash = $jc(_$hash, potassium.hashCode);
     _$hash = $jc(_$hash, nitrogen.hashCode);
+    _$hash = $jc(_$hash, latitude.hashCode);
+    _$hash = $jc(_$hash, longitude.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -158,7 +185,9 @@ class _$SensorData extends SensorData {
           ..add('moisture', moisture)
           ..add('phosphorus', phosphorus)
           ..add('potassium', potassium)
-          ..add('nitrogen', nitrogen))
+          ..add('nitrogen', nitrogen)
+          ..add('latitude', latitude)
+          ..add('longitude', longitude))
         .toString();
   }
 }
@@ -190,6 +219,14 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
   double? get nitrogen => _$this._nitrogen;
   set nitrogen(double? nitrogen) => _$this._nitrogen = nitrogen;
 
+  double? _latitude;
+  double? get latitude => _$this._latitude;
+  set latitude(double? latitude) => _$this._latitude = latitude;
+
+  double? _longitude;
+  double? get longitude => _$this._longitude;
+  set longitude(double? longitude) => _$this._longitude = longitude;
+
   SensorDataBuilder();
 
   SensorDataBuilder get _$this {
@@ -201,6 +238,8 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
       _phosphorus = $v.phosphorus;
       _potassium = $v.potassium;
       _nitrogen = $v.nitrogen;
+      _latitude = $v.latitude;
+      _longitude = $v.longitude;
       _$v = null;
     }
     return this;
@@ -234,7 +273,11 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
             potassium: BuiltValueNullFieldError.checkNotNull(
                 potassium, r'SensorData', 'potassium'),
             nitrogen: BuiltValueNullFieldError.checkNotNull(
-                nitrogen, r'SensorData', 'nitrogen'));
+                nitrogen, r'SensorData', 'nitrogen'),
+            latitude: BuiltValueNullFieldError.checkNotNull(
+                latitude, r'SensorData', 'latitude'),
+            longitude: BuiltValueNullFieldError.checkNotNull(
+                longitude, r'SensorData', 'longitude'));
     replace(_$result);
     return _$result;
   }

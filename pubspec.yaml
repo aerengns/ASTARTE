@@ -49,6 +49,8 @@ dependencies:
   json_annotation: ^4.8.0
   logging: ^1.1.1
   built_value: ^8.4.4
+  intl: ^0.17.0
+  geolocator: ^9.0.2
 
 flutter_icons:
   image_path: "assets/icons/launcher_icon.png" 

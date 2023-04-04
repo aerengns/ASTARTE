@@ -14,6 +14,8 @@ abstract class SensorData implements Built<SensorData, SensorDataBuilder> {
   double get phosphorus;
   double get potassium;
   double get nitrogen;
+  double get latitude;
+  double get longitude;
 
   SensorData._();
 
