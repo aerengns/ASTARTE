@@ -4,6 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:table_calendar/table_calendar.dart';
@@ -100,7 +101,7 @@ Future<void> getCalendarData() async {
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'POST', Uri.parse('pythoneverywhere.com/astarte/app/calendar_data'));
+        'POST', Uri.parse('${GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
 
