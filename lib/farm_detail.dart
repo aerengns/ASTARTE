@@ -1,5 +1,7 @@
+import 'package:astarte/network_manager/services/farm_data_service.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
+import 'package:provider/provider.dart';
 
 class FarmDetail extends StatefulWidget {
   const FarmDetail({Key? key}) : super(key: key);
@@ -58,8 +60,9 @@ class _FarmDetailState extends State<FarmDetail> {
                   child: const Text('Reports'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                   // Navigate to photos page.
+                    final response = await Provider.of<FarmDataService>(context, listen: false).getFarmDataDetail();
                   },
                   child: const Text('Photos'),
                 ),

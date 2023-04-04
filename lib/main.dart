@@ -19,6 +19,7 @@ import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
 import 'heatmap.dart';
+import 'network_manager/services/farm_data_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,10 +60,14 @@ class Astarte extends StatelessWidget {
         create: (_) => SensorDataService.create(),
         dispose: (_, SensorDataService service) => service.client.dispose(),
       ),
+      Provider(
+        create: (_) => FarmDataService.create(),
+        dispose: (_, FarmDataService service) => service.client.dispose(),
+      ),
     ],
       child: MaterialApp(
         title: 'ASTARTE',
-        initialRoute: '/sign_in',
+        initialRoute: '/',
         routes: {
           // When navigating to the "/" route, build the FirstScreen widget.
           '/': (context) => const HomePage(),
