@@ -4,22 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:astarte/sidebar.dart';
 
-import 'farm_data_form.dart';
-import 'package:astarte/network_manager/models/farm_data.dart' as f;
-import 'network_manager/services/farm_data_service.dart';
-
-class Farms extends StatefulWidget {
-  const Farms({Key? key}) : super(key: key);
+class FarmSensorData extends StatefulWidget {
+  const FarmSensorData({Key? key}) : super(key: key);
 
   @override
-  State<Farms> createState() => _FarmsState();
+  State<FarmSensorData> createState() => _FarmSensorDataState();
 }
 
-class _FarmsState extends State<Farms> {
+class _FarmSensorDataState extends State<FarmSensorData> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AstarteAppBar(title: 'Farms'),
+      appBar: const AstarteAppBar(title: 'FarmSensorData'),
       body: Column(
         children: [
           Align (
@@ -57,7 +53,7 @@ class _FarmsState extends State<Farms> {
                     backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/farm_detail');
+                    Navigator.pushNamed(context, '/farm_data_form');
                   },
                   child: const Text('Add New Data', style: TextStyle(fontSize: 20)),
                 )
@@ -75,8 +71,8 @@ class DataList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<f.FarmData>>(
-      future: Provider.of<FarmDataService>(context, listen: false).getFarmDataDetail().then((response) => response.body!.toList()),
+    return FutureBuilder<List<SensorData>>(
+      future: Provider.of<SensorDataService>(context, listen: false).getSensorData().then((response) => response.body!.toList()),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -88,14 +84,13 @@ class DataList extends StatelessWidget {
             shrinkWrap: true,
             itemCount: data.length,
             itemBuilder: (context, index) {
-              return Card(
-                  child:ListTile(
-                      leading: const Icon(Icons.home),
-                      title: Text(data[index].name),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/farm_detail', arguments: data[index].id);
-                  },
-                )
+              return ListTile(
+                leading: const Icon(Icons.newspaper),
+                title: Text(data[index].farmName),
+                subtitle: Text(data[index].formDate),
+                onTap: () {
+                  Navigator.pushNamed(context, '/farm_data_form', arguments: data[index]);
+                },
               );
             },
           );
@@ -106,3 +101,13 @@ class DataList extends StatelessWidget {
 }
 
 
+class FormData {
+  String farmName;
+  String date;
+  double moisture;
+  double phosphorus;
+  double potassium;
+  double nitrogen;
+
+  FormData(this.farmName, this.date, this.moisture, this.phosphorus, this.potassium, this.nitrogen);
+}

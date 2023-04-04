@@ -17,24 +17,24 @@ class _$FarmDataService extends FarmDataService {
   final definitionType = FarmDataService;
 
   @override
-  Future<Response<dynamic>> getFarmDataDetail() {
+  Future<Response<BuiltList<FarmData>>> getFarmDataDetail() {
     final Uri $url = Uri.parse('/farms');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<BuiltList<FarmData>, FarmData>($request);
   }
 
   @override
-  Future<Response<dynamic>> getFarmData(int farmId) {
+  Future<Response<FarmData>> getFarmData(int farmId) {
     final Uri $url = Uri.parse('/farms/${farmId}');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<FarmData, FarmData>($request);
   }
 }

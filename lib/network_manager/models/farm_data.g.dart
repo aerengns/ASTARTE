@@ -28,7 +28,7 @@ class _$FarmDataSerializer implements StructuredSerializer<FarmData> {
           specifiedType: const FullType(String)),
       'is_active',
       serializers.serialize(object.is_active,
-          specifiedType: const FullType(Bool)),
+          specifiedType: const FullType(int)),
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
       'area',
@@ -65,7 +65,7 @@ class _$FarmDataSerializer implements StructuredSerializer<FarmData> {
           break;
         case 'is_active':
           result.is_active = serializers.deserialize(value,
-              specifiedType: const FullType(Bool))! as Bool;
+              specifiedType: const FullType(int))! as int;
           break;
         case 'name':
           result.name = serializers.deserialize(value,
@@ -94,7 +94,7 @@ class _$FarmData extends FarmData {
   @override
   final String updated_at;
   @override
-  final Bool is_active;
+  final int is_active;
   @override
   final String name;
   @override
@@ -188,9 +188,9 @@ class FarmDataBuilder implements Builder<FarmData, FarmDataBuilder> {
   String? get updated_at => _$this._updated_at;
   set updated_at(String? updated_at) => _$this._updated_at = updated_at;
 
-  Bool? _is_active;
-  Bool? get is_active => _$this._is_active;
-  set is_active(Bool? is_active) => _$this._is_active = is_active;
+  int? _is_active;
+  int? get is_active => _$this._is_active;
+  set is_active(int? is_active) => _$this._is_active = is_active;
 
   String? _name;
   String? get name => _$this._name;

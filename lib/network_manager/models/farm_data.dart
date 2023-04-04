@@ -11,7 +11,7 @@ abstract class FarmData implements Built<FarmData, FarmDataBuilder> {
   int get id;
   String get created_at;
   String get updated_at;
-  Bool get is_active;
+  int get is_active;
   String get name;
   double get area;
   int get owner;

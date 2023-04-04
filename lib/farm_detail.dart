@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:provider/provider.dart';
 
+import 'network_manager/models/farm_data.dart';
+
 class FarmDetail extends StatefulWidget {
   const FarmDetail({Key? key}) : super(key: key);
 
@@ -25,6 +27,33 @@ class _FarmDetailState extends State<FarmDetail> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<List<FarmData>>(
+      future: Provider.of<FarmDataService>(context, listen: false).getFarmDataDetail().then((response) => response.body!.toList()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final data = snapshot.data!;
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return Card(
+                  child:ListTile(
+                    leading: const Icon(Icons.home),
+                    title: Text(data[index].name),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/farm_detail', arguments: data[index].id);
+                    },
+                  )
+              );
+            },
+          );
+        }
+      },
+    );
     return Scaffold(
       appBar: const AstarteAppBar(title: 'Farm Detail Page'),
       body: Column(
@@ -63,6 +92,7 @@ class _FarmDetailState extends State<FarmDetail> {
                   onPressed: () async {
                   // Navigate to photos page.
                     final response = await Provider.of<FarmDataService>(context, listen: false).getFarmDataDetail();
+
                   },
                   child: const Text('Photos'),
                 ),

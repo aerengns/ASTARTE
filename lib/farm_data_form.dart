@@ -4,7 +4,7 @@ import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:provider/provider.dart';
-import 'package:astarte/farms.dart';
+import 'package:astarte/farm_sensor_data.dart';
 
 import 'network_manager/services/sensor_data_service.dart';
 
