@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
@@ -88,6 +89,33 @@ class _FarmDataFormState extends State<FarmDataForm> {
         _date = formatter.format(picked);
       });
     }
+  }
+
+  Future<Position> _getUserLocation() async {
+    bool locationServiceEnabled;
+    LocationPermission permission;
+
+    locationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!locationServiceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -251,15 +279,18 @@ class _FarmDataFormState extends State<FarmDataForm> {
                           ),
                         );
                       }
+                      Position _position = await _getUserLocation();
                       final response = await Provider.of<SensorDataService>(context, listen: false).saveSensorData(
                           SensorData(
                                   (b) => b
-                                ..farmName = _farmName
-                                ..formDate = _date
-                                ..moisture = double.parse(_moisture)
-                                ..phosphorus = double.parse(_phosphorus)
-                                ..potassium = double.parse(_potassium)
-                                ..nitrogen = double.parse(_nitrogen)
+                                    ..farmName = _farmName
+                                    ..formDate = _date
+                                    ..moisture = double.parse(_moisture)
+                                    ..phosphorus = double.parse(_phosphorus)
+                                    ..potassium = double.parse(_potassium)
+                                    ..nitrogen = double.parse(_nitrogen)
+                                    ..latitude = _position.latitude
+                                    ..longitude = _position.longitude
                           ));
                       if (response.isSuccessful) {
                         ScaffoldMessenger.of(context).showSnackBar(
