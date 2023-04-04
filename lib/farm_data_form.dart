@@ -1,5 +1,9 @@
+import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
+import 'package:provider/provider.dart';
+
+import 'network_manager/services/sensor_data_service.dart';
 
 class FarmData extends StatelessWidget {
   const FarmData({Key? key}) : super(key: key);
@@ -115,12 +119,19 @@ class _FarmDataFormState extends State<FarmDataForm> {
                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Saving Your Data')),
-                        );
-                      }
+                    onPressed: () async {
+                      final response = await Provider.of<SensorDataService>(context, listen: false).saveSensorData(
+                        // TODO: replace with data written in form text fields
+                        SensorData(
+                                (b) => b
+                          ..farmName = 'Farm 1'
+                          ..formDate = '2021-09-01'
+                          ..moisture = 0.5
+                          ..phosphorus = 0.5
+                          ..potassium = 0.5
+                          ..nitrogen = 0.5
+                      ));
+                      print(response.body);
                     },
                     child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),

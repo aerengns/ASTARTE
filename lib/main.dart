@@ -1,5 +1,8 @@
+import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
@@ -41,7 +44,7 @@ void main() async {
   });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  _setupLogging();
   runApp(const Astarte());
 }
 
@@ -50,30 +53,44 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ASTARTE',
-      initialRoute: '/sign_in',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const HomePage(),
-        '/sign_in': (context) => const MyApp(),
-        '/sign_up': (context) => const SignUp(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/humidity_report': (context) => HumidityReport(),
-        '/npk_report': (context) => NPKReport(),
-        '/temperature_report': (context) => TemperatureReport(),
-        '/workers': (context) => const Workers(),
-        '/farms': (context) => const Farms(),
-        '/farm_data_form': (context) => const FarmData(),
-        '/heatmap': (context) => const Heatmap(),
-        '/photo-upload': (context) => PhotoUpload(),
-        '/calendar': (context) => Calendar(),
-        '/pests-and-diseases': (context) => PestsAndDiseases(),
-      },
+    return MultiProvider(providers: [
+      Provider(
+        create: (_) => SensorDataService.create(),
+        dispose: (_, SensorDataService service) => service.client.dispose(),
+      ),
+    ],
+      child: MaterialApp(
+        title: 'ASTARTE',
+        initialRoute: '/sign_in',
+        routes: {
+          // When navigating to the "/" route, build the FirstScreen widget.
+          '/': (context) => const HomePage(),
+          '/sign_in': (context) => const MyApp(),
+          '/sign_up': (context) => const SignUp(),
+          // When navigating to the "/second" route, build the SecondScreen widget.
+          '/humidity_report': (context) => HumidityReport(),
+          '/npk_report': (context) => NPKReport(),
+          '/temperature_report': (context) => TemperatureReport(),
+          '/workers': (context) => const Workers(),
+          '/farms': (context) => const Farms(),
+          '/farm_data_form': (context) => const FarmData(),
+          '/heatmap': (context) => const Heatmap(),
+          '/photo-upload': (context) => PhotoUpload(),
+          '/calendar': (context) => Calendar(),
+          '/pests-and-diseases': (context) => PestsAndDiseases(),
+        },
+      ),
     );
   }
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+}
+
+void _setupLogging() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
 }
