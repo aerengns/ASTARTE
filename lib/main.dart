@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
@@ -12,6 +13,7 @@ import 'package:astarte/sign_in.dart';
 import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
+import 'package:astarte/pests_and_diseases.dart';
 import 'heatmap.dart';
 
 void main() async {
@@ -19,6 +21,27 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // get user permission for sending notifications on iOS
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print('notification: ${message.notification}');
+    }
+  });
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   runApp(const Astarte());
 }
 
@@ -45,7 +68,12 @@ class Astarte extends StatelessWidget {
         '/heatmap': (context) => const Heatmap(),
         '/photo-upload': (context) => PhotoUpload(),
         '/calendar': (context) => Calendar(),
+        '/pests-and-diseases': (context) => PestsAndDiseases(),
       },
     );
   }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
 }

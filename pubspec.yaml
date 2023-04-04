@@ -43,6 +43,7 @@ dependencies:
   firebase_analytics: ^10.0.8
   firebase_auth: ^4.2.3
   table_calendar: ^3.0.8
+  firebase_messaging: ^14.2.5
 
 flutter_icons:
   image_path: "assets/icons/launcher_icon.png" 
@@ -76,6 +77,27 @@ flutter:
   assets:
     - assets/images/astarte.jpg
     - assets/images/farm.jpg
+    - assets/images/pests/aphids.jpg
+    - assets/images/pests/beetles.jpg
+    - assets/images/pests/borers.jpg
+    - assets/images/pests/cutworm.jpg
+    - assets/images/pests/fruitworm.jpg
+    - assets/images/pests/nematodes.jpg
+    - assets/images/pests/psylid.jpg
+    - assets/images/pests/snail.jpg
+    - assets/images/pests/spider-mites.jpg
+    - assets/images/pests/stink-bug.jpg
+    - assets/images/pests/tarnished-plant-bugs.jpg
+    - assets/images/pests/thrip.jpg
+    - assets/images/pests/tomato-hornworm.jpg
+    - assets/images/pests/whiteflies.jpg
+    - assets/images/pests/wireworm.jpg
+    - assets/images/diseases/bacterial-spot.jpg
+    - assets/images/diseases/bacterial-wilt.jpg
+    - assets/images/diseases/early-blight.jpg
+    - assets/images/diseases/late-blight.jpg
+    - assets/images/diseases/leaf-mold.jpg
+    - assets/images/diseases/septoria-leaf-spot.jpg
     - assets/icons/
     - assets/icons/launcher_icon.png
 
