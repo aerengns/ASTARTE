@@ -18,7 +18,6 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -34,8 +33,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:51039',
 ]
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -53,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'reports',
     'calendarapp',
+    'workers',
 ]
 
 MIDDLEWARE = [
@@ -64,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'corsheaders.middleware.CorsMiddleware',    
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backendapp.urls'
@@ -87,17 +86,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backendapp.wsgi.application'
 
-
-REST_FRAMEWORK = { 
+REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions, 
     # or allow read-only access for unauthenticated users. 
-    'DEFAULT_PERMISSION_CLASSES': [ 
-        'rest_framework.permissions.IsAuthenticated',   
-       # 'rest_framework.authentication.TokenAuthentication', 
-    ] ,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ],
 
-     'DEFAULT_AUTHENTICATION_CLASSES': (   
-        'rest_framework_simplejwt.authentication.JWTAuthentication',   
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
@@ -111,11 +109,10 @@ DATABASES = {
     }
 }
 
-
-SIMPLE_JWT = {   
-    'AUTH_HEADER_TYPES': ('JWT',),   
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),   
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 # Password validation
@@ -136,7 +133,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -147,7 +143,6 @@ TIME_ZONE = 'Europe/Istanbul'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
