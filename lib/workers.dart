@@ -1,6 +1,8 @@
 import 'package:astarte/sidebar.dart';
 import 'package:flutter/material.dart';
 
+import 'utils/workers_util.dart';
+
 class Workers extends StatefulWidget {
   const Workers({Key? key}) : super(key: key);
 
@@ -31,11 +33,23 @@ class _WorkersState extends State<Workers> {
                   ],
                 )),
           ),
-          const WorkerCard(),
-          const WorkerCard(),
-          const WorkerCard(),
-          const WorkerCard(),
-          const WorkerCard(),
+          SizedBox(
+              height: 100000000,
+              child: FutureBuilder<List<Worker>>(
+                future: getWorkerData(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Worker>? workers = snapshot.data;
+                    return ListView.builder(
+                      itemCount: workers?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return WorkerCard(worker: workers![index]);
+                      },
+                    );
+                  }
+                  return const CircularProgressIndicator();
+                },
+              ))
         ],
       ),
       drawer: NavBar(context),
@@ -44,12 +58,9 @@ class _WorkersState extends State<Workers> {
 }
 
 class WorkerCard extends StatelessWidget {
-  const WorkerCard({Key? key, this.profilePhoto, this.name, this.work})
-      : super(key: key);
+  const WorkerCard({Key? key, required this.worker}) : super(key: key);
 
-  final Image? profilePhoto;
-  final Text? name;
-  final Icon? work;
+  final Worker worker;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +76,7 @@ class WorkerCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const WorkerCardDetail())),
+            MaterialPageRoute(builder: (context) => WorkerCardDetail(worker: worker,))),
         child: SizedBox(
           height: 75,
           child: Row(
@@ -77,23 +88,22 @@ class WorkerCard extends StatelessWidget {
                   minRadius: 29,
                   maxRadius: 33,
                   child: ClipOval(
-                    child: Image.network(
-                      'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
-                      fit: BoxFit.cover,
-                      width: 90,
-                      height: 90,
-                    ),
+                    child: worker.profilePhoto
                   ),
                 ),
               ),
-              const Text('John Doe'),
-              Container(
-                padding: const EdgeInsets.only(right: 8.0),
-                height: 60,
-                decoration: const BoxDecoration(shape: BoxShape.circle),
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset('assets/icons/watering.png'),
-              ),
+              Text("${worker.name} ${worker.surname}"),
+              if (worker.event != null)
+                SizedBox(
+                  height: 50,
+                    width: 50,
+                    child:worker.event?.getImage())
+              else
+                Container(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  height: 60,
+                  child: const Icon(Icons.hotel_rounded),
+                ),
             ],
           ),
         ),
@@ -103,13 +113,15 @@ class WorkerCard extends StatelessWidget {
 }
 
 class WorkerCardDetail extends StatelessWidget {
-  const WorkerCardDetail({Key? key}) : super(key: key);
+  const WorkerCardDetail({Key? key, required this.worker}) : super(key: key);
+
+  final Worker worker;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("John Doe"),
+        title: Text("${worker.name} ${worker.surname}"),
         backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
         leading: IconButton(
           onPressed: () {
@@ -136,9 +148,9 @@ class WorkerCardDetail extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16.0),
-            const Text(
-              'John Doe',
-              style: TextStyle(
+            Text(
+              "${worker.name} ${worker.surname}",
+              style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -160,24 +172,9 @@ class WorkerCardDetail extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-              'Pellentesque rutrum aliquam tellus, vel venenatis nibh '
-              'efficitur vel. Aliquam lacinia augue vitae velit gravida, '
-              'sed facilisis urna volutpat. Integer pellentesque dui vel '
-              'quam tincidunt, at varius urna consequat. Donec ut nisl '
-              'at nunc ultrices iaculis. Nullam gravida, nunc vel aliquam '
-              'dignissim, ex metus pulvinar velit, eu egestas turpis mauris '
-              'vel nisl. Nullam vel quam non massa sollicitudin dictum vitae '
-              'quis sapien. Duis eu felis vel urna tincidunt aliquam. Sed '
-              'at ornare velit. Donec eu tortor at metus pellentesque '
-              'ullamcorper eu nec ex. Integer blandit, sapien ut dapibus '
-              'tempus, dui augue maximus nisl, ac vestibulum velit erat ut '
-              'tellus. Sed euismod auctor turpis, at euismod lorem cursus '
-              'ut. Vestibulum bibendum sapien vel quam aliquet tristique. '
-              'Donec imperdiet, nulla in dignissim efficitur, libero arcu '
-              'pulvinar velit, ac tristique lacus augue nec turpis.',
-              style: TextStyle(
+            Text(
+              '${worker.about}',
+              style: const TextStyle(
                 fontSize: 16.0,
               ),
             ),
@@ -192,14 +189,14 @@ class WorkerCardDetail extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  height: 40,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.asset('assets/icons/watering.png'),
-                ),
-                const Text('Watering the soil on farm x'),
+                if (worker.event != null)
+                  Expanded(child: worker.event?.get())
+                else
+                  Container(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    height: 30,
+                    child: const Icon(Icons.hotel_rounded),
+                  ),
                 ElevatedButton(
                   onPressed: () {},
                   style: const ButtonStyle(),
