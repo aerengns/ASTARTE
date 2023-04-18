@@ -1,4 +1,5 @@
 import 'package:astarte/sidebar.dart';
+import 'package:astarte/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class Workers extends StatefulWidget {
@@ -22,10 +23,11 @@ class _WorkersState extends State<Workers> {
                 },
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll<Color>(
-                      Color.fromARGB(255, 133, 208, 222)),
+                      CustomColors.astarteLightBlue
+                  ),
                 ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Icon(Icons.person_search_rounded),
                     Expanded(child: Center(child: Text("Filter"))),
                   ],
@@ -61,7 +63,7 @@ class WorkerCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(5)),
-          side: BorderSide(width: 1.5, color: Color.fromARGB(255, 34, 41, 42))),
+          side: BorderSide(width: 1.5, color: CustomColors.astarteDarkGrey)),
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () => Navigator.push(context,
@@ -109,8 +111,8 @@ class WorkerCardDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("John Doe"),
-        backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+        title: const Text("John Doe"),
+        backgroundColor: CustomColors.astarteRed,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -202,7 +204,6 @@ class WorkerCardDetail extends StatelessWidget {
                 const Text('Watering the soil on farm x'),
                 ElevatedButton(
                   onPressed: () {},
-                  style: const ButtonStyle(),
                   child: const Text('Assign Job'),
                 ),
               ],

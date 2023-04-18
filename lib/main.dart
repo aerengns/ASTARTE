@@ -1,4 +1,5 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/theme/astarte_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logging/logging.dart';
@@ -62,6 +63,7 @@ class Astarte extends StatelessWidget {
       child: MaterialApp(
         title: 'ASTARTE',
         initialRoute: '/sign_in',
+        theme: AstarteTheme.lightTheme,
         routes: {
           // When navigating to the "/" route, build the FirstScreen widget.
           '/': (context) => const HomePage(),
@@ -76,8 +78,8 @@ class Astarte extends StatelessWidget {
           '/farm_data_form': (context) => const FarmData(),
           '/heatmap': (context) => const Heatmap(),
           '/photo-upload': (context) => PhotoUpload(),
-          '/calendar': (context) => Calendar(),
-          '/pests-and-diseases': (context) => PestsAndDiseases(),
+          '/calendar': (context) => const Calendar(),
+          '/pests-and-diseases': (context) => const PestsAndDiseases(),
         },
       ),
     );

@@ -39,19 +39,6 @@ class _FarmsState extends State<Farms> {
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: 50.0,
                 child: ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            side: const BorderSide(color: Color.fromRGBO(211, 47, 47, 1))
-                        )
-                    ),
-                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.all(12.0)
-                    ),
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
-                  ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/farm_data_form');
                   },
