@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class TemperatureReport extends StatefulWidget {
-  TemperatureReport({Key? key}) : super(key: key);
+  const TemperatureReport({Key? key}) : super(key: key);
   @override
   State<TemperatureReport> createState() => _TemperatureReportsState();
 }
@@ -22,7 +22,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
     getTemperatureData().whenComplete(() => _addTemperatureValueContainer());
   }
 
-  List<Widget> _widgets = [
+  final List<Widget> _widgets = [
     Image.asset(
       'assets/images/astarte.jpg',
       width: 100,
@@ -47,7 +47,9 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   void _addTemperatureValueContainer() {
     setState(() {
       _widgets.add(
-        Container(
+        SizedBox(
+          width: 450,
+          height: 300,
           child: Echarts(
             option: '''
               {
@@ -72,8 +74,6 @@ class _TemperatureReportsState extends State<TemperatureReport> {
               }
             ''',
           ),
-          width: 450,
-          height: 300,
         ),
       );
     });

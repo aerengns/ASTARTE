@@ -79,7 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             Container(
               padding: const EdgeInsets.only(top: 30),
-              child: TextButton(
+              child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _register();
@@ -197,11 +197,11 @@ class SignUp extends StatelessWidget {
 
     Widget credentialsSection = Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
-      child: Column(
+      child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
+          children: [
             SignUpForm(),
           ]),
     );

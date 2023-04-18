@@ -62,8 +62,8 @@ class Astarte extends StatelessWidget {
     ],
       child: MaterialApp(
         title: 'ASTARTE',
-        initialRoute: '/sign_in',
         theme: AstarteTheme.lightTheme,
+        initialRoute: '/',
         routes: {
           // When navigating to the "/" route, build the FirstScreen widget.
           '/': (context) => const HomePage(),

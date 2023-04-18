@@ -224,9 +224,9 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
+                        children: [
                           Icon(
                             FontAwesomeIcons.twitter,
                             color: Colors.white,
@@ -253,9 +253,9 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
+                        children: [
                           FaIcon(
                             FontAwesomeIcons.facebook,
                             color: Colors.white,
