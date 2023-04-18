@@ -1,3 +1,4 @@
+import 'package:astarte/network_manager/services/reports_service.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
@@ -5,6 +6,10 @@ import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
+
+import 'network_manager/services/sensor_data_service.dart';
 
 class TemperatureReport extends StatefulWidget {
   TemperatureReport({Key? key}) : super(key: key);
@@ -80,32 +85,20 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   }
 
   Future<void> getTemperatureData() async {
-    // your token if needed
-    try {
-      var headers = {
-        'Authorization': 'Bearer ' + "token",
-      };
-      // your endpoint and request method
-      var request = http.MultipartRequest(
-          'POST', Uri.parse('${GENERAL_URL}app/temperature_report'));
+    final response = await Provider.of<SensorDataService>(
+        context, listen: false).getTemperatureReport();
 
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode == 200) {
-        String new_message = await response.stream.bytesToString();
-        dynamic data = jsonDecode(new_message);
-
-        data_x = jsonEncode(data['days']);
-        for (dynamic n in data['temperatures']) {
-          data_y.add(n as int);
-        }
-      } else {
-        print(response.reasonPhrase);
-      }
-    } catch (e) {
-      print(e);
+    if (response.isSuccessful) {
+      data_x = response.body!.days.toString();
+      response.body?.temperatures.forEach((element) {
+        data_y.add(element);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Temperature report failed to load. Please try again.'),
+        ),
+      );
     }
   }
 }
