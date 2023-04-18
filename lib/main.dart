@@ -17,6 +17,7 @@ import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
+import 'package:astarte/heatmap2.dart';
 import 'heatmap.dart';
 
 void main() async {
@@ -53,12 +54,13 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(providers: [
-      Provider(
-        create: (_) => SensorDataService.create(),
-        dispose: (_, SensorDataService service) => service.client.dispose(),
-      ),
-    ],
+    return MultiProvider(
+      providers: [
+        Provider(
+          create: (_) => SensorDataService.create(),
+          dispose: (_, SensorDataService service) => service.client.dispose(),
+        ),
+      ],
       child: MaterialApp(
         title: 'ASTARTE',
         initialRoute: '/sign_in',
@@ -75,6 +77,7 @@ class Astarte extends StatelessWidget {
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
           '/heatmap': (context) => const Heatmap(),
+          '/heatmap2': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => Calendar(),
           '/pests-and-diseases': (context) => PestsAndDiseases(),
