@@ -8,13 +8,16 @@ from django.core.files import File  # you need this somewhere
 import urllib
 
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
+
+from firebase_auth.authentication import FirebaseAuthentication
 
 
 # Create your views here.
 class HumidityReportAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         print('Report request recevied')
@@ -32,7 +35,8 @@ class HumidityReportAPI(APIView):
 
 
 class NPKReportAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         print('Report request recevied')
@@ -52,7 +56,8 @@ class NPKReportAPI(APIView):
 
 
 class TemperatureReportAPI(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         print('Report request recevied')
@@ -67,7 +72,3 @@ class TemperatureReportAPI(APIView):
         temperatures = [25, 24, 24, 45, 43, 42, 40]
 
         return Response(data={'days': days, 'temperatures': temperatures})
-
-
-
-

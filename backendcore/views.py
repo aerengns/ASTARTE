@@ -2,15 +2,20 @@ import os
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.views import View
-from django.core.files import File  # you need this somewhere
-import urllib
+from django.http import Http404
 
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from backendapp import settings
+from backendcore.models import FarmParcelReport, Farm
+from backendcore.serializers import FarmParcelReportSerializer, FarmSerializer
+
+from rest_framework.permissions import IsAuthenticated
+
+from firebase_auth.authentication import FirebaseAuthentication
 
 
 # Create your views here.
@@ -66,6 +71,108 @@ class HelloDjango(APIView):
             total_ripness += num_of_tomato * ripening_dict[i]
             number_of_tomatoes_dict[i] += num_of_tomato
         return Response(f"Percentage of ripeness: {100 * total_ripness / total_detection:.2f}%,")
-        #f"total number of fully ripened tomatoes: {number_of_tomatoes_dict[0] + number_of_tomatoes_dict[3]},"
-        #f"total number of half ripened tomatoes: {number_of_tomatoes_dict[1] + number_of_tomatoes_dict[4]},"
-        #f"total number of green tomatoes: {number_of_tomatoes_dict[2] + number_of_tomatoes_dict[5]},")
+        # f"total number of fully ripened tomatoes: {number_of_tomatoes_dict[0] + number_of_tomatoes_dict[3]},"
+        # f"total number of half ripened tomatoes: {number_of_tomatoes_dict[1] + number_of_tomatoes_dict[4]},"
+        # f"total number of green tomatoes: {number_of_tomatoes_dict[2] + number_of_tomatoes_dict[5]},")
+
+
+class ReportDetail(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get_object(self, report_id):
+        try:
+            return FarmParcelReport.objects.get(id=report_id)
+        except FarmParcelReport.DoesNotExist:
+            raise Http404
+
+    def get(self, request, report_id):
+        report = self.get_object(report_id)
+        serializer = FarmParcelReportSerializer(report)
+        return Response(serializer.data)
+
+    def put(self, request, report_id):
+        report = self.get_object(report_id)
+        serializer = FarmParcelReportSerializer(report, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, report_id):
+        report = self.get_object(report_id)
+        report.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReportList(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request, farm_id):
+        reports = FarmParcelReport.objects.filter(farm_id=farm_id)
+        serializer = FarmParcelReportSerializer(reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, farm_id):
+        serializer = FarmParcelReportSerializer(data=request.data)
+        farm = Farm.objects.get(id=farm_id)
+        if serializer.is_valid():
+            report = serializer.save()
+            report.farm = farm
+            report.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FarmDetail(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get_object(self, farm_id):
+        try:
+            return Farm.objects.get(id=farm_id)
+        except Farm.DoesNotExist:
+            raise Http404
+
+    def get(self, request, farm_id):
+        farm = self.get_object(farm_id)
+        serializer = FarmSerializer(farm)
+        dct = {"farm_data": serializer.data}
+        return Response(dct)
+
+    def put(self, request, farm_id):
+        farm = self.get_object(farm_id)
+        serializer = FarmSerializer(farm, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, farm_id):
+        farm = self.get_object(farm_id)
+        farm.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FarmList(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request):
+        reports = Farm.objects.filter(owner=request.user)
+        serializer = FarmSerializer(reports, many=True)
+        return Response(serializer.data)
+
+
+class GetTokenCredentials(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request):
+        content = {
+            'user': str(request.user),  # `django.contrib.authentication.User` instance.
+            'authentication': str(request.auth),  # None
+        }
+        return Response(content)

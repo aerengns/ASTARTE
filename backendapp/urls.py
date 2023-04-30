@@ -21,7 +21,8 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('app/', include('backendcore.urls')),
+    path('api/v1/firebase/', include('firebase_auth.urls')),
+    path('api/v1/', include('backendcore.urls')),
     path('app/', include('reports.urls')),
     path('app/', include('calendarapp.urls')),
 ]
