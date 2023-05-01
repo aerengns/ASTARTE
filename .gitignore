@@ -5,5 +5,5 @@ backendcore/mmdetection
 db.sqlite3
 backendapp/.env
 **/__pycache__
-workers/migrations/*
-calendarapp/migrations/*
+**/migrations
+keyfile.json

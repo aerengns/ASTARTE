@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'backendcore.apps.BackendcoreConfig',
     # External
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'reports',
     'calendarapp',
     'workers',
+    'firebase_auth',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,8 @@ MIDDLEWARE = [
 
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backendapp.urls'
 
@@ -87,16 +91,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backendapp.wsgi.application'
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions, 
-    # or allow read-only access for unauthenticated users. 
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'firebase_auth.authentication.FirebaseAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        # 'rest_framework.authentication.TokenAuthentication',
     ],
-
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
 }
 
 # Database
@@ -120,16 +120,16 @@ SIMPLE_JWT = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.authentication.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.authentication.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.authentication.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.authentication.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -156,3 +156,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
+
+
+FIREBASE_CONFIG = BASE_DIR / 'keyfile.json'
