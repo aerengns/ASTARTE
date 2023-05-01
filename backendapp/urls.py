@@ -25,4 +25,5 @@ urlpatterns += [
     path('api/v1/', include('backendcore.urls')),
     path('app/', include('reports.urls')),
     path('app/', include('calendarapp.urls')),
+    path('app/', include('workers.urls')),
 ]

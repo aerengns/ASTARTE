@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'reports',
     'calendarapp',
+    'workers',
     'firebase_auth',
 ]
 
