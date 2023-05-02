@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:fl_heatmap/fl_heatmap.dart';
 import 'package:flutter/material.dart';
 
+import 'package:astarte/sidebar.dart';
+
 class HeatmapPage extends StatefulWidget {
   const HeatmapPage({Key? key}) : super(key: key);
 
@@ -23,27 +25,27 @@ class _ExampleState extends State<HeatmapPage> {
 
   void _initExampleData() {
     const rows = [
-      '2022',
-      '2021',
-      '2020',
-      '2019',
+      '0m',
+      '5m',
+      '10m',
+      '15m',
     ];
     const columns = [
-      'Jan',
-      'Feb',
-      'Mär',
-      'Apr',
-      'Mai',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Dez',
+      '0m',
+      '5m',
+      '10m',
+      '15m',
+      '25m',
+      '30m',
+      '35m',
+      '40m',
+      '45m',
+      '50m',
+      '55m',
+      '60m',
     ];
     final r = Random();
-    const String unit = 'kWh';
+    const String unit = 'moisture';
     final items = [
       for (int row = 0; row < rows.length; row++)
         for (int col = 0; col < columns.length; col++)
@@ -52,7 +54,10 @@ class _ExampleState extends State<HeatmapPage> {
                   2)) // Do not add the very first item (incomplete data edge case)
             HeatmapItem(
                 value: r.nextDouble() * 6,
-                style: row == 0 && col > 1
+                style: row == 3 && col == 2 ||
+                        row == 1 && col == 3 ||
+                        row == 2 && col == 6 ||
+                        row == 1 && col == 9
                     ? HeatmapItemStyle.hatched
                     : HeatmapItemStyle.filled,
                 unit: unit,
@@ -77,9 +82,7 @@ class _ExampleState extends State<HeatmapPage> {
         : '---';
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Heatmap plugin example app'),
-        ),
+        appBar: const AstarteAppBar(title: 'Heatmap'),
         body: SingleChildScrollView(
           child: Column(
             children: [
