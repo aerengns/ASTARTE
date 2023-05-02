@@ -79,6 +79,17 @@ class _NPKReportsState extends State<NPKReport> {
                   show: true,
                   padding: 30,
                 },
+                tooltip: {
+                  trigger: 'axis',
+                  formatter: function(params) {
+                    var tooltip = '';
+                    for (var i = 0; i < params.length; i++) {
+                      var param = params[i];
+                      tooltip += param.seriesName + ': ' + param.value + '<br>';
+                    }
+                    return tooltip;
+                  }
+                },
                 series: [						
                   {
                     name: 'n',

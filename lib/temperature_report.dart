@@ -66,6 +66,10 @@ class _TemperatureReportsState extends State<TemperatureReport> {
                 yAxis: {
                   type: 'value',
                 },
+                tooltip: {
+                  trigger: 'axis', // Show tooltip when the user touches data points
+                  formatter: '{b}: {c}', // Display the name and value of the data point
+                },
                 series: [{
                   data:  ${data_y},
                   type: 'line'
