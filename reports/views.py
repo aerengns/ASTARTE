@@ -1,6 +1,7 @@
 import datetime
 
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -82,8 +83,8 @@ class SaveReportData(APIView):
         byte_object = request.body
         string_object = byte_object.decode('utf-8')
         object_dict = json.loads(string_object)
-        farm = Farm.objects.get(name=object_dict.pop('farmName'))
-        parcel = FarmParcel.objects.get(farm=farm, no=object_dict.pop('parcelNo'))
+        farm = get_object_or_404(Farm, name=object_dict.pop('farmName'))
+        parcel = get_object_or_404(FarmParcel, no=object_dict.pop('parcelNo'))
         constants = {'farm_id': farm.id, 'parcel_id': parcel.id}
         date = object_dict.pop('formDate')
         object_dict.update({'date_collected': datetime.datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%d')})
