@@ -11,6 +11,17 @@ class Workers extends StatefulWidget {
 }
 
 class _WorkersState extends State<Workers> {
+  late Future<List<Worker>>? _workersData;
+  List<Worker> workerOptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _workersData = getWorkerData();
+  }
+
+  static String _displayStringForOption(Worker option) => '${option.name} ${option.surname}';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +30,7 @@ class _WorkersState extends State<Workers> {
         children: [
           ListTile(
             title: ElevatedButton(
-                onPressed: () {
-                  debugPrint('Filter Tapped');
-                },
+                onPressed: showWorkerFilterDialog,
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll<Color>(
                       Color.fromARGB(255, 133, 208, 222)),
@@ -29,21 +38,23 @@ class _WorkersState extends State<Workers> {
                 child: Row(
                   children: const [
                     Icon(Icons.person_search_rounded),
-                    Expanded(child: Center(child: Text("Filter"))),
+                    Expanded(child: Center(child: Text("Find"))),
                   ],
                 )),
           ),
           SizedBox(
               height: 100000000,
               child: FutureBuilder<List<Worker>>(
-                future: getWorkerData(),
+                future: _workersData,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Worker>? workers = snapshot.data;
+                    workerOptions = workers!;
+
                     return ListView.builder(
-                      itemCount: workers?.length,
+                      itemCount: workers.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return WorkerCard(worker: workers![index]);
+                        return WorkerCard(worker: workers[index]);
                       },
                     );
                   }
@@ -55,6 +66,36 @@ class _WorkersState extends State<Workers> {
       drawer: NavBar(context),
     );
   }
+
+  void showWorkerFilterDialog() async {
+    final result = await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Find Worker'),
+          content: Autocomplete<Worker>(
+            displayStringForOption: _displayStringForOption,
+            optionsBuilder: (TextEditingValue textEditingValue) {
+              if (textEditingValue.text == '') {
+                return const Iterable<Worker>.empty();
+              }
+              return workerOptions.where((Worker option) {
+                return option
+                    .toString()
+                    .contains(textEditingValue.text.toLowerCase());
+              });
+            },
+            onSelected: (Worker selection) {
+              Navigator.of(context).pop();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WorkerCardDetail(worker: selection,)));
+            },
+          )
+        );
+      },
+    );
+  }
+
 }
 
 class WorkerCard extends StatelessWidget {
@@ -112,16 +153,30 @@ class WorkerCard extends StatelessWidget {
   }
 }
 
-class WorkerCardDetail extends StatelessWidget {
+class WorkerCardDetail extends StatefulWidget {
   const WorkerCardDetail({Key? key, required this.worker}) : super(key: key);
 
   final Worker worker;
 
   @override
+  State<WorkerCardDetail> createState() => _WorkerCardDetailState();
+}
+
+class _WorkerCardDetailState extends State<WorkerCardDetail> {
+
+  late Worker _worker; // declare a private variable to store the worker
+
+  @override
+  void initState() {
+    super.initState();
+    _worker = widget.worker; // access the worker variable via widget property
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${worker.name} ${worker.surname}"),
+        title: Text("${_worker.name} ${_worker.surname}"),
         backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
         leading: IconButton(
           onPressed: () {
@@ -149,7 +204,7 @@ class WorkerCardDetail extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             Text(
-              "${worker.name} ${worker.surname}",
+              "${_worker.name} ${_worker.surname}",
               style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
@@ -173,7 +228,7 @@ class WorkerCardDetail extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Text(
-              '${worker.about}',
+              '${_worker.about}',
               style: const TextStyle(
                 fontSize: 16.0,
               ),
@@ -189,8 +244,8 @@ class WorkerCardDetail extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                if (worker.event != null)
-                  Expanded(child: worker.event?.get())
+                if (_worker.event != null)
+                  Expanded(child: _worker.event?.get())
                 else
                   Container(
                     padding: const EdgeInsets.only(right: 8.0),

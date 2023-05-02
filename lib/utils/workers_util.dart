@@ -23,7 +23,24 @@ class Worker {
     this.event,
     this.about,
     this.profilePhoto});
+
+  @override
+  String toString() {
+    return '${name.toLowerCase()} ${surname.toLowerCase()} ${email.toLowerCase()}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is Worker && other.name == name && other.surname == surname && other.email == email;
+  }
+
+  @override
+  int get hashCode => Object.hash(name, surname, email);
 }
+
 
 Future<List<Worker>> getWorkerData() async {
   try {
