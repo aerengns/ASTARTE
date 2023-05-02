@@ -1,3 +1,4 @@
+import 'package:astarte/theme/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
@@ -17,7 +18,7 @@ class FarmData extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Farm Data'),
-        backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+        backgroundColor: CustomColors.astarteRed,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -72,9 +73,9 @@ class _FarmDataFormState extends State<FarmDataForm> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color.fromRGBO(211, 47, 47, 1),
+              primary: CustomColors.astarteRed,
               onPrimary: Colors.white,
-              surface:Color.fromRGBO(211, 47, 47, 1),
+              surface: CustomColors.astarteRed,
               onSurface: Colors.black,
             ),
             dialogBackgroundColor: Colors.white,
@@ -258,19 +259,6 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   child: Padding(
                   padding: const EdgeInsets.all(30.0),
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              side: const BorderSide(color: Color.fromRGBO(211, 47, 47, 1))
-                          )
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          const EdgeInsets.all(12.0)
-                      ),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
-                    ),
                     onPressed: () async {
                       if (_formKey.currentState?.validate() != true) {
                         ScaffoldMessenger.of(context).showSnackBar(

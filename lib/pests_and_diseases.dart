@@ -35,7 +35,7 @@ class _PestsAndDiseasesState extends State<PestsAndDiseases> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DiseasesPage()),
+                    MaterialPageRoute(builder: (context) => const DiseasesPage()),
                   );
                 },
                 child: const Text('Diseases'),

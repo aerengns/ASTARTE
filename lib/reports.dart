@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Reports extends StatefulWidget {
-  Reports({Key? key}) : super(key: key);
+  const Reports({Key? key}) : super(key: key);
   @override
   State<Reports> createState() => _ReportsState();
 }
@@ -22,7 +22,7 @@ class _ReportsState extends State<Reports> {
     getHumidityData().whenComplete(() => _addHumidityContainer());
   }
 
-  List<Widget> _widgets = [
+  final List<Widget> _widgets = [
     Image.asset(
       'assets/images/astarte.jpg',
       width: 100,
@@ -45,7 +45,9 @@ class _ReportsState extends State<Reports> {
   void _addHumidityContainer() {
     setState(() {
       _widgets.add(
-        Container(
+        SizedBox(
+          width: 450,
+          height: 300,
           child: Echarts(
             option: '''
               {
@@ -58,20 +60,18 @@ class _ReportsState extends State<Reports> {
                 },
                 xAxis: {
                   type: 'category',
-                  data: ${data_x},
+                  data: $data_x,
                 },
                 yAxis: {
                   type: 'value',
                 },
                 series: [{
-                  data:  ${data_y},
+                  data:  $data_y,
                   type: 'line'
                 }]
               }
             ''',
           ),
-          width: 450,
-          height: 300,
         ),
       );
     });

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:astarte/sidebar.dart';
+import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/calendar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -64,7 +65,6 @@ class _CalendarState extends State<Calendar> {
       appBar: const AstarteAppBar(
         title: 'Calendar',
       ),
-      backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
       body: Column(
         children: [
           TableCalendar(
@@ -86,17 +86,17 @@ class _CalendarState extends State<Calendar> {
               outsideDaysVisible: true,
               outsideTextStyle: TextStyle(color: Color.fromRGBO(0, 7, 10, 0.2)),
               todayDecoration: BoxDecoration(
-                  color: Color.fromRGBO(255, 128, 47, 0.5),
+                  color: CustomColors.astarteBrown,
                   shape: BoxShape.circle),
-              defaultTextStyle: TextStyle(color: Color.fromRGBO(0, 7, 10, 1.0)),
+              defaultTextStyle: TextStyle(color: Colors.black),
               weekendTextStyle:
-                  TextStyle(color: Color.fromRGBO(222, 10, 10, 1.0)),
+                  TextStyle(color: CustomColors.astarteRed),
               selectedDecoration: BoxDecoration(
-                  color: Color(0xFFFF802F), shape: BoxShape.circle),
+                  color: CustomColors.astarteOrange, shape: BoxShape.circle),
             ),
             calendarBuilders: CalendarBuilders(
               markerBuilder: (BuildContext context, date, events) {
-                if (events.isEmpty) return SizedBox();
+                if (events.isEmpty) return const SizedBox();
                 return ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,

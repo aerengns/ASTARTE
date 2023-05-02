@@ -275,7 +275,7 @@ class PestCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               child: Text(
                 name,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
             ),
