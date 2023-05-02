@@ -69,31 +69,72 @@ class PostList extends StatelessWidget {
             itemCount: data.length,
             itemBuilder: (context, index) {
               final post = data[index];
-              return Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      height: 200,
-                      child: post.image == null
-                          ? const Icon(Icons.image_not_supported)
-                          : Image.file(post.image!),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            post.postText,
-                            style: Theme.of(context).textTheme.titleSmall,
+              return Column(
+                children: [
+                  Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            width: double.infinity,
+                            height: 200,
+                            child: post.image == null
+                                ? const Icon(Icons.image_not_supported)
+                                : Image.asset('assets/images/diseases/bacterial-spot.jpg')
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                post.postText,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // TODO: open reply dialog
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Reply'),
+                                      content: const TextField(
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Reply',
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Reply'),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                              );
+                            },
+                            child: const Text('Reply'),
+                          ),
+                        )
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           );
