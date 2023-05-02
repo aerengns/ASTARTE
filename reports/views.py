@@ -23,22 +23,26 @@ class BaseReportAPI(APIView):
 
         return Response('Hello from ASTARTE!')
 
-    def get_weekly_values(self, key):
+    def get_weekly_values(self, key, user):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=3)
         report_values = FarmParcelReportLog.objects.filter(
-            date_collected__gte=seven_days_before).order_by('date_collected')
+            date_collected__gte=seven_days_before,
+            farm__owner__username=user,
+        ).order_by('date_collected')
         days = []
         for data in report_values:
             day = data.date_collected
             days.append(day.strftime("%A"))
         return report_values.values_list(key, flat=True), days
 
-    def get_weekly_values_for_multiple_keys(self, keys):
+    def get_weekly_values_for_multiple_keys(self, keys, user):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=7)
         report_values = FarmParcelReportLog.objects.filter(
-            date_collected__gte=seven_days_before).order_by('date_collected')
+            date_collected__gte=seven_days_before,
+            farm__owner__username=user,
+        ).order_by('date_collected')
         days = []
         for data in report_values:
             day = data.date_collected
@@ -49,18 +53,19 @@ class BaseReportAPI(APIView):
 class HumidityReportAPI(BaseReportAPI):
 
     def post(self, request, *args, **kwargs):
-
-        humidity_levels, days = self.get_weekly_values('moisture')
+        user = request.user
+        humidity_levels, days = self.get_weekly_values('moisture', user)
         return Response(data={'days': days, 'humidity_levels': humidity_levels})
 
 
 class NPKReportAPI(BaseReportAPI):
 
     def post(self, request, *args, **kwargs):
-
+        user = request.user
         n_values, p_values, k_values, days = self.get_weekly_values_for_multiple_keys(['nitrogen',
                                                                                        'phosphorus',
-                                                                                       'potassium'])
+                                                                                       'potassium'],
+                                                                                      user)
 
         return Response(data={'days': days, 'n_values': n_values, 'p_values': p_values, 'k_values': k_values})
 
@@ -68,7 +73,8 @@ class NPKReportAPI(BaseReportAPI):
 class TemperatureReportAPI(BaseReportAPI):
 
     def post(self, request, *args, **kwargs):
-        temperatures, days = self.get_weekly_values('temperature')
+        user = request.user
+        temperatures, days = self.get_weekly_values('temperature', user)
         return Response(data={'days': days, 'temperatures': temperatures})
 
 
