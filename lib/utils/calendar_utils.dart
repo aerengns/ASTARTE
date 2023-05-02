@@ -40,6 +40,14 @@ class Event {
         title: Text(title),
         trailing: cEventImages[eventType],
       );
+
+  getImage() => cEventImages[eventType];
+
+  Event.fromMap(Map<String, dynamic> map)
+      : title = map['title'],
+        eventType = map['type'],
+        date = DateTime.parse(map['date']),
+        importance = map['importance'];
 }
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
@@ -118,7 +126,7 @@ Future<void> getCalendarData() async {
             eventType: event['event_type'] as int,
             date: date,
             importance: event['importance'] as int);
-        source[date] != null?source[date]?.add(temp): source[date] = [temp];
+        source[date] != null ? source[date]?.add(temp) : source[date] = [temp];
       }
       kEvents.addAll(source);
     } else {
