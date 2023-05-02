@@ -1,4 +1,5 @@
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -13,9 +14,9 @@ class NPKReport extends StatefulWidget {
 }
 
 class _NPKReportsState extends State<NPKReport> {
-  List<int> data_n = [];
-  List<int> data_p = [];
-  List<int> data_k = [];
+  List<double> data_n = [];
+  List<double> data_p = [];
+  List<double> data_k = [];
   String data_x = "";
 
   @override
@@ -56,7 +57,7 @@ class _NPKReportsState extends State<NPKReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'N values for 7 Days',
+                  text: 'Past NPK Values',
                 },
                 xAxis: {
                   type: 'category',
@@ -122,11 +123,12 @@ class _NPKReportsState extends State<NPKReport> {
 
   Future<void> getNData() async {
     // your token if needed
+    final user = await FirebaseAuth.instance.currentUser!;
+    final idToken = await user.getIdToken();
     try {
       var headers = {
-        'Authorization': 'Bearer ' + "token",
+        'AUTHORIZATION': 'Bearer ' + idToken.toString(),
       };
-      // your endpoint and request method
       var request = http.MultipartRequest(
           'POST', Uri.parse('${GENERAL_URL}app/npk_report'));
 
@@ -140,13 +142,13 @@ class _NPKReportsState extends State<NPKReport> {
 
         data_x = jsonEncode(data['days']);
         for (dynamic n in data['n_values']) {
-          data_n.add(n as int);
+          data_n.add(n as double);
         }
         for (dynamic n in data['p_values']) {
-          data_p.add(n as int);
+          data_p.add(n as double);
         }
         for (dynamic n in data['k_values']) {
-          data_k.add(n as int);
+          data_k.add(n as double);
         }
       } else {
         print(response.reasonPhrase);

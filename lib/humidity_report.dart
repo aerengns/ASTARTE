@@ -1,4 +1,5 @@
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -13,7 +14,7 @@ class HumidityReport extends StatefulWidget {
 }
 
 class _ReportsState extends State<HumidityReport> {
-  List<int> data_y = [];
+  List<double> data_y = [];
   String data_x = "";
 
   @override
@@ -54,7 +55,7 @@ class _ReportsState extends State<HumidityReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'Soil Humidity Percentage for 7 Days',
+                  text: 'Past Soil Humidity Percentages',
                   left: 'left',
                   top: 'top'
                 },
@@ -81,9 +82,11 @@ class _ReportsState extends State<HumidityReport> {
 
   Future<void> getHumidityData() async {
     // your token if needed
+    final user = await FirebaseAuth.instance.currentUser!;
+    final idToken = await user.getIdToken();
     try {
       var headers = {
-        'Authorization': 'Bearer ' + "token",
+        'AUTHORIZATION': 'Bearer ' + idToken.toString(),
       };
       // your endpoint and request method
       var request = http.MultipartRequest(
@@ -99,7 +102,7 @@ class _ReportsState extends State<HumidityReport> {
 
         data_x = jsonEncode(data['days']);
         for (dynamic humidity_level in data['humidity_levels']) {
-          data_y.add(humidity_level as int);
+          data_y.add(humidity_level as double);
         }
       } else {
         print(response.reasonPhrase);

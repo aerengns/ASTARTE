@@ -18,21 +18,21 @@ class _FarmsState extends State<Farms> {
       appBar: const AstarteAppBar(title: 'Farms'),
       body: Column(
         children: [
-          Align (
+          Align(
             alignment: Alignment.center,
-            child: Image.asset('assets/images/farm.jpg',
+            child: Image.asset(
+              'assets/images/farm.jpg',
               height: MediaQuery.of(context).size.height * 0.25,
               width: MediaQuery.of(context).size.width * 0.7,
             ),
           ),
           Align(
-            alignment: Alignment.center,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: const DataList(),
-            )
-          ),
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: const DataList(),
+              )),
           Align(
             alignment: Alignment.center,
             child: SizedBox(
@@ -43,21 +43,21 @@ class _FarmsState extends State<Farms> {
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
-                            side: const BorderSide(color: Color.fromRGBO(211, 47, 47, 1))
-                        )
-                    ),
+                            side: const BorderSide(
+                                color: Color.fromRGBO(211, 47, 47, 1)))),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.all(12.0)
-                    ),
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
+                        const EdgeInsets.all(12.0)),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color.fromRGBO(211, 47, 47, 1)),
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/farm_data_form');
                   },
-                  child: const Text('Add New Data', style: TextStyle(fontSize: 20)),
-                )
-            ),
+                  child: const Text('Add New Data',
+                      style: TextStyle(fontSize: 20)),
+                )),
           ),
         ],
       ),
@@ -72,7 +72,9 @@ class DataList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<SensorData>>(
-      future: Provider.of<SensorDataService>(context, listen: false).getSensorData().then((response) => response.body!.toList()),
+      future: Provider.of<SensorDataService>(context, listen: false)
+          .getSensorData()
+          .then((response) => response.body!.toList()),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -89,7 +91,8 @@ class DataList extends StatelessWidget {
                 title: Text(data[index].farmName),
                 subtitle: Text(data[index].formDate),
                 onTap: () {
-                  Navigator.pushNamed(context, '/farm_data_form', arguments: data[index]);
+                  Navigator.pushNamed(context, '/farm_data_form',
+                      arguments: data[index]);
                 },
               );
             },
@@ -100,14 +103,25 @@ class DataList extends StatelessWidget {
   }
 }
 
-
 class FormData {
   String farmName;
   String date;
+  double parcelNo;
+  double temperature;
   double moisture;
   double phosphorus;
   double potassium;
   double nitrogen;
+  double ph;
 
-  FormData(this.farmName, this.date, this.moisture, this.phosphorus, this.potassium, this.nitrogen);
+  FormData(
+      this.farmName,
+      this.date,
+      this.moisture,
+      this.parcelNo,
+      this.temperature,
+      this.phosphorus,
+      this.potassium,
+      this.nitrogen,
+      this.ph);
 }

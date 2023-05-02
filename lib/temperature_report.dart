@@ -1,4 +1,5 @@
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -13,7 +14,7 @@ class TemperatureReport extends StatefulWidget {
 }
 
 class _TemperatureReportsState extends State<TemperatureReport> {
-  List<int> data_y = [];
+  List<double> data_y = [];
   String data_x = "";
 
   @override
@@ -54,7 +55,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'Temperature values for 7 Days',
+                  text: 'Past Temperature Values',
                   left: 'left',
                   top: 'top'
                 },
@@ -80,10 +81,11 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   }
 
   Future<void> getTemperatureData() async {
-    // your token if needed
+    final user = await FirebaseAuth.instance.currentUser!;
+    final idToken = await user.getIdToken();
     try {
       var headers = {
-        'Authorization': 'Bearer ' + "token",
+        'AUTHORIZATION': 'Bearer ' + idToken.toString(),
       };
       // your endpoint and request method
       var request = http.MultipartRequest(
@@ -99,7 +101,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
 
         data_x = jsonEncode(data['days']);
         for (dynamic n in data['temperatures']) {
-          data_y.add(n as int);
+          data_y.add(n as double);
         }
       } else {
         print(response.reasonPhrase);
