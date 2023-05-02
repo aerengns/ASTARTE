@@ -1,4 +1,5 @@
 import 'package:astarte/sidebar.dart';
+import 'package:astarte/utils/calendar_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'utils/workers_util.dart';
@@ -20,7 +21,8 @@ class _WorkersState extends State<Workers> {
     _workersData = getWorkerData();
   }
 
-  static String _displayStringForOption(Worker option) => '${option.name} ${option.surname}';
+  static String _displayStringForOption(Worker option) =>
+      '${option.name} ${option.surname}';
 
   @override
   Widget build(BuildContext context) {
@@ -72,30 +74,32 @@ class _WorkersState extends State<Workers> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Find Worker'),
-          content: Autocomplete<Worker>(
-            displayStringForOption: _displayStringForOption,
-            optionsBuilder: (TextEditingValue textEditingValue) {
-              if (textEditingValue.text == '') {
-                return const Iterable<Worker>.empty();
-              }
-              return workerOptions.where((Worker option) {
-                return option
-                    .toString()
-                    .contains(textEditingValue.text.toLowerCase());
-              });
-            },
-            onSelected: (Worker selection) {
-              Navigator.of(context).pop();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WorkerCardDetail(worker: selection,)));
-            },
-          )
-        );
+            title: const Text('Find Worker'),
+            content: Autocomplete<Worker>(
+              displayStringForOption: _displayStringForOption,
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<Worker>.empty();
+                }
+                return workerOptions.where((Worker option) {
+                  return option
+                      .toString()
+                      .contains(textEditingValue.text.toLowerCase());
+                });
+              },
+              onSelected: (Worker selection) {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => WorkerCardDetail(
+                              worker: selection,
+                            )));
+              },
+            ));
       },
     );
   }
-
 }
 
 class WorkerCard extends StatelessWidget {
@@ -116,8 +120,12 @@ class WorkerCard extends StatelessWidget {
           side: BorderSide(width: 1.5, color: Color.fromARGB(255, 34, 41, 42))),
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => WorkerCardDetail(worker: worker,))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WorkerCardDetail(
+                      worker: worker,
+                    ))),
         child: SizedBox(
           height: 75,
           child: Row(
@@ -128,17 +136,12 @@ class WorkerCard extends StatelessWidget {
                 child: CircleAvatar(
                   minRadius: 29,
                   maxRadius: 33,
-                  child: ClipOval(
-                    child: worker.profilePhoto
-                  ),
+                  child: ClipOval(child: worker.profilePhoto),
                 ),
               ),
               Text("${worker.name} ${worker.surname}"),
               if (worker.event != null)
-                SizedBox(
-                  height: 50,
-                    width: 50,
-                    child:worker.event?.getImage())
+                SizedBox(height: 50, width: 50, child: worker.event?.getImage())
               else
                 Container(
                   padding: const EdgeInsets.only(right: 8.0),
@@ -163,13 +166,12 @@ class WorkerCardDetail extends StatefulWidget {
 }
 
 class _WorkerCardDetailState extends State<WorkerCardDetail> {
-
-  late Worker _worker; // declare a private variable to store the worker
+  late Worker _worker;
 
   @override
   void initState() {
     super.initState();
-    _worker = widget.worker; // access the worker variable via widget property
+    _worker = widget.worker;
   }
 
   @override
@@ -252,8 +254,14 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
                     height: 30,
                     child: const Icon(Icons.hotel_rounded),
                   ),
+                // TODO: Add remove job
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AssignJob(
+                                worker: _worker,
+                              ))),
                   style: const ButtonStyle(),
                   child: const Text('Assign Job'),
                 ),
@@ -263,5 +271,89 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
         ),
       ),
     );
+  }
+}
+
+class AssignJob extends StatefulWidget {
+  const AssignJob({Key? key, required this.worker}) : super(key: key);
+
+  final Worker worker;
+
+  @override
+  State<AssignJob> createState() => _AssignJobState();
+}
+
+class _AssignJobState extends State<AssignJob> {
+  Future<List<Event>>? events;
+
+  late Worker _worker;
+
+  @override
+  void initState() {
+    super.initState();
+    events = getAvailableJobs();
+    _worker = widget.worker;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: const AstarteAppBar(title: 'Assign Job'),
+        body: FutureBuilder<List<Event>>(
+            future: events,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Event>? eventsList = snapshot.data;
+
+                return ListView.builder(
+                    itemCount: eventsList?.length,
+                    itemBuilder: (context, index) => Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 4.0,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  const MaterialStatePropertyAll<Color>(
+                                      Color.fromRGBO(105, 199, 105, 1.0)),
+                              padding:
+                                  MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 4.0,
+                                ),
+                              ),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  side: const BorderSide(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              assignJob(_worker, eventsList[index])
+                                  .then((returnVal) {
+                                if (returnVal) {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  Navigator.pushNamed(context, '/workers');
+                                } else {
+                                  print("Unsuccessful");
+                                }
+                              });
+                            },
+                            child: eventsList![index].get(),
+                          ),
+                        ));
+              }
+              return const CircularProgressIndicator();
+            }));
   }
 }
