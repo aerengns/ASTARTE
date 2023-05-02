@@ -1,4 +1,7 @@
+import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/new_post.dart';
+import 'package:astarte/posts.dart';
 import 'package:astarte/theme/astarte_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -59,6 +62,10 @@ class Astarte extends StatelessWidget {
         create: (_) => SensorDataService.create(),
         dispose: (_, SensorDataService service) => service.client.dispose(),
       ),
+      Provider(
+        create: (_) => PostsService.create(),
+        dispose: (_, PostsService service) => service.client.dispose(),
+      )
     ],
       child: MaterialApp(
         title: 'ASTARTE',
@@ -80,6 +87,8 @@ class Astarte extends StatelessWidget {
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => const Calendar(),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
+          '/posts': (context) => const Posts(),
+          '/create-post': (context) => const NewPost(),
         },
       ),
     );
