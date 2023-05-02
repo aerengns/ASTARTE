@@ -17,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from firebase_auth.authentication import FirebaseAuthentication
 
+from dynamic_heatmap import dynamic_heatmap
+import numpy as np
 
 # Create your views here.
 
@@ -176,3 +178,27 @@ class GetTokenCredentials(APIView):
             'authentication': str(request.auth),  # None
         }
         return Response(content)
+
+class GetDynamicHeatmap(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        print('Request recevied')
+
+        farm_corners = [[20,30],[1000,800], [850,20], [100,800], [500,1000]]
+        sensors = np.array([[522.65376412, 427.41600244,  13.06000998],
+                            [396.81318874, 591.42826318,  53.65369118],
+                            [449.85461397, 382.34698418,  25.07147272],
+                            [661.00950662, 654.96374368,  29.64015572],
+                            [321.92585641, 608.52216015,  79.14850035],
+                            [453.93996295, 532.63975706,  43.65067217],
+                            [429.57552743, 554.50984214,  63.41508049],
+                            [639.03549159, 382.75902613,  23.78781876],
+                            [603.28219428, 676.45087338,  31.60635241],
+                            [307.13265298, 443.10370478,  97.088938  ]])
+
+        zi = dynamic_heatmap(farm_corners, sensors, number_of_rows=12)
+
+        events = {'rows': ['1'], 'columns': ['5'], 'items': [10]}
+
+        return Response(data=events)
