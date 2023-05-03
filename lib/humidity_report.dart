@@ -22,7 +22,7 @@ class _ReportsState extends State<HumidityReport> {
     getHumidityData().whenComplete(() => _addHumidityContainer());
   }
 
-  List<Widget> _widgets = [
+  final List<Widget> _widgets = [
     Image.asset(
       'assets/images/astarte.jpg',
       width: 100,
@@ -47,7 +47,9 @@ class _ReportsState extends State<HumidityReport> {
   void _addHumidityContainer() {
     setState(() {
       _widgets.add(
-        Container(
+        SizedBox(
+          width: 450,
+          height: 300,
           child: Echarts(
             option: '''
               {
@@ -72,8 +74,6 @@ class _ReportsState extends State<HumidityReport> {
               }
             ''',
           ),
-          width: 450,
-          height: 300,
         ),
       );
     });

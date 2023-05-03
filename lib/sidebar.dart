@@ -1,3 +1,4 @@
+import 'package:astarte/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,6 @@ class _NavBarState extends State<NavBar> {
   Widget build(context) {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
-      backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
       child: ListView(
         // Remove padding
         padding: EdgeInsets.zero,
@@ -143,7 +143,7 @@ class AstarteAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
-      backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+      backgroundColor: CustomColors.astarteRed,
     );
   }
 

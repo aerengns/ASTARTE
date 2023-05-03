@@ -1,5 +1,6 @@
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/utils/calendar_utils.dart';
+import 'package:astarte/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 import 'utils/workers_util.dart';
@@ -35,10 +36,11 @@ class _WorkersState extends State<Workers> {
                 onPressed: showWorkerFilterDialog,
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll<Color>(
-                      Color.fromARGB(255, 133, 208, 222)),
+                      CustomColors.astarteLightBlue
+                  ),
                 ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Icon(Icons.person_search_rounded),
                     Expanded(child: Center(child: Text("Find"))),
                   ],
@@ -117,7 +119,7 @@ class WorkerCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(5)),
-          side: BorderSide(width: 1.5, color: Color.fromARGB(255, 34, 41, 42))),
+          side: BorderSide(width: 1.5, color: CustomColors.astarteDarkGrey)),
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () => Navigator.push(
@@ -179,7 +181,7 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${_worker.name} ${_worker.surname}"),
-        backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
+        backgroundColor: CustomColors.astarteRed,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

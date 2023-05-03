@@ -24,7 +24,7 @@ class _NPKReportsState extends State<NPKReport> {
     getNData().whenComplete(() => _addNValueContainer());
   }
 
-  List<Widget> _widgets = [
+  final List<Widget> _widgets = [
     Image.asset(
       'assets/images/astarte.jpg',
       width: 100,
@@ -49,7 +49,9 @@ class _NPKReportsState extends State<NPKReport> {
   void _addNValueContainer() {
     setState(() {
       _widgets.add(
-        Container(
+        SizedBox(
+          width: 450,
+          height: 300,
           child: Echarts(
             option: '''
               {
@@ -60,7 +62,7 @@ class _NPKReportsState extends State<NPKReport> {
                 },
                 xAxis: {
                   type: 'category',
-                  data: ${data_x},
+                  data: $data_x,
                 },
                 yAxis: [{
                   name: 'n',
@@ -87,7 +89,7 @@ class _NPKReportsState extends State<NPKReport> {
                         color: 'rgb(125, 10, 10)'
                       }
                     },
-                    data: ${data_n},
+                    data: $data_n,
                   },	
                   {
                     name: 'p',
@@ -97,7 +99,7 @@ class _NPKReportsState extends State<NPKReport> {
                         color: 'rgb(125, 125, 10)'
                       }
                     },
-                    data: ${data_p},
+                    data: $data_p,
                   },
                   {
                     name: 'k',
@@ -107,14 +109,12 @@ class _NPKReportsState extends State<NPKReport> {
                         color: 'rgb(125, 125, 125)'
                       }
                     },
-                    data: ${data_k},
+                    data: $data_k,
                   },	
                 ],
               }
             ''',
           ),
-          width: 450,
-          height: 300,
         ),
       );
     });
