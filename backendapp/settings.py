@@ -22,7 +22,6 @@ from firebase_admin import credentials
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -38,8 +37,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:51039',
 ]
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -54,9 +52,12 @@ INSTALLED_APPS = [
     'backendcore.apps.BackendcoreConfig',
     # External
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'reports',
     'calendarapp',
+    'workers',
+    'firebase_auth',
 ]
 
 MIDDLEWARE = [
@@ -68,8 +69,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'corsheaders.middleware.CorsMiddleware',    
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backendapp.urls'
 
@@ -91,18 +94,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backendapp.wsgi.application'
 
-
-REST_FRAMEWORK = { 
-    # Use Django's standard `django.contrib.auth` permissions, 
-    # or allow read-only access for unauthenticated users. 
-    'DEFAULT_PERMISSION_CLASSES': [ 
-        'rest_framework.permissions.IsAuthenticated',   
-       # 'rest_framework.authentication.TokenAuthentication', 
-    ] ,
-
-     'DEFAULT_AUTHENTICATION_CLASSES': (   
-        'rest_framework_simplejwt.authentication.JWTAuthentication',   
-    )
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'firebase_auth.authentication.FirebaseAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 # Database
@@ -115,11 +113,10 @@ DATABASES = {
     }
 }
 
-
-SIMPLE_JWT = {   
-    'AUTH_HEADER_TYPES': ('JWT',),   
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),   
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 # Password validation
@@ -127,19 +124,18 @@ SIMPLE_JWT = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.authentication.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.authentication.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.authentication.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.authentication.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -151,7 +147,6 @@ TIME_ZONE = 'Europe/Istanbul'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -171,3 +166,4 @@ cred = credentials.Certificate('astarte-odtu-firebase-adminsdk-n6duv-5b18431d97.
 firebase_admin.initialize_app(cred)
 
 
+FIREBASE_CONFIG = BASE_DIR / 'keyfile.json'
