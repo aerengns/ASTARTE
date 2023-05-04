@@ -1,4 +1,5 @@
 import 'package:astarte/network_manager/models/sensor_data.dart';
+import 'package:astarte/network_manager/models/temperature_report.dart';
 import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
@@ -20,6 +21,15 @@ abstract class SensorDataService extends ChopperService {
       @Body() SensorData data
       );
 
+  @Get(path: '/temperature_report')
+  Future<Response<TemperatureReport>> getTemperatureReport();
+
+  @Get(path: '/npk_report')
+  Future<Response> getNpkReport();
+
+  @Get(path: '/humidity_report')
+  Future<Response> getHumidityReport();
+
   static SensorDataService create() {
     final client = ChopperClient(
         baseUrl: Uri.parse('https://astarte.pythonanywhere.com/api/v1'),
@@ -28,7 +38,7 @@ abstract class SensorDataService extends ChopperService {
         ],
         converter: BuiltValueConverter(),
         interceptors: [
-          // HeadersInterceptor({'token': 'token'}),
+          HeadersInterceptor({'token': 'token'}),
           HttpLoggingInterceptor(),
         ]
     );

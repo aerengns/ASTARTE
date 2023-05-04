@@ -50,4 +50,37 @@ class _$SensorDataService extends SensorDataService {
     );
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<TemperatureReport>> getTemperatureReport() {
+    final Uri $url = Uri.parse('/reports/temperature_report');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<TemperatureReport, TemperatureReport>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getNpkReport() {
+    final Uri $url = Uri.parse('/reports/npk_report');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getHumidityReport() {
+    final Uri $url = Uri.parse('/reports/humidity_report');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }
