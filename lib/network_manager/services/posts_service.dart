@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:astarte/network_manager/models/sensor_data.dart';
+import 'package:astarte/utils/parameters.dart';
 import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
@@ -21,7 +22,7 @@ abstract class PostsService extends ChopperService {
 
   static PostsService create() {
     final client = ChopperClient(
-        baseUrl: Uri.parse('https://astarte.pythonanywhere.com/api/v1'),
+        baseUrl: Uri.parse('${GENERAL_URL}api/v1'),
         services: [
           _$PostsService(),
         ],
