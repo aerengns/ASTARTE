@@ -1,3 +1,4 @@
+import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class NPKReport extends StatefulWidget {
   NPKReport({Key? key}) : super(key: key);
@@ -121,38 +124,26 @@ class _NPKReportsState extends State<NPKReport> {
   }
 
   Future<void> getNData() async {
-    // your token if needed
-    try {
-      var headers = {
-        'Authorization': 'Bearer ' + "token",
-      };
-      // your endpoint and request method
-      var request = http.MultipartRequest(
-          'POST', Uri.parse('${GENERAL_URL}app/npk_report'));
+    final response = await Provider.of<SensorDataService>(
+        context, listen: false).getNpkReport();
 
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode == 200) {
-        String new_message = await response.stream.bytesToString();
-        dynamic data = jsonDecode(new_message);
-
-        data_x = jsonEncode(data['days']);
-        for (dynamic n in data['n_values']) {
-          data_n.add(n as int);
-        }
-        for (dynamic n in data['p_values']) {
-          data_p.add(n as int);
-        }
-        for (dynamic n in data['k_values']) {
-          data_k.add(n as int);
-        }
-      } else {
-        print(response.reasonPhrase);
-      }
-    } catch (e) {
-      print(e);
+    if (response.isSuccessful) {
+      data_x = response.body!.days.toString();
+      response.body?.n_values.forEach((element) {
+        data_n.add(element);
+      });
+      response.body?.p_values.forEach((element) {
+        data_p.add(element);
+      });
+      response.body?.k_values.forEach((element) {
+        data_k.add(element);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Temperature report failed to load. Please try again.'),
+        ),
+      );
     }
   }
 }

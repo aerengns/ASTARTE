@@ -36,6 +36,16 @@ class Event {
       required this.date,
       this.importance});
 
+  Map<String, dynamic> toDict()
+  {
+    return{
+      'title': title,
+      'type': eventType,
+      'date': date.toIso8601String(),
+      'importance': importance
+    };
+  }
+
   get() => ListTile(
         title: Text(title),
         trailing: cEventImages[eventType],
