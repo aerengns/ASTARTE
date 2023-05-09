@@ -17,7 +17,7 @@ import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
-import 'package:astarte/heatmap2.dart';
+import 'package:astarte/dynamic_heatmap.dart';
 import 'heatmap.dart';
 
 void main() async {
@@ -77,7 +77,7 @@ class Astarte extends StatelessWidget {
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
           '/heatmap': (context) => const Heatmap(),
-          '/heatmap2': (context) => HeatmapPage(),
+          '/dynamic_heatmap': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => Calendar(),
           '/pests-and-diseases': (context) => PestsAndDiseases(),
