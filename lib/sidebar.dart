@@ -103,6 +103,12 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/pests-and-diseases'),
           ),
+          ListTile(
+            leading: const Icon(Icons.help_rounded),
+            title: const Text('Get Help'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/posts'),
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings_rounded),
