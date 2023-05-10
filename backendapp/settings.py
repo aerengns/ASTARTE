@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'calendarapp',
     'workers',
     'firebase_auth',
+    'posts',
 ]
 
 MIDDLEWARE = [
