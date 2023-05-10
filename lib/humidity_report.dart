@@ -1,5 +1,6 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -16,7 +17,7 @@ class HumidityReport extends StatefulWidget {
 }
 
 class _ReportsState extends State<HumidityReport> {
-  List<int> data_y = [];
+  List<double> data_y = [];
   String data_x = "";
 
   @override
@@ -59,7 +60,7 @@ class _ReportsState extends State<HumidityReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'Soil Humidity Percentage for 7 Days',
+                  text: 'Past Soil Humidity Percentages',
                   left: 'left',
                   top: 'top'
                 },
@@ -69,6 +70,10 @@ class _ReportsState extends State<HumidityReport> {
                 },
                 yAxis: {
                   type: 'value',
+                },
+                tooltip: {
+                  trigger: 'axis', // Show tooltip when the user touches data points
+                  formatter: '{b}: {c}', // Display the name and value of the data point
                 },
                 series: [{
                   data:  ${data_y},
@@ -83,14 +88,18 @@ class _ReportsState extends State<HumidityReport> {
   }
 
   Future<void> getHumidityData() async {
-    final response = await Provider.of<SensorDataService>(
-        context, listen: false).getHumidityReport();
+    final response =
+        await Provider.of<SensorDataService>(context, listen: false)
+            .getHumidityReport();
 
     if (response.isSuccessful) {
-      data_x = response.body!.days.toString();
-      response.body?.humidity_levels.forEach((element) {
-        data_y.add(element);
-      });
+      String new_message = await response.body!;
+      dynamic data = jsonDecode(new_message);
+
+      data_x = jsonEncode(data['days']);
+      for (dynamic humidity_level in data['humidity_levels']) {
+        data_y.add(humidity_level as double);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

@@ -1,5 +1,6 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -16,9 +17,9 @@ class NPKReport extends StatefulWidget {
 }
 
 class _NPKReportsState extends State<NPKReport> {
-  List<int> data_n = [];
-  List<int> data_p = [];
-  List<int> data_k = [];
+  List<double> data_n = [];
+  List<double> data_p = [];
+  List<double> data_k = [];
   String data_x = "";
 
   @override
@@ -61,7 +62,7 @@ class _NPKReportsState extends State<NPKReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'N values for 7 Days',
+                  text: 'Past NPK Values',
                 },
                 xAxis: {
                   type: 'category',
@@ -82,6 +83,17 @@ class _NPKReportsState extends State<NPKReport> {
                 legend: {
                   show: true,
                   padding: 30,
+                },
+                tooltip: {
+                  trigger: 'axis',
+                  formatter: function(params) {
+                    var tooltip = '';
+                    for (var i = 0; i < params.length; i++) {
+                      var param = params[i];
+                      tooltip += param.seriesName + ': ' + param.value + '<br>';
+                    }
+                    return tooltip;
+                  }
                 },
                 series: [						
                   {
@@ -124,20 +136,24 @@ class _NPKReportsState extends State<NPKReport> {
   }
 
   Future<void> getNData() async {
-    final response = await Provider.of<SensorDataService>(
-        context, listen: false).getNpkReport();
+    final response =
+        await Provider.of<SensorDataService>(context, listen: false)
+            .getNpkReport();
 
     if (response.isSuccessful) {
-      data_x = response.body!.days.toString();
-      response.body?.n_values.forEach((element) {
-        data_n.add(element);
-      });
-      response.body?.p_values.forEach((element) {
-        data_p.add(element);
-      });
-      response.body?.k_values.forEach((element) {
-        data_k.add(element);
-      });
+      String new_message = await response.body!;
+      dynamic data = jsonDecode(new_message);
+
+      data_x = jsonEncode(data['days']);
+      for (dynamic n in data['n_values']) {
+        data_n.add(n as double);
+      }
+      for (dynamic n in data['p_values']) {
+        data_p.add(n as double);
+      }
+      for (dynamic n in data['k_values']) {
+        data_k.add(n as double);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

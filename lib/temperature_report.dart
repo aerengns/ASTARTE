@@ -1,5 +1,6 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/utils/parameters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
@@ -18,7 +19,7 @@ class TemperatureReport extends StatefulWidget {
 }
 
 class _TemperatureReportsState extends State<TemperatureReport> {
-  List<int> data_y = [];
+  List<double> data_y = [];
   String data_x = "";
 
   @override
@@ -61,7 +62,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
                 height: 200,
                 width: 300,
                 title: {
-                  text: 'Temperature values for 7 Days',
+                  text: 'Past Temperature Values',
                   left: 'left',
                   top: 'top'
                 },
@@ -71,6 +72,10 @@ class _TemperatureReportsState extends State<TemperatureReport> {
                 },
                 yAxis: {
                   type: 'value',
+                },
+                tooltip: {
+                  trigger: 'axis', // Show tooltip when the user touches data points
+                  formatter: '{b}: {c}', // Display the name and value of the data point
                 },
                 series: [{
                   data:  ${data_y},
@@ -85,14 +90,18 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   }
 
   Future<void> getTemperatureData() async {
-    final response = await Provider.of<SensorDataService>(
-        context, listen: false).getTemperatureReport();
+    final response =
+        await Provider.of<SensorDataService>(context, listen: false)
+            .getTemperatureReport();
 
     if (response.isSuccessful) {
-      data_x = response.body!.days.toString();
-      response.body?.temperatures.forEach((element) {
-        data_y.add(element);
-      });
+      String new_message = await response.body!;
+      dynamic data = jsonDecode(new_message);
+
+      data_x = jsonEncode(data['days']);
+      for (dynamic temperature in data['temperatures']) {
+        data_y.add(temperature as double);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

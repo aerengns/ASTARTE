@@ -52,14 +52,14 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<TemperatureReport>> getTemperatureReport() {
+  Future<Response<dynamic>> getTemperatureReport() {
     final Uri $url = Uri.parse('/reports/temperature_report');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<TemperatureReport, TemperatureReport>($request);
+    return client.send<dynamic, dynamic>($request);
   }
 
   @override

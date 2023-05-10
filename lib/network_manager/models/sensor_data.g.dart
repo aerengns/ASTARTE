@@ -24,6 +24,12 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
       'formDate',
       serializers.serialize(object.formDate,
           specifiedType: const FullType(String)),
+      'parcelNo',
+      serializers.serialize(object.parcelNo,
+          specifiedType: const FullType(double)),
+      'temperature',
+      serializers.serialize(object.temperature,
+          specifiedType: const FullType(double)),
       'moisture',
       serializers.serialize(object.moisture,
           specifiedType: const FullType(double)),
@@ -36,6 +42,8 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
       'nitrogen',
       serializers.serialize(object.nitrogen,
           specifiedType: const FullType(double)),
+      'ph',
+      serializers.serialize(object.ph, specifiedType: const FullType(double)),
       'latitude',
       serializers.serialize(object.latitude,
           specifiedType: const FullType(double)),
@@ -66,6 +74,14 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
           result.formDate = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'parcelNo':
+          result.parcelNo = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
+        case 'temperature':
+          result.temperature = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
         case 'moisture':
           result.moisture = serializers.deserialize(value,
               specifiedType: const FullType(double))! as double;
@@ -80,6 +96,10 @@ class _$SensorDataSerializer implements StructuredSerializer<SensorData> {
           break;
         case 'nitrogen':
           result.nitrogen = serializers.deserialize(value,
+              specifiedType: const FullType(double))! as double;
+          break;
+        case 'ph':
+          result.ph = serializers.deserialize(value,
               specifiedType: const FullType(double))! as double;
           break;
         case 'latitude':
@@ -103,6 +123,10 @@ class _$SensorData extends SensorData {
   @override
   final String formDate;
   @override
+  final double parcelNo;
+  @override
+  final double temperature;
+  @override
   final double moisture;
   @override
   final double phosphorus;
@@ -110,6 +134,8 @@ class _$SensorData extends SensorData {
   final double potassium;
   @override
   final double nitrogen;
+  @override
+  final double ph;
   @override
   final double latitude;
   @override
@@ -122,20 +148,27 @@ class _$SensorData extends SensorData {
       {required this.farmName,
       required this.formDate,
       required this.moisture,
+      required this.parcelNo,
+      required this.temperature,
       required this.phosphorus,
       required this.potassium,
       required this.nitrogen,
+      required this.ph,
       required this.latitude,
       required this.longitude})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(farmName, r'SensorData', 'farmName');
     BuiltValueNullFieldError.checkNotNull(formDate, r'SensorData', 'formDate');
+    BuiltValueNullFieldError.checkNotNull(parcelNo, r'SensorData', 'parcelNo');
+    BuiltValueNullFieldError.checkNotNull(
+        temperature, r'SensorData', 'temperature');
     BuiltValueNullFieldError.checkNotNull(moisture, r'SensorData', 'moisture');
     BuiltValueNullFieldError.checkNotNull(
         phosphorus, r'SensorData', 'phosphorus');
     BuiltValueNullFieldError.checkNotNull(
         potassium, r'SensorData', 'potassium');
     BuiltValueNullFieldError.checkNotNull(nitrogen, r'SensorData', 'nitrogen');
+    BuiltValueNullFieldError.checkNotNull(ph, r'SensorData', 'ph');
     BuiltValueNullFieldError.checkNotNull(latitude, r'SensorData', 'latitude');
     BuiltValueNullFieldError.checkNotNull(
         longitude, r'SensorData', 'longitude');
@@ -154,10 +187,13 @@ class _$SensorData extends SensorData {
     return other is SensorData &&
         farmName == other.farmName &&
         formDate == other.formDate &&
+        parcelNo == other.parcelNo &&
+        temperature == other.temperature &&
         moisture == other.moisture &&
         phosphorus == other.phosphorus &&
         potassium == other.potassium &&
         nitrogen == other.nitrogen &&
+        ph == other.ph &&
         latitude == other.latitude &&
         longitude == other.longitude;
   }
@@ -167,10 +203,13 @@ class _$SensorData extends SensorData {
     var _$hash = 0;
     _$hash = $jc(_$hash, farmName.hashCode);
     _$hash = $jc(_$hash, formDate.hashCode);
+    _$hash = $jc(_$hash, parcelNo.hashCode);
+    _$hash = $jc(_$hash, temperature.hashCode);
     _$hash = $jc(_$hash, moisture.hashCode);
     _$hash = $jc(_$hash, phosphorus.hashCode);
     _$hash = $jc(_$hash, potassium.hashCode);
     _$hash = $jc(_$hash, nitrogen.hashCode);
+    _$hash = $jc(_$hash, ph.hashCode);
     _$hash = $jc(_$hash, latitude.hashCode);
     _$hash = $jc(_$hash, longitude.hashCode);
     _$hash = $jf(_$hash);
@@ -182,10 +221,13 @@ class _$SensorData extends SensorData {
     return (newBuiltValueToStringHelper(r'SensorData')
           ..add('farmName', farmName)
           ..add('formDate', formDate)
+          ..add('parcelNo', parcelNo)
+          ..add('temperature', temperature)
           ..add('moisture', moisture)
           ..add('phosphorus', phosphorus)
           ..add('potassium', potassium)
           ..add('nitrogen', nitrogen)
+          ..add('ph', ph)
           ..add('latitude', latitude)
           ..add('longitude', longitude))
         .toString();
@@ -203,6 +245,14 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
   String? get formDate => _$this._formDate;
   set formDate(String? formDate) => _$this._formDate = formDate;
 
+  double? _parcelNo;
+  double? get parcelNo => _$this._parcelNo;
+  set parcelNo(double? parcelNo) => _$this._parcelNo = parcelNo;
+
+  double? _temperature;
+  double? get temperature => _$this._temperature;
+  set temperature(double? temperature) => _$this._temperature = temperature;
+
   double? _moisture;
   double? get moisture => _$this._moisture;
   set moisture(double? moisture) => _$this._moisture = moisture;
@@ -219,6 +269,10 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
   double? get nitrogen => _$this._nitrogen;
   set nitrogen(double? nitrogen) => _$this._nitrogen = nitrogen;
 
+  double? _ph;
+  double? get ph => _$this._ph;
+  set ph(double? ph) => _$this._ph = ph;
+
   double? _latitude;
   double? get latitude => _$this._latitude;
   set latitude(double? latitude) => _$this._latitude = latitude;
@@ -234,10 +288,13 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
     if ($v != null) {
       _farmName = $v.farmName;
       _formDate = $v.formDate;
+      _parcelNo = $v.parcelNo;
+      _temperature = $v.temperature;
       _moisture = $v.moisture;
       _phosphorus = $v.phosphorus;
       _potassium = $v.potassium;
       _nitrogen = $v.nitrogen;
+      _ph = $v.ph;
       _latitude = $v.latitude;
       _longitude = $v.longitude;
       _$v = null;
@@ -266,6 +323,10 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
                 farmName, r'SensorData', 'farmName'),
             formDate: BuiltValueNullFieldError.checkNotNull(
                 formDate, r'SensorData', 'formDate'),
+            parcelNo: BuiltValueNullFieldError.checkNotNull(
+                parcelNo, r'SensorData', 'parcelNo'),
+            temperature: BuiltValueNullFieldError.checkNotNull(
+                temperature, r'SensorData', 'temperature'),
             moisture: BuiltValueNullFieldError.checkNotNull(
                 moisture, r'SensorData', 'moisture'),
             phosphorus: BuiltValueNullFieldError.checkNotNull(
@@ -274,10 +335,11 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
                 potassium, r'SensorData', 'potassium'),
             nitrogen: BuiltValueNullFieldError.checkNotNull(
                 nitrogen, r'SensorData', 'nitrogen'),
+            ph: BuiltValueNullFieldError.checkNotNull(
+                ph, r'SensorData', 'latphitude'),
             latitude: BuiltValueNullFieldError.checkNotNull(
                 latitude, r'SensorData', 'latitude'),
-            longitude: BuiltValueNullFieldError.checkNotNull(
-                longitude, r'SensorData', 'longitude'));
+            longitude: BuiltValueNullFieldError.checkNotNull(longitude, r'SensorData', 'longitude'));
     replace(_$result);
     return _$result;
   }
