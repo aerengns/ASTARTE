@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:astarte/sidebar.dart';
@@ -55,15 +58,15 @@ class PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Post>>(
-      future: Provider.of<PostsService>(context, listen: false).getPosts().then((response) => response.body!.toList()),
+    return FutureBuilder<Response<BuiltList<PostData>>>(
+      future: Provider.of<PostsService>(context, listen: false).getPosts(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
-          final data = snapshot.data!;
+          final data = snapshot.data!.body!;
           return ListView.builder(
             shrinkWrap: true,
             itemCount: data.length,
@@ -80,7 +83,7 @@ class PostList extends StatelessWidget {
                             height: 200,
                             child: post.image == null
                                 ? const Icon(Icons.image_not_supported)
-                                : Image.asset('assets/images/diseases/bacterial-spot.jpg')
+                                : Image.memory(base64.decode(post.image!))
                         ),
                         Padding(
                           padding: const EdgeInsets.all(16),
@@ -88,7 +91,7 @@ class PostList extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                post.postText,
+                                post.message,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ],

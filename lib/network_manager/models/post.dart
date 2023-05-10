@@ -6,14 +6,15 @@ import 'package:built_collection/built_collection.dart';
 
 part 'post.g.dart';
 
-abstract class Post implements Built<Post, PostBuilder> {
+abstract class PostData implements Built<PostData, PostDataBuilder> {
 
-  File? get image;
-  String get postText;
+  int? get id;
+  String? get image;
+  String get message;
 
-  Post._();
+  PostData._();
 
-  factory Post([updates(PostBuilder b)]) = _$Post;
+  factory PostData([updates(PostDataBuilder b)]) = _$PostData;
 
-  static Serializer<Post> get serializer => _$postSerializer;
+  static Serializer<PostData> get serializer => _$postDataSerializer;
 }

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:astarte/network_manager/models/sensor_data.dart';
+import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
@@ -12,17 +12,16 @@ part "posts_service.chopper.dart";
 abstract class PostsService extends ChopperService {
 
   @Get()
-  Future<Response> getPosts();
+  Future<Response<BuiltList<PostData>>> getPosts();
 
   @Post(path: '/new_post')
   Future<Response> createPost(
-      @Body() String postText,
-      @Field() File? image,
+      @Body() PostData data
       );
 
   static PostsService create() {
     final client = ChopperClient(
-        baseUrl: Uri.parse('${GENERAL_URL}api/v1'),
+        baseUrl: Uri.parse('${GENERAL_URL}app/'),
         services: [
           _$PostsService(),
         ],

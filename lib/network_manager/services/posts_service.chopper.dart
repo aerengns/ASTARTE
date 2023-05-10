@@ -17,23 +17,20 @@ class _$PostsService extends PostsService {
   final definitionType = PostsService;
 
   @override
-  Future<Response<dynamic>> getPosts() {
+  Future<Response<BuiltList<PostData>>> getPosts() {
     final Uri $url = Uri.parse('/posts');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<BuiltList<PostData>, PostData>($request);
   }
 
   @override
-  Future<Response<dynamic>> createPost(
-    String postText,
-    File? image,
-  ) {
+  Future<Response<dynamic>> createPost(PostData data) {
     final Uri $url = Uri.parse('/posts/new_post');
-    final $body = postText;
+    final $body = data;
     final Request $request = Request(
       'POST',
       $url,
