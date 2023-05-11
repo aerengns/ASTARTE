@@ -19,6 +19,18 @@ abstract class PostsService extends ChopperService {
       @Body() PostData data
       );
 
+  @Get(path: '/reply/{post_id}')
+  Future<Response<BuiltList<PostData>>> getReplies(@Path('post_id') int postId);
+
+  @Post(path: '/reply/{post_id}')
+  Future<Response> createReply(
+      @Path('post_id') int postId,
+      @Body() PostData data
+      );
+
+  @Delete(path: '/{post_id}')
+  Future<Response> deletePost(@Path('post_id') int postId);
+
   static PostsService create() {
     final client = ChopperClient(
         baseUrl: Uri.parse('${GENERAL_URL}app/'),

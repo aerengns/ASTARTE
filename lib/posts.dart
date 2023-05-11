@@ -75,15 +75,19 @@ class PostList extends StatelessWidget {
               return Column(
                 children: [
                   Card(
+                    color: Colors.white70,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                            width: double.infinity,
-                            height: 200,
-                            child: post.image == null
-                                ? const Icon(Icons.image_not_supported)
-                                : Image.memory(base64.decode(post.image!))
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: SizedBox(
+                              width: double.infinity,
+                              height: 200,
+                              child: post.image == null
+                                  ? const Icon(Icons.image_not_supported)
+                                  : Image.memory(base64.decode(post.image!))
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(16),
@@ -92,50 +96,130 @@ class PostList extends StatelessWidget {
                             children: [
                               Text(
                                 post.message,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Align(
                           alignment: Alignment.bottomRight,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // TODO: open reply dialog
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Text('Reply'),
-                                      content: const TextField(
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Reply',
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      final replyController = TextEditingController();
+
+                                      return AlertDialog(
+                                        title: const Text('Reply'),
+                                        content: TextField(
+                                          controller: replyController,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Reply',
+                                          ),
                                         ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Reply'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              final response = await Provider.of<PostsService>(context, listen: false)
+                                                  .createReply(post.id!,
+                                                PostData((b) => b
+                                                  ..message = replyController.text
+                                              ),
+                                              );
+
+                                              if (response.isSuccessful) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Reply created'),
+                                                  ),
+                                                );
+                                                Navigator.pop(context);
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Could not create reply'),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            child: const Text('Reply'),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                );
+                              },
+                              child: const Text('Reply', style: TextStyle(fontSize: 16)),
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          child: Text('Replies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                        ),
+                        Container(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child: FutureBuilder<Response<BuiltList<PostData>>>(
+                            future: Provider.of<PostsService>(context, listen: false).getReplies(post.id!),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(child: Text('Error: ${snapshot.error}'));
+                              } else {
+                                final data = snapshot.data!.body!;
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: data.length,
+                                  itemBuilder: (context, index) {
+                                    final post = data[index];
+                                    return Column(
+                                      children: [
+                                        Card(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                  children: [
+                                                    Text(
+                                                      post.message,
+                                                      style: Theme.of(context).textTheme.titleMedium,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     );
-                                  }
-                              );
+                                  },
+                                );
+                              }
                             },
-                            child: const Text('Reply'),
                           ),
-                        )
+                        ),
                       ],
                     ),
+                  ),
+                  const SizedBox(
+                    height: 30,
                   ),
                 ],
               );

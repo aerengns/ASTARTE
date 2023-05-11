@@ -39,4 +39,42 @@ class _$PostsService extends PostsService {
     );
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<BuiltList<PostData>>> getReplies(int postId) {
+    final Uri $url = Uri.parse('/posts/reply/${postId}');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<BuiltList<PostData>, PostData>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> createReply(
+    int postId,
+    PostData data,
+  ) {
+    final Uri $url = Uri.parse('/posts/reply/${postId}');
+    final $body = data;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> deletePost(int postId) {
+    final Uri $url = Uri.parse('/posts/${postId}');
+    final Request $request = Request(
+      'DELETE',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }
