@@ -15,12 +15,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
 from firebase_auth.authentication import FirebaseAuthentication
-from posts.models import Post
+from posts.models import Post, Reply
 from posts.serializers import PostSerializer
 
 
 class PostList(APIView):
     permission_classes = [AllowAny]
+
     # authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
@@ -30,6 +31,7 @@ class PostList(APIView):
 
 class PostCreate(APIView):
     permission_classes = [AllowAny]
+
     # authentication_classes = [FirebaseAuthentication]
 
     def post(self, request):
@@ -42,3 +44,28 @@ class PostCreate(APIView):
         post = Post.objects.create(message=message, image=image)
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class Reply(APIView):
+    permission_classes = [AllowAny]
+
+    # authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        return Response(post.replies.values())
+
+    def post(self, request, post_id):
+        message = request.data.get('message')
+
+        if not message:
+            return Response({'message': 'Please provide a message'}, status=status.HTTP_400_BAD_REQUEST)
+
+        post = Post.objects.get(id=post_id)
+        post.replies.create(message=message)
+        return Response({'message': 'Reply created'}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        post.delete()
+        return Response({'message': 'Post deleted'}, status=status.HTTP_200_OK)
