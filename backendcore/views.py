@@ -139,8 +139,7 @@ class FarmDetail(APIView):
     def get(self, request, farm_id):
         farm = self.get_object(farm_id)
         serializer = FarmSerializer(farm)
-        dct = {"farm_data": serializer.data}
-        return Response(dct)
+        return Response(serializer.data)
 
     def put(self, request, farm_id):
         farm = self.get_object(farm_id)
