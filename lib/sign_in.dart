@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -115,9 +116,11 @@ class _SignInFormState extends State<SignInForm> {
         .user;
 
     if (user != null) {
-      setState(() {
+      setState(() async {
         _success = true;
         _userEmail = user.email!;
+        parameters.TOKEN = await user.getIdToken();
+        print('auth token: ${parameters.TOKEN}');
         Navigator.popUntil(context, ModalRoute.withName('/'));
       });
     } else {

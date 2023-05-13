@@ -2,6 +2,7 @@ import 'package:astarte/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:astarte/utils/auth_validator.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -122,10 +123,11 @@ class _SignUpFormState extends State<SignUpForm> {
         .user;
 
     if (user != null) {
-      setState(() {
+      setState(() async {
         _success = true;
         _userEmail = user.email!;
-
+        parameters.TOKEN = await user.getIdToken();
+        print('auth token: ${parameters.TOKEN}');
       });
       Navigator.popUntil(context, ModalRoute.withName('/'));
 

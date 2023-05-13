@@ -1,6 +1,7 @@
 import 'package:astarte/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 
 class NavBar extends StatefulWidget {
   const NavBar(BuildContext context, {Key? key}) : super(key: key);
@@ -126,6 +127,7 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.logout_rounded),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
+              parameters.TOKEN = '';
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.popAndPushNamed(context, '/sign_in');
