@@ -1,9 +1,9 @@
 import 'package:astarte/theme/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:astarte/utils/auth_validator.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -180,7 +180,7 @@ class MyApp extends StatelessWidget {
                         child: Text(
                           'Hi there! Nice to see you again.',
                           style:
-                          TextStyle(color: Colors.grey[500], fontSize: 15),
+                              TextStyle(color: Colors.grey[500], fontSize: 15),
                         ),
                       )
                     ],
@@ -227,9 +227,9 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
+                        children: const [
                           Icon(
                             FontAwesomeIcons.twitter,
                             color: Colors.white,
@@ -256,9 +256,9 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
+                        children: const [
                           FaIcon(
                             FontAwesomeIcons.facebook,
                             color: Colors.white,
