@@ -1,4 +1,5 @@
 import base64
+import io
 import json
 
 from django.forms import model_to_dict
@@ -33,8 +34,10 @@ class WorkerDataAPI(APIView):
             except:
                 event_dic = None
             image = Image.open(worker.profile_photo)
-            # TODO: Fix image encode
-            encoded_image = base64.b64encode(image.tobytes()).decode('utf-8')
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='PNG')
+            img_byte_arr = img_byte_arr.getvalue()
+            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
 
             worker_dict = model_to_dict(worker)
             worker_dict['event'] = event_dic
