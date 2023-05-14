@@ -1,6 +1,6 @@
 import 'package:astarte/sidebar.dart';
-import 'package:astarte/utils/calendar_utils.dart';
 import 'package:astarte/theme/colors.dart';
+import 'package:astarte/utils/calendar_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'utils/workers_util.dart';
@@ -36,11 +36,10 @@ class _WorkersState extends State<Workers> {
                 onPressed: showWorkerFilterDialog,
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll<Color>(
-                      CustomColors.astarteLightBlue
-                  ),
+                      CustomColors.astarteLightBlue),
                 ),
-                child: const Row(
-                  children: [
+                child: Row(
+                  children: const [
                     Icon(Icons.person_search_rounded),
                     Expanded(child: Center(child: Text("Find"))),
                   ],
@@ -199,10 +198,7 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
                 minRadius: 45,
                 maxRadius: 75,
                 child: ClipOval(
-                  child: Image.network(
-                    'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
-                    fit: BoxFit.cover,
-                  ),
+                  child: _worker.profilePhoto,
                 ),
               ),
             ),
