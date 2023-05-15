@@ -52,7 +52,7 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getTemperatureReport() {
+  Future<Response> getTemperatureReport() {
     final Uri $url = Uri.parse('/reports/temperature_report');
     final Request $request = Request(
       'GET',
@@ -63,7 +63,7 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getNpkReport() {
+  Future<Response> getNpkReport() {
     final Uri $url = Uri.parse('/reports/npk_report');
     final Request $request = Request(
       'GET',
@@ -74,7 +74,7 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getHumidityReport() {
+  Future<Response> getHumidityReport() {
     final Uri $url = Uri.parse('/reports/humidity_report');
     final Request $request = Request(
       'GET',

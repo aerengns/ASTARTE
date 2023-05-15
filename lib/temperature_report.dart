@@ -95,7 +95,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
             .getTemperatureReport();
 
     if (response.isSuccessful) {
-      String new_message = await response.body!;
+      String new_message = await response.bodyString;
       dynamic data = jsonDecode(new_message);
 
       data_x = jsonEncode(data['days']);
