@@ -1,4 +1,5 @@
 import 'package:astarte/theme/colors.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -45,10 +46,9 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.popUntil(context, ModalRoute.withName('/')),
           ),
-          ExpansionTile(
-              title: Text('Reports'),
+          MyExpansionTile(
+              title: const Text('Reports'),
               leading: const Icon(Icons.addchart),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded),
               children: <Widget>[
                 ListTile(
                   title: const Text('Humidity Reports'),
@@ -67,12 +67,23 @@ class _NavBarState extends State<NavBar> {
                       Navigator.pushNamed(context, '/temperature_report'),
                 ),
               ]),
-          ListTile(
-            leading: const Icon(Icons.people_alt_rounded),
-            title: const Text('Workers'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/workers'),
-          ),
+          MyExpansionTile(
+              title: const Text('Worker'),
+              leading: const Icon(Icons.person_rounded),
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.people_alt_rounded),
+                  title: const Text('Workers List'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () => Navigator.pushNamed(context, '/workers'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.work_off_rounded),
+                  title: const Text('Finish Job'),
+                  trailing: const Icon(Icons.check_circle_rounded),
+                  onTap: () => {},
+                ),
+              ]),
           ListTile(
             leading: const Icon(Icons.warehouse_rounded),
             title: const Text('Farms'),
@@ -126,6 +137,7 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.logout_rounded),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
+              parameters.TOKEN = '';
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.popAndPushNamed(context, '/sign_in');
@@ -155,4 +167,37 @@ class AstarteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(60);
+}
+
+class MyExpansionTile extends StatefulWidget {
+  final Widget title;
+  final Widget leading;
+  final List<Widget> children;
+
+  const MyExpansionTile(
+      {super.key,
+      required this.title,
+      required this.leading,
+      required this.children});
+
+  @override
+  MyExpansionTileState createState() => MyExpansionTileState();
+}
+
+class MyExpansionTileState extends State<MyExpansionTile> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      title: widget.title,
+      leading: widget.leading,
+      trailing: isExpanded
+          ? const Icon(Icons.keyboard_arrow_down_rounded)
+          : const Icon(Icons.arrow_forward_ios_rounded),
+      onExpansionChanged: (bool expanding) =>
+          setState(() => isExpanded = expanding),
+      children: widget.children,
+    );
+  }
 }

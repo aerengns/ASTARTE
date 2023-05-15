@@ -1,5 +1,6 @@
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:astarte/network_manager/models/temperature_report.dart';
+import 'package:astarte/utils/parameters.dart';
 import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
@@ -35,7 +36,7 @@ abstract class SensorDataService extends ChopperService {
         ],
         converter: BuiltValueConverter(),
         interceptors: [
-          HeadersInterceptor({'token': 'token'}),
+          HeadersInterceptor({'Authorization': TOKEN}),
           HttpLoggingInterceptor(),
         ]);
     return _$SensorDataService(client);

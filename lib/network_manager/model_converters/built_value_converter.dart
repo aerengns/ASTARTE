@@ -17,29 +17,31 @@ class BuiltValueConverter extends JsonConverter {
   }
 
   @override
-  Response<BodyType> convertResponse<BodyType, SingleItemType>(Response response) {
-    final BodyType customBody = _convertToCustomObject<SingleItemType>(response.body);
-
-    return response.copyWith<BodyType>(body: customBody);
+  Future<Response<BodyType>> convertResponse<BodyType, SingleItemType>(Response response) async {
+    final Response<dynamic> dynamicResponse = await super.convertResponse(response);
+    final BodyType customBody = _convertToCustomObject<SingleItemType>(dynamicResponse.body);
+    return dynamicResponse.copyWith<BodyType>(body: customBody);
   }
 
   dynamic _convertToCustomObject<SingleItemType>(dynamic element) {
     if (element is SingleItemType) {
       return element;
-    } else if (element is List) {
+    }
+
+    if (element is List) {
       return _deserializeListOf<SingleItemType>(element);
     } else {
       return _deserialize<SingleItemType>(element);
     }
   }
 
-  BuiltList<SingleItemType> _deserializeListOf<SingleItemType>(List dynamicList) {
+  BuiltList<SingleItemType> _deserializeListOf<SingleItemType>(List dynamicList,) {
     return BuiltList<SingleItemType>(
       dynamicList.map((element) => _deserialize<SingleItemType>(element)),
     );
   }
 
-  SingleItemType _deserialize<SingleItemType>(Map<String, dynamic> value) {
+  SingleItemType _deserialize<SingleItemType>(Map<String, dynamic> value,) {
     return serializers.deserializeWith<SingleItemType>(
       serializers.serializerForType(SingleItemType)! as Serializer<SingleItemType>,
       value,

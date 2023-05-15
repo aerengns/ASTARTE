@@ -1,7 +1,8 @@
 import 'package:astarte/theme/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:astarte/utils/auth_validator.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -96,9 +97,10 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             Container(
               alignment: Alignment.center,
-              child: TextButton(onPressed: (){
-                Navigator.pushNamed(context, '/sign_in');
-              },
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sign_in');
+                },
                 child: const Text("Already have an account?"),
               ),
             )
@@ -122,13 +124,13 @@ class _SignUpFormState extends State<SignUpForm> {
         .user;
 
     if (user != null) {
-      setState(() {
+      setState(() async {
         _success = true;
         _userEmail = user.email!;
-
+        parameters.TOKEN = await user.getIdToken();
+        print('auth token: ${parameters.TOKEN}');
       });
       Navigator.popUntil(context, ModalRoute.withName('/'));
-
     } else {
       setState(() {
         _success = false;
@@ -197,11 +199,11 @@ class SignUp extends StatelessWidget {
 
     Widget credentialsSection = Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
-      child: const Column(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
+          children: const [
             SignUpForm(),
           ]),
     );

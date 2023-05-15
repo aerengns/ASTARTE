@@ -90,8 +90,8 @@ Future<List<Worker>> getWorkerData() async {
           about: worker['about'],
           event: event,
           //TODO: profilePhoto: Image.memory(decodedImage),
-          profilePhoto: Image.network(
-            'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
+          profilePhoto: Image.memory(
+            decodedImage,
             fit: BoxFit.cover,
           ),
         );
