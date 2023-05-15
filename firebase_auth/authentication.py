@@ -12,11 +12,10 @@ firebase_app = firebase_admin.initialize_app(firebase_creds)
 
 class FirebaseAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        auth_header = request.META.get('HTTP_AUTHORIZATION')
-        if not auth_header:
+        token = request.META.get('HTTP_AUTHORIZATION')
+        if not token:
             return None
         try:
-            token = auth_header.split(' ')[1]
             if len(token.split('.')) != 3:
                 raise AuthenticationFailed("Invalid token structure.")
             decoded_token = auth.verify_id_token(token)
