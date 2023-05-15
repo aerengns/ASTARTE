@@ -40,6 +40,8 @@ class FarmParcelReport(BaseAbstractModel):
     potassium = models.FloatField(null=True, blank=True)
     nitrogen = models.FloatField(null=True, blank=True)
     temperature = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     ph = models.FloatField(null=True, blank=True)
     date_collected = models.DateTimeField()
 

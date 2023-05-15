@@ -1,74 +1,111 @@
-from django.shortcuts import render
-import os
+import datetime
 
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.views import View
-from django.core.files import File  # you need this somewhere
-import urllib
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
+from backendcore.models import FarmParcelReport, Farm, FarmParcel
 from firebase_auth.authentication import FirebaseAuthentication
+from reports.models import FarmParcelReportLog
+import json
+from datetime import date, timedelta
 
 
-# Create your views here.
-class HumidityReportAPI(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [FirebaseAuthentication]
+class BaseReportAPI(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
-    def get(self, request):
-        print('Report request recevied')
 
-        return Response('Hello from ASTARTE!')
+    def get_weekly_values(self, key, user):
+        current_date = date.today()
+        seven_days_before = current_date - timedelta(days=20)
+        report_values = FarmParcelReportLog.objects.filter(
+            date_collected__gte=seven_days_before,
+            farm__owner__username=user,
+        ).order_by('date_collected')
+        days = []
+        for data in report_values:
+            day = data.date_collected
+            days.append(day.strftime("%A"))
+        print(days)
+        return report_values.values_list(key, flat=True), days
 
-    def post(self, request, *args, **kwargs):
-        print('Request POST received')
+    def get_weekly_values_for_multiple_keys(self, keys, user):
+        current_date = date.today()
+        seven_days_before = current_date - timedelta(days=20)
+        report_values = FarmParcelReportLog.objects.filter(
+            date_collected__gte=seven_days_before,
+            farm__owner__username=user,
+        ).order_by('date_collected')
+        days = []
+        for data in report_values:
+            day = data.date_collected
+            days.append(day.strftime("%A"))
+        return report_values.values_list(keys[0], flat=True), report_values.values_list(keys[1], flat=True),\
+            report_values.values_list(keys[2], flat=True), days
 
-        days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-        humidity_levels = [25, 24, 24, 45, 43, 42, 40]
+class HumidityReportAPI(BaseReportAPI):
 
+    def get(self, request, *args, **kwargs):
+        #user = request.user
+        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        humidity_levels, days = self.get_weekly_values('moisture', user)
         return Response(data={'days': days, 'humidity_levels': humidity_levels})
 
 
-class NPKReportAPI(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [FirebaseAuthentication]
+class NPKReportAPI(BaseReportAPI):
 
-    def get(self, request):
-        print('Report request recevied')
-
-        return Response('Hello from ASTARTE!')
-
-    def post(self, request, *args, **kwargs):
-        print('Request POST received')
-
-        days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
-        n_values = [25, 24, 24, 45, 43, 42, 40]
-        p_values = [12, 11, 11, 12, 20, 19, 19]
-        k_values = [15, 10, 15, 16, 18, 18, 17]
+    def get(self, request, *args, **kwargs):
+        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        n_values, p_values, k_values, days = self.get_weekly_values_for_multiple_keys(['nitrogen',
+                                                                                       'phosphorus',
+                                                                                       'potassium'],
+                                                                                      user)
 
         return Response(data={'days': days, 'n_values': n_values, 'p_values': p_values, 'k_values': k_values})
 
 
-class TemperatureReportAPI(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [FirebaseAuthentication]
+class TemperatureReportAPI(BaseReportAPI):
 
-    def get(self, request):
-        print('Report request recevied')
-
-        return Response('Hello from ASTARTE!')
-
-    def post(self, request, *args, **kwargs):
-        print('Request POST received')
-
-        days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
-        temperatures = [25, 24, 24, 45, 43, 42, 40]
-
+    def get(self, request, *args, **kwargs):
+        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        temperatures, days = self.get_weekly_values('temperature', user)
         return Response(data={'days': days, 'temperatures': temperatures})
+
+
+class SaveReportData(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request, *args):
+        return Response("get recieved")
+
+    def post(self, request):
+        byte_object = request.body
+        string_object = byte_object.decode('utf-8')
+        object_dict = json.loads(string_object)
+        farm = get_object_or_404(Farm, name=object_dict.pop('farmName'))
+        parcel = get_object_or_404(FarmParcel, no=object_dict.pop('parcelNo'))
+        constants = {'farm_id': farm.id, 'parcel_id': parcel.id}
+        date = object_dict.pop('formDate')
+        object_dict.update({'date_collected': datetime.datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%d')})
+        obj, created = FarmParcelReport.objects.update_or_create(
+            farm_id=farm.id,
+            parcel_id=parcel.id,
+            defaults=object_dict,
+        )
+        object_dict.update(constants)
+        log = FarmParcelReportLog(**object_dict)
+        log.save()
+
+        if created:
+            message = "new report is created"
+        else:
+            message = f"farm {farm.name} with parcel_no:{parcel.no} is changed"
+        print(message)
+        return Response(message)
+
