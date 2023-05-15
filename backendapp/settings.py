@@ -14,6 +14,10 @@ from pathlib import Path
 from datetime import timedelta
 
 import environ
+import firebase_admin
+from firebase_admin import credentials
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,6 +160,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
+
+
+cred = credentials.Certificate('astarte-odtu-firebase-adminsdk-n6duv-5b18431d97.json')
+firebase_admin.initialize_app(cred)
 
 
 FIREBASE_CONFIG = BASE_DIR / 'keyfile.json'

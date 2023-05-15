@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import requests
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from firebase_admin import messaging
 
 from calendarapp.models import Event
 
@@ -322,6 +323,22 @@ class Command(BaseCommand):
         events = []
         for i in self.notifications:
             for j in self.notifications[i]:
-                events.append(Event(
-                    title=j['reason'], type=j['type'], date=i, importance=j['importance']))
+                importance = random.randint(0, 2)
+                if importance==0:
+                    self.send_notification(j['reason'])
+                events.append(Event(title=j['reason'], type=j['type'], date=i, importance=importance))
         Event.objects.bulk_create(events)
+
+    def send_notification(self, body):
+        registration_token = 'cksEuS-pRA6M6YIapATRT6:APA91bGdLb8rQ-wrDwLioQwzTiUafLtK46uTZ2WGNwAa2ZFFOzUxf7ILMW217Y9qP5ZNqY0qWdIxMNA_Ye6y1xAloacvbZ9WJpZ8-UYz_UCn13ciYmevIcGgfsdRpK-9uYitqblsE38d'
+        title = 'Critical Event'
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body + ' is expected',
+                image='https://img.icons8.com/plumpy/512/important-event.png',
+            ),
+            token=registration_token,
+        )
+        response = messaging.send(message)
+        print('Successfully sent message:', message.notification)
