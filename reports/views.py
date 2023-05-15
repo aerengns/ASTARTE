@@ -19,26 +19,27 @@ class BaseReportAPI(APIView):
     authentication_classes = [FirebaseAuthentication]
 
 
-    def get_weekly_values(self, key, user):
+    def get_weekly_values(self, key, user, farm_id):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=20)
         report_values = FarmParcelReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
+            farm_id=farm_id,
         ).order_by('date_collected')
         days = []
         for data in report_values:
             day = data.date_collected
             days.append(day.strftime("%A"))
-        print(days)
         return report_values.values_list(key, flat=True), days
 
-    def get_weekly_values_for_multiple_keys(self, keys, user):
+    def get_weekly_values_for_multiple_keys(self, keys, user, farm_id):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=20)
         report_values = FarmParcelReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
+            farm_id=farm_id
         ).order_by('date_collected')
         days = []
         for data in report_values:
@@ -51,19 +52,29 @@ class BaseReportAPI(APIView):
 class HumidityReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except:
+            Response(status=404)
         user = request.user
-        humidity_levels, days = self.get_weekly_values('moisture', user)
+        humidity_levels, days = self.get_weekly_values('moisture', user, farm_id)
         return Response(data={'days': days, 'humidity_levels': humidity_levels})
 
 
 class NPKReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except:
+            Response(status=404)
         user = request.user
         n_values, p_values, k_values, days = self.get_weekly_values_for_multiple_keys(['nitrogen',
                                                                                        'phosphorus',
                                                                                        'potassium'],
-                                                                                      user)
+                                                                                      user, farm_id)
 
         return Response(data={'days': days, 'n_values': n_values, 'p_values': p_values, 'k_values': k_values})
 
@@ -71,9 +82,25 @@ class NPKReportAPI(BaseReportAPI):
 class TemperatureReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except:
+            Response(status=404)
         user = request.user
-        temperatures, days = self.get_weekly_values('temperature', user)
+        temperatures, days = self.get_weekly_values('temperature', user, farm_id)
         return Response(data={'days': days, 'temperatures': temperatures})
+
+
+class SendFarmList(BaseReportAPI):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        farms = Farm.objects.filter(owner__username=user, is_active=1).values_list('name', 'id')
+        return Response(data=farms)
+
 
 
 class SaveReportData(APIView):
