@@ -15,8 +15,8 @@ from datetime import date, timedelta
 
 
 class BaseReportAPI(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
 
     def get_weekly_values(self, key, user):
@@ -51,8 +51,7 @@ class BaseReportAPI(APIView):
 class HumidityReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
-        #user = request.user
-        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        user = request.user
         humidity_levels, days = self.get_weekly_values('moisture', user)
         return Response(data={'days': days, 'humidity_levels': humidity_levels})
 
@@ -60,7 +59,7 @@ class HumidityReportAPI(BaseReportAPI):
 class NPKReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
-        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        user = request.user
         n_values, p_values, k_values, days = self.get_weekly_values_for_multiple_keys(['nitrogen',
                                                                                        'phosphorus',
                                                                                        'potassium'],
@@ -72,7 +71,7 @@ class NPKReportAPI(BaseReportAPI):
 class TemperatureReportAPI(BaseReportAPI):
 
     def get(self, request, *args, **kwargs):
-        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        user = request.user
         temperatures, days = self.get_weekly_values('temperature', user)
         return Response(data={'days': days, 'temperatures': temperatures})
 
