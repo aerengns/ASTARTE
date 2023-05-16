@@ -124,13 +124,15 @@ class _SignUpFormState extends State<SignUpForm> {
         .user;
 
     if (user != null) {
+      final token = await user.getIdToken();
+      final currentUser = await parameters.requestCurrentUser(token);
       setState(() async {
         _success = true;
         _userEmail = user.email!;
-        parameters.TOKEN = await user.getIdToken();
-        print('auth token: ${parameters.TOKEN}');
+        parameters.TOKEN = token;
+        parameters.setCurrentUser(currentUser);
+        Navigator.popUntil(context, ModalRoute.withName('/'));
       });
-      Navigator.popUntil(context, ModalRoute.withName('/'));
     } else {
       setState(() {
         _success = false;
