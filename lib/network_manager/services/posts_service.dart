@@ -36,6 +36,7 @@ abstract class PostsService extends ChopperService {
         ],
         converter: BuiltValueConverter(),
         interceptors: [
+          HeadersInterceptor({'Authorization': TOKEN}),
           HttpLoggingInterceptor(),
         ]
     );
