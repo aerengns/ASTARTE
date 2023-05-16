@@ -5,6 +5,7 @@ import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/utils/parameters.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
@@ -86,12 +87,22 @@ class PostList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            post.username,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: SizedBox(
                               width: double.infinity,
-                              height: 200,
+                              height: post.image == null ? 0 : 200,
                               child: post.image == null
-                                  ? const Icon(Icons.image_not_supported)
+                                  ? const SizedBox.shrink()
                                   : Image.memory(base64.decode(post.image!))
                           ),
                         ),
@@ -120,7 +131,6 @@ class PostList extends StatelessWidget {
                                     context: context,
                                     builder: (context) {
                                       final replyController = TextEditingController();
-
                                       return AlertDialog(
                                         title: const Text('Reply'),
                                         content: TextField(
@@ -143,6 +153,7 @@ class PostList extends StatelessWidget {
                                                   .createReply(post.id!,
                                                 PostData((b) => b
                                                   ..message = replyController.text
+                                                  ..username = getCurrentUserName()
                                               ),
                                               );
 
@@ -202,6 +213,14 @@ class PostList extends StatelessWidget {
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                                   children: [
+                                                    Text(
+                                                      post.username,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 10),
                                                     Text(
                                                       post.message,
                                                       style: Theme.of(context).textTheme.titleMedium,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/theme/colors.dart';
+import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -74,6 +75,7 @@ class _NewPostFormState extends State<NewPostForm> {
                   (b) => b
                     ..image = encodedImage
                     ..message = _postText
+                    ..username = getCurrentUserName()
           )
       );
 

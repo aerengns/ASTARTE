@@ -11,6 +11,7 @@ abstract class PostData implements Built<PostData, PostDataBuilder> {
   int? get id;
   String? get image;
   String get message;
+  String get username;
 
   PostData._();
 
