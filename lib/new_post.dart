@@ -63,7 +63,11 @@ class _NewPostFormState extends State<NewPostForm> {
 
   void _savePost() async {
     if (_formKey.currentState!.validate()) {
-      String encodedImage = base64Encode(_image!.readAsBytesSync());
+      String? encodedImage;
+      final image = _image;
+      if (image != null) {
+        encodedImage = base64Encode(image.readAsBytesSync());
+      }
       final response = await Provider.of<PostsService>(context, listen: false)
           .createPost(
           PostData(
