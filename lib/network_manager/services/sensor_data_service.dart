@@ -5,8 +5,6 @@ import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
 import 'package:astarte/utils/parameters.dart';
-import 'package:astarte/network_manager/models/farm_date_data.dart';
-
 part "sensor_data_service.chopper.dart";
 
 @ChopperApi(baseUrl: "/reports")

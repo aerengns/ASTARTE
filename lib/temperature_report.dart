@@ -12,7 +12,6 @@ import 'dart:convert';
 
 import 'package:provider/provider.dart';
 
-import 'network_manager/models/farm_date_data.dart';
 import 'network_manager/services/sensor_data_service.dart';
 
 class TemperatureReport extends StatefulWidget {
