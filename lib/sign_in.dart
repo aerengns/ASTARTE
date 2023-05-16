@@ -1,4 +1,3 @@
-import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -124,11 +123,13 @@ class _SignInFormState extends State<SignInForm> {
         .user;
 
     if (user != null) {
-      setState(() async {
+      final token = await user.getIdToken();
+      final currentUser = await parameters.requestCurrentUser(token);
+      setState(() {
         _success = true;
         _userEmail = user.email!;
-        parameters.TOKEN = await user.getIdToken();
-        print('auth token: ${parameters.TOKEN}');
+        parameters.TOKEN = token;
+        parameters.setCurrentUser(currentUser);
         Navigator.popUntil(context, ModalRoute.withName('/'));
       });
     } else {

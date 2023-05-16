@@ -20,16 +20,11 @@ class _NavBarState extends State<NavBar> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text('Someone'),
-            accountEmail: const Text('example@gmail.com'),
+            accountName: Text(parameters.getCurrentUserName()),
+            accountEmail: Text(parameters.getCurrentUserEmail()),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.network(
-                  'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
-                  fit: BoxFit.cover,
-                  width: 90,
-                  height: 90,
-                ),
+                child: parameters.getCurrentUserImage(),
               ),
             ),
             decoration: const BoxDecoration(
@@ -39,6 +34,10 @@ class _NavBarState extends State<NavBar> {
                   image: NetworkImage(
                       'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
             ),
+            onDetailsPressed: (){
+              // TODO: Navigate to Profile Page which will be written later
+            },
+            arrowColor: const Color.fromRGBO(0, 0, 0, 0),
           ),
           ListTile(
             leading: const Icon(Icons.home_filled),
@@ -90,12 +89,12 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/farms'),
           ),
-          ListTile(
-            leading: const Icon(Icons.camera_alt_rounded),
-            title: const Text('Photo Upload'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/photo-upload'),
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.camera_alt_rounded),
+          //   title: const Text('Photo Upload'),
+          //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
+          //   onTap: () => Navigator.pushNamed(context, '/photo-upload'),
+          // ),
           ListTile(
             leading: const Icon(Icons.map_rounded),
             title: const Text('Dynamic Heatmap'),
@@ -137,7 +136,10 @@ class _NavBarState extends State<NavBar> {
             leading: const Icon(Icons.logout_rounded),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
-              parameters.TOKEN = '';
+              setState(() {
+                parameters.TOKEN = '';
+                parameters.setCurrentUser({});
+              });
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.popAndPushNamed(context, '/sign_in');
