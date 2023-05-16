@@ -22,7 +22,6 @@ import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
 import 'package:astarte/dynamic_heatmap.dart';
-import 'heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 
@@ -90,8 +89,8 @@ class Astarte extends StatelessWidget {
           dispose: (_, SensorDataService service) => service.client.dispose(),
         ),
         Provider(
-        create: (_) => PostsService.create(),
-        dispose: (_, PostsService service) => service.client.dispose(),
+          create: (_) => PostsService.create(),
+          dispose: (_, PostsService service) => service.client.dispose(),
         ),
       ],
       child: MaterialApp(
@@ -110,7 +109,6 @@ class Astarte extends StatelessWidget {
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
-          '/heatmap': (context) => const Heatmap(),
           '/dynamic_heatmap': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => const Calendar(),
