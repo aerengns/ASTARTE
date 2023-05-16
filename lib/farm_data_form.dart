@@ -60,13 +60,10 @@ class _FarmDataFormState extends State<FarmDataForm> {
     super.initState();
     _farmName = widget.formData?.farmName ?? '';
     _date = widget.formData?.date ?? '';
-    _parcelNo = widget.formData?.parcelNo.toString() ?? '';
-    _temperature = widget.formData?.temperature.toString() ?? '';
     _moisture = widget.formData?.moisture.toString() ?? '';
     _phosphorus = widget.formData?.phosphorus.toString() ?? '';
     _potassium = widget.formData?.potassium.toString() ?? '';
     _nitrogen = widget.formData?.nitrogen.toString() ?? '';
-    _ph = widget.formData?.ph.toString() ?? '';
   }
 
   Future<void> _selectDate() async {

@@ -3,6 +3,8 @@ import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
 
+import '../../utils/parameters.dart';
+
 
 part "farm_data_service.chopper.dart";
 
@@ -28,7 +30,7 @@ abstract class FarmDataService extends ChopperService {
         ],
         converter: BuiltValueConverter(),
         interceptors: [
-          HeadersInterceptor({'Authorization': 'Token ff87098fc547674d2c69361042b8504c573c5d4a'}),
+          HeadersInterceptor({'Authorization': TOKEN}),
           HttpLoggingInterceptor(),
         ]
     );

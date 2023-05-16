@@ -84,8 +84,7 @@ class DataList extends StatelessWidget {
                   Navigator.pushNamed(context, '/farm_detail',
                       arguments: data[index].id);
                   },
-                )
-              );
+                );
             },
           );
         }

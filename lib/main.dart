@@ -26,6 +26,8 @@ import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 
+import 'network_manager/services/farm_data_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
