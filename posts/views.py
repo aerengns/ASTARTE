@@ -64,8 +64,3 @@ class Reply(APIView):
         post = Post.objects.get(id=post_id)
         post.replies.create(message=message)
         return Response({'message': 'Reply created'}, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, post_id):
-        post = Post.objects.get(id=post_id)
-        post.delete()
-        return Response({'message': 'Post deleted'}, status=status.HTTP_200_OK)
