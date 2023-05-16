@@ -10,10 +10,10 @@ part "farm_data_service.chopper.dart";
 abstract class FarmDataService extends ChopperService {
 
   @Get()
-  Future<Response<BuiltList<FarmData>>> getFarmDataDetail();
+  Future<Response<BuiltList<FarmData>>> getFarms();
 
   @Get(path: '/{farm_id}')
-  Future<Response<FarmData>> getFarmData(@Path('farm_id') int farmId);
+  Future<Response<FarmData>> getFarm(@Path('farm_id') int farmId);
 
   //@Post()
   //Future<Response> saveSensorData(

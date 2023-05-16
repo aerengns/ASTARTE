@@ -8,6 +8,7 @@ part of 'serializers.dart';
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(FarmData.serializer)
+      ..add(FarmReportData.serializer)
       ..add(SensorData.serializer))
     .build();
 

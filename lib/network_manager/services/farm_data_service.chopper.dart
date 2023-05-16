@@ -17,18 +17,7 @@ class _$FarmDataService extends FarmDataService {
   final definitionType = FarmDataService;
 
   @override
-  Future<Response<BuiltList<FarmData>>> getFarmDataDetail() {
-    final Uri $url = Uri.parse('/farms');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<BuiltList<FarmData>, FarmData>($request);
-  }
-
-  @override
-  Future<Response<FarmData>> getFarmData(int farmId) {
+  Future<Response<FarmData>> getFarm(int farmId) {
     final Uri $url = Uri.parse('/farms/${farmId}');
     final Request $request = Request(
       'GET',
@@ -36,5 +25,16 @@ class _$FarmDataService extends FarmDataService {
       client.baseUrl,
     );
     return client.send<FarmData, FarmData>($request);
+  }
+
+  @override
+  Future<Response<BuiltList<FarmData>>> getFarms() {
+    final Uri $url = Uri.parse('/farms');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<BuiltList<FarmData>, FarmData>($request);
   }
 }

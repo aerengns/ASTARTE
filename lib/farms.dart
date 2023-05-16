@@ -76,7 +76,8 @@ class DataList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<f.FarmData>>(
-      future: Provider.of<FarmDataService>(context, listen: false).getFarmDataDetail().then((response) => response.body!.toList()),
+
+      future: Provider.of<FarmDataService>(context, listen: false).getFarms().then((response) => response.body!.toList()),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
