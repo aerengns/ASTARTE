@@ -69,8 +69,8 @@ class PostList extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
-          final data = snapshot.data!.body!;
-          if (data.isEmpty) {
+          final data = snapshot.data?.body;
+          if (data == null || data.isEmpty) {
             return const Center(child: Text('No posts yet', style: TextStyle(fontSize: 18)));
           }
           return ListView.builder(
@@ -182,7 +182,10 @@ class PostList extends StatelessWidget {
                               } else if (snapshot.hasError) {
                                 return Center(child: Text('Error: ${snapshot.error}'));
                               } else {
-                                final data = snapshot.data!.body!;
+                                final data = snapshot.data?.body;
+                                if (data == null || data.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
                                 return ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: data.length,
