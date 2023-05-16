@@ -147,9 +147,9 @@ class _$SensorData extends SensorData {
   _$SensorData._(
       {required this.farmName,
       required this.formDate,
-      required this.moisture,
       required this.parcelNo,
       required this.temperature,
+      required this.moisture,
       required this.phosphorus,
       required this.potassium,
       required this.nitrogen,
@@ -335,11 +335,11 @@ class SensorDataBuilder implements Builder<SensorData, SensorDataBuilder> {
                 potassium, r'SensorData', 'potassium'),
             nitrogen: BuiltValueNullFieldError.checkNotNull(
                 nitrogen, r'SensorData', 'nitrogen'),
-            ph: BuiltValueNullFieldError.checkNotNull(
-                ph, r'SensorData', 'latphitude'),
+            ph: BuiltValueNullFieldError.checkNotNull(ph, r'SensorData', 'ph'),
             latitude: BuiltValueNullFieldError.checkNotNull(
                 latitude, r'SensorData', 'latitude'),
-            longitude: BuiltValueNullFieldError.checkNotNull(longitude, r'SensorData', 'longitude'));
+            longitude: BuiltValueNullFieldError.checkNotNull(
+                longitude, r'SensorData', 'longitude'));
     replace(_$result);
     return _$result;
   }
