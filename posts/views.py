@@ -20,9 +20,8 @@ from posts.serializers import PostSerializer
 
 
 class PostList(APIView):
-    permission_classes = [AllowAny]
-
-    # authentication_classes = [FirebaseAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         posts = Post.objects.all()
@@ -30,9 +29,8 @@ class PostList(APIView):
 
 
 class PostCreate(APIView):
-    permission_classes = [AllowAny]
-
-    # authentication_classes = [FirebaseAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def post(self, request):
         message = request.data.get('message')
@@ -47,9 +45,8 @@ class PostCreate(APIView):
 
 
 class Reply(APIView):
-    permission_classes = [AllowAny]
-
-    # authentication_classes = [FirebaseAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request, post_id):
         post = Post.objects.get(id=post_id)
