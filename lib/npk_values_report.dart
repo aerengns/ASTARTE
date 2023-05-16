@@ -1,5 +1,7 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart';
+import 'package:built_value/built_value.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:astarte/utils/reports_util.dart';
 
 import 'package:provider/provider.dart';
 
@@ -21,11 +24,13 @@ class _NPKReportsState extends State<NPKReport> {
   List<double> data_p = [];
   List<double> data_k = [];
   String data_x = "";
+  List<Farm> farms = [];
+  Farm selectedFarm = Farm(name: "Select a Farm", id: "0");
 
   @override
   void initState() {
     super.initState();
-    getNData().whenComplete(() => _addNValueContainer());
+    fillFarms().whenComplete(() => _addDropdown());
   }
 
   final List<Widget> _widgets = [
@@ -35,6 +40,7 @@ class _NPKReportsState extends State<NPKReport> {
       height: 100,
       fit: BoxFit.contain,
     ),
+    const Text("Select a Farm"),
   ];
 
   @override
@@ -50,8 +56,41 @@ class _NPKReportsState extends State<NPKReport> {
     );
   }
 
+  void _addDropdown() {
+    setState(() {
+      _widgets.add(
+        Center(
+          child: DropdownButton<Farm>(
+            value: selectedFarm,
+            icon: const Icon(
+              Icons.arrow_drop_down_circle,
+              color: CustomColors.astarteRed,
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedFarm = value!;
+                getNData(selectedFarm.id)
+                    .whenComplete(() => _addNValueContainer());
+              });
+              print(selectedFarm.name);
+            },
+            items: farms.map((farm) {
+              return DropdownMenuItem<Farm>(
+                value: farm,
+                child: Text(farm.name),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    });
+  }
+
   void _addNValueContainer() {
     setState(() {
+      // Remove the old report container if it exists
+      _widgets.removeWhere((widget) =>
+          widget is SizedBox && widget.width == 450 && widget.height == 300);
       _widgets.add(
         SizedBox(
           width: 450,
@@ -135,15 +174,17 @@ class _NPKReportsState extends State<NPKReport> {
     });
   }
 
-  Future<void> getNData() async {
+  Future<void> getNData(String selectedFarm) async {
     final response =
         await Provider.of<SensorDataService>(context, listen: false)
-            .getNpkReport();
+            .getNpkReport(selectedFarm);
 
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
       dynamic data = jsonDecode(new_message);
-
+      data_n.clear();
+      data_p.clear();
+      data_k.clear();
       data_x = jsonEncode(data['days']);
       for (dynamic n in data['n_values']) {
         data_n.add(n as double);
@@ -154,6 +195,27 @@ class _NPKReportsState extends State<NPKReport> {
       for (dynamic n in data['k_values']) {
         data_k.add(n as double);
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Temperature report failed to load. Please try again.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> fillFarms() async {
+    final response =
+        await Provider.of<SensorDataService>(context, listen: false)
+            .getFarmList();
+
+    if (response.isSuccessful) {
+      String new_message = await response.bodyString;
+      dynamic data = jsonDecode(new_message);
+      for (dynamic n in data) {
+        farms.add(Farm(name: n[0], id: n[1].toString()));
+      }
+      selectedFarm = farms[0];
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

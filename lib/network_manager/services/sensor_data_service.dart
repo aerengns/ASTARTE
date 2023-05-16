@@ -5,6 +5,7 @@ import 'package:chopper/chopper.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:astarte/network_manager/model_converters/built_value_converter.dart';
 import 'package:astarte/utils/parameters.dart';
+import 'package:astarte/network_manager/models/farm_date_data.dart';
 
 part "sensor_data_service.chopper.dart";
 
@@ -19,14 +20,17 @@ abstract class SensorDataService extends ChopperService {
   @Post()
   Future<Response> saveSensorData(@Body() SensorData data);
 
-  @Get(path: '/temperature_report')
-  Future<Response> getTemperatureReport();
+  @Get(path: '/temperature_report/{farm}')
+  Future<Response> getTemperatureReport(@Path('farm') String selectedFarm);
 
-  @Get(path: '/npk_report')
-  Future<Response> getNpkReport();
+  @Get(path: '/npk_report/{farm}')
+  Future<Response> getNpkReport(@Path('farm') String selectedFarm);
 
-  @Get(path: '/humidity_report')
-  Future<Response> getHumidityReport();
+  @Get(path: '/humidity_report/{farm}')
+  Future<Response> getHumidityReport(@Path('farm') String selectedFarm);
+
+  @Get(path: '/get_farms')
+  Future<Response> getFarmList();
 
   static SensorDataService create() {
     final client = ChopperClient(
