@@ -1,4 +1,4 @@
-import 'package:astarte/network_manager/services/posts_service.dart';
+import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/npk_report.dart';
 import 'package:astarte/network_manager/models/humidity_report.dart';
 import 'package:astarte/network_manager/models/temperature_report.dart';
@@ -14,6 +14,6 @@ part 'serializers.g.dart';
   TemperatureReport,
   NpkReport,
   HumidityReport,
-  PostsService,
+  PostData,
 ])
 final Serializers serializers = (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();

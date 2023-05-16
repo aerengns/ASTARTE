@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -61,8 +63,15 @@ class _NewPostFormState extends State<NewPostForm> {
 
   void _savePost() async {
     if (_formKey.currentState!.validate()) {
+      String encodedImage = base64Encode(_image!.readAsBytesSync());
       final response = await Provider.of<PostsService>(context, listen: false)
-          .createPost(_postText, _image!);
+          .createPost(
+          PostData(
+                  (b) => b
+                    ..image = encodedImage
+                    ..message = _postText
+          )
+      );
 
       if (response.isSuccessful) {
         ScaffoldMessenger.of(context).showSnackBar(

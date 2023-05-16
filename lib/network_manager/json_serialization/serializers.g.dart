@@ -9,6 +9,7 @@ part of 'serializers.dart';
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(HumidityReport.serializer)
       ..add(NpkReport.serializer)
+      ..add(PostData.serializer)
       ..add(SensorData.serializer)
       ..add(TemperatureReport.serializer))
     .build();

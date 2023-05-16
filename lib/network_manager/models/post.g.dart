@@ -6,37 +6,43 @@ part of 'post.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<Post> _$postSerializer = new _$PostSerializer();
+Serializer<PostData> _$postDataSerializer = new _$PostDataSerializer();
 
-class _$PostSerializer implements StructuredSerializer<Post> {
+class _$PostDataSerializer implements StructuredSerializer<PostData> {
   @override
-  final Iterable<Type> types = const [Post, _$Post];
+  final Iterable<Type> types = const [PostData, _$PostData];
   @override
-  final String wireName = 'Post';
+  final String wireName = 'PostData';
 
   @override
-  Iterable<Object?> serialize(Serializers serializers, Post object,
+  Iterable<Object?> serialize(Serializers serializers, PostData object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object?>[
-      'postText',
-      serializers.serialize(object.postText,
+      'message',
+      serializers.serialize(object.message,
           specifiedType: const FullType(String)),
     ];
     Object? value;
+    value = object.id;
+    if (value != null) {
+      result
+        ..add('id')
+        ..add(serializers.serialize(value, specifiedType: const FullType(int)));
+    }
     value = object.image;
     if (value != null) {
       result
         ..add('image')
-        ..add(
-            serializers.serialize(value, specifiedType: const FullType(File)));
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
     }
     return result;
   }
 
   @override
-  Post deserialize(Serializers serializers, Iterable<Object?> serialized,
+  PostData deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new PostBuilder();
+    final result = new PostDataBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -44,12 +50,16 @@ class _$PostSerializer implements StructuredSerializer<Post> {
       iterator.moveNext();
       final Object? value = iterator.current;
       switch (key) {
+        case 'id':
+          result.id = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int?;
+          break;
         case 'image':
           result.image = serializers.deserialize(value,
-              specifiedType: const FullType(File)) as File?;
+              specifiedType: const FullType(String)) as String?;
           break;
-        case 'postText':
-          result.postText = serializers.deserialize(value,
+        case 'message':
+          result.message = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
       }
@@ -59,93 +69,106 @@ class _$PostSerializer implements StructuredSerializer<Post> {
   }
 }
 
-class _$Post extends Post {
+class _$PostData extends PostData {
   @override
-  final File? image;
+  final int? id;
   @override
-  final String postText;
+  final String? image;
+  @override
+  final String message;
 
-  factory _$Post([void Function(PostBuilder)? updates]) =>
-      (new PostBuilder()..update(updates))._build();
+  factory _$PostData([void Function(PostDataBuilder)? updates]) =>
+      (new PostDataBuilder()..update(updates))._build();
 
-  _$Post._({this.image, required this.postText}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(postText, r'Post', 'postText');
+  _$PostData._({this.id, this.image, required this.message}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(message, r'PostData', 'message');
   }
 
   @override
-  Post rebuild(void Function(PostBuilder) updates) =>
+  PostData rebuild(void Function(PostDataBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  PostBuilder toBuilder() => new PostBuilder()..replace(this);
+  PostDataBuilder toBuilder() => new PostDataBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Post && image == other.image && postText == other.postText;
+    return other is PostData &&
+        id == other.id &&
+        image == other.image &&
+        message == other.message;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
+    _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, image.hashCode);
-    _$hash = $jc(_$hash, postText.hashCode);
+    _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'Post')
+    return (newBuiltValueToStringHelper(r'PostData')
+          ..add('id', id)
           ..add('image', image)
-          ..add('postText', postText))
+          ..add('message', message))
         .toString();
   }
 }
 
-class PostBuilder implements Builder<Post, PostBuilder> {
-  _$Post? _$v;
+class PostDataBuilder implements Builder<PostData, PostDataBuilder> {
+  _$PostData? _$v;
 
-  File? _image;
-  File? get image => _$this._image;
-  set image(File? image) => _$this._image = image;
+  int? _id;
+  int? get id => _$this._id;
+  set id(int? id) => _$this._id = id;
 
-  String? _postText;
-  String? get postText => _$this._postText;
-  set postText(String? postText) => _$this._postText = postText;
+  String? _image;
+  String? get image => _$this._image;
+  set image(String? image) => _$this._image = image;
 
-  PostBuilder();
+  String? _message;
+  String? get message => _$this._message;
+  set message(String? message) => _$this._message = message;
 
-  PostBuilder get _$this {
+  PostDataBuilder();
+
+  PostDataBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
+      _id = $v.id;
       _image = $v.image;
-      _postText = $v.postText;
+      _message = $v.message;
       _$v = null;
     }
     return this;
   }
 
   @override
-  void replace(Post other) {
+  void replace(PostData other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$Post;
+    _$v = other as _$PostData;
   }
 
   @override
-  void update(void Function(PostBuilder)? updates) {
+  void update(void Function(PostDataBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  Post build() => _build();
+  PostData build() => _build();
 
-  _$Post _build() {
+  _$PostData _build() {
     final _$result = _$v ??
-        new _$Post._(
+        new _$PostData._(
+            id: id,
             image: image,
-            postText: BuiltValueNullFieldError.checkNotNull(
-                postText, r'Post', 'postText'));
+            message: BuiltValueNullFieldError.checkNotNull(
+                message, r'PostData', 'message'));
     replace(_$result);
     return _$result;
   }
