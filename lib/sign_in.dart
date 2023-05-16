@@ -45,7 +45,7 @@ class _SignInFormState extends State<SignInForm> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
-                        color: CustomColors.astarteRed,
+                        color: Colors.red,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Email',
@@ -64,7 +64,7 @@ class _SignInFormState extends State<SignInForm> {
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
                     labelStyle: const TextStyle(
-                        color: CustomColors.astarteRed,
+                        color: Colors.red,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Password',
@@ -81,7 +81,7 @@ class _SignInFormState extends State<SignInForm> {
             ),
             Container(
               padding: const EdgeInsets.only(top: 30),
-              child: ElevatedButton(
+              child: TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _signInWithEmailAndPassword();
@@ -89,6 +89,14 @@ class _SignInFormState extends State<SignInForm> {
                 },
                 child: Container(
                   alignment: Alignment.center,
+                  height: 50,
+                  width: 300,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
                   child: const Text(
                     'Sign In',
                     style: TextStyle(color: Colors.white, fontSize: 25),
@@ -116,11 +124,9 @@ class _SignInFormState extends State<SignInForm> {
         .user;
 
     if (user != null) {
-      setState(() async {
+      setState(() {
         _success = true;
         _userEmail = user.email!;
-        parameters.TOKEN = await user.getIdToken();
-        print('auth token: ${parameters.TOKEN}');
         Navigator.popUntil(context, ModalRoute.withName('/'));
       });
     } else {
@@ -147,11 +153,11 @@ class MyApp extends StatelessWidget {
                 /*2*/
                 Container(
                   padding: const EdgeInsets.only(top: 8, bottom: 30),
-                  child: const Text(
+                  child: Text(
                     'ASTARTE',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.astarteRed,
+                        color: Colors.red[700],
                         fontSize: 35),
                   ),
                 ),
@@ -278,7 +284,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.only(top: 60),
+              padding: const EdgeInsets.only(top: 35),
               width: 300,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -300,7 +306,7 @@ class MyApp extends StatelessWidget {
                     child: const Text(
                       'Sign Up',
                       style: TextStyle(
-                          color: CustomColors.astarteRed,
+                          color: Colors.red,
                           fontWeight: FontWeight.bold,
                           fontSize: 17),
                     ),
@@ -312,18 +318,20 @@ class MyApp extends StatelessWidget {
     );
 
     return Scaffold(
-      body: ListView(
+        body: Container(
+      color: const Color.fromRGBO(237, 230, 231, 1),
+      child: ListView(
         children: [
           Image.asset(
-            'assets/images/astarte.jpg',
-            width: 100,
-            height: 100,
+            'assets/icons/launcher_icon.png',
+            width: 200,
+            height: 200,
             fit: BoxFit.contain,
           ),
           titleSection,
           credentialsSection,
         ],
       ),
-    );
+    ));
   }
 }

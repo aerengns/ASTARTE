@@ -98,12 +98,6 @@ class _NavBarState extends State<NavBar> {
           ),
           ListTile(
             leading: const Icon(Icons.map_rounded),
-            title: const Text('Heatmap'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/heatmap'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.map_rounded),
             title: const Text('Dynamic Heatmap'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/dynamic_heatmap'),
