@@ -29,21 +29,24 @@ class _PostsState extends State<Posts> {
               alignment: Alignment.center,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.7,
+                height: MediaQuery.of(context).size.height * 0.75,
                 child: const PostList(),
               )
           ),
           Align(
             alignment: Alignment.center,
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: 50.0,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/create-post');
-                  },
-                  child: const Text('Ask a new question', style: TextStyle(fontSize: 20)),
-                )
+            child: Padding(
+              padding: const EdgeInsets.all(11.0),
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: 50.0,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/create-post');
+                    },
+                    child: const Text('Ask a new question', style: TextStyle(fontSize: 20)),
+                  )
+              ),
             ),
           ),
         ],
@@ -67,6 +70,9 @@ class PostList extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           final data = snapshot.data!.body!;
+          if (data.isEmpty) {
+            return const Center(child: Text('No posts yet', style: TextStyle(fontSize: 18)));
+          }
           return ListView.builder(
             shrinkWrap: true,
             itemCount: data.length,
@@ -165,10 +171,6 @@ class PostList extends StatelessWidget {
                               child: const Text('Reply', style: TextStyle(fontSize: 16)),
                             ),
                           ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                          child: Text('Replies', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
                         ),
                         Container(
                           constraints: const BoxConstraints(maxHeight: 150),

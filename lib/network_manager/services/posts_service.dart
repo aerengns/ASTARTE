@@ -28,9 +28,6 @@ abstract class PostsService extends ChopperService {
       @Body() PostData data
       );
 
-  @Delete(path: '/{post_id}')
-  Future<Response> deletePost(@Path('post_id') int postId);
-
   static PostsService create() {
     final client = ChopperClient(
         baseUrl: Uri.parse('${GENERAL_URL}app/'),

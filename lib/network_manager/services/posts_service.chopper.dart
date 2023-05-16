@@ -66,15 +66,4 @@ class _$PostsService extends PostsService {
     );
     return client.send<dynamic, dynamic>($request);
   }
-
-  @override
-  Future<Response<dynamic>> deletePost(int postId) {
-    final Uri $url = Uri.parse('/posts/${postId}');
-    final Request $request = Request(
-      'DELETE',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
 }
