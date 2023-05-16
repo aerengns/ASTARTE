@@ -21,7 +21,7 @@ class BaseReportAPI(APIView):
 
     def get_weekly_values(self, key, user, farm_id):
         current_date = date.today()
-        seven_days_before = current_date - timedelta(days=20)
+        seven_days_before = current_date - timedelta(days=7)
         report_values = FarmParcelReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
@@ -35,7 +35,7 @@ class BaseReportAPI(APIView):
 
     def get_weekly_values_for_multiple_keys(self, keys, user, farm_id):
         current_date = date.today()
-        seven_days_before = current_date - timedelta(days=20)
+        seven_days_before = current_date - timedelta(days=7)
         report_values = FarmParcelReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
@@ -101,6 +101,27 @@ class SendFarmList(BaseReportAPI):
         farms = Farm.objects.filter(owner__username=user, is_active=1).values_list('name', 'id')
         return Response(data=farms)
 
+
+class LogSenderAPI(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except:
+            Response(status=404)
+        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
+        report_values = FarmParcelReportLog.objects.filter(
+            farm__owner__username=user,
+            farm_id=farm_id,
+        ).order_by('-date_collected')
+        logs = report_values.values('id', 'farm__name', 'parcel', 'moisture', 'phosphorus', 'potassium', 'nitrogen', 'temperature',
+                                         'ph', 'latitude', 'longitude', 'date_collected')
+
+
+        return Response(data=logs)
 
 
 class SaveReportData(APIView):
