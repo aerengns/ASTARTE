@@ -163,9 +163,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
 
-
-cred = credentials.Certificate('astarte-odtu-firebase-adminsdk-n6duv-5b18431d97.json')
-firebase_admin.initialize_app(cred)
-
-
 FIREBASE_CONFIG = BASE_DIR / 'keyfile.json'
