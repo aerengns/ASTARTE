@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FarmParcelReport, Farm
+from .models import FarmReport, Farm
 
 
 class BooleanAsIntegerField(serializers.IntegerField):
@@ -11,13 +11,13 @@ class BooleanAsIntegerField(serializers.IntegerField):
 
 class FarmParcelReportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FarmParcelReport
+        model = FarmReport
         fields = '__all__'
 
 
 class FarmReportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FarmParcelReport
+        model = FarmReport
         fields = ['moisture', 'phosphorus', 'potassium', 'nitrogen', 'temperature', 'ph']
 
 
@@ -30,7 +30,7 @@ class FarmSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_latest_farm_report(self, obj):
-        latest_report = obj.farmparcelreport_set.order_by('-created_at').first()
+        latest_report = obj.farmreport_set.order_by('-created_at').first()
         if latest_report:
             return FarmReportSerializer(latest_report).data
         return None

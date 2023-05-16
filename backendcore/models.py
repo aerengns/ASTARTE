@@ -23,18 +23,12 @@ class Farm(BaseAbstractModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class FarmParcel(BaseAbstractModel):
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
-    no = models.PositiveIntegerField(default=1, blank=True)
-
-
 class Worker(User):
     works_at = models.ForeignKey(Farm, on_delete=models.SET_NULL, null=True)
 
 
-class FarmParcelReport(BaseAbstractModel):
+class FarmReport(BaseAbstractModel):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE, blank=True)
-    parcel = models.ForeignKey(FarmParcel, on_delete=models.SET_NULL, null=True)
     moisture = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)

@@ -7,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
-from backendcore.models import FarmParcelReport, Farm, FarmParcel
+from backendcore.models import FarmReport, Farm
 from firebase_auth.authentication import FirebaseAuthentication
-from reports.models import FarmParcelReportLog
+from reports.models import FarmReportLog
 import json
 from datetime import date, timedelta
 
@@ -22,7 +22,7 @@ class BaseReportAPI(APIView):
     def get_weekly_values(self, key, user, farm_id):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=20)
-        report_values = FarmParcelReportLog.objects.filter(
+        report_values = FarmReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
             farm_id=farm_id,
@@ -36,7 +36,7 @@ class BaseReportAPI(APIView):
     def get_weekly_values_for_multiple_keys(self, keys, user, farm_id):
         current_date = date.today()
         seven_days_before = current_date - timedelta(days=20)
-        report_values = FarmParcelReportLog.objects.filter(
+        report_values = FarmReportLog.objects.filter(
             date_collected__gte=seven_days_before,
             farm__owner__username=user,
             farm_id=farm_id
@@ -115,23 +115,21 @@ class SaveReportData(APIView):
         string_object = byte_object.decode('utf-8')
         object_dict = json.loads(string_object)
         farm = get_object_or_404(Farm, name=object_dict.pop('farmName'))
-        parcel = get_object_or_404(FarmParcel, no=object_dict.pop('parcelNo'))
-        constants = {'farm_id': farm.id, 'parcel_id': parcel.id}
+        constants = {'farm_id': farm.id}
         date = object_dict.pop('formDate')
         object_dict.update({'date_collected': datetime.datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%d')})
-        obj, created = FarmParcelReport.objects.update_or_create(
+        obj, created = FarmReport.objects.update_or_create(
             farm_id=farm.id,
-            parcel_id=parcel.id,
             defaults=object_dict,
         )
         object_dict.update(constants)
-        log = FarmParcelReportLog(**object_dict)
+        log = FarmReportLog(**object_dict)
         log.save()
 
         if created:
             message = "new report is created"
         else:
-            message = f"farm {farm.name} with parcel_no:{parcel.no} is changed"
+            message = f"farm {farm.name} is changed"
         print(message)
         return Response(message)
 

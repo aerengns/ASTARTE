@@ -3,7 +3,6 @@ from . import views
 from rest_framework.authtoken import views as auth_views
 
 urlpatterns = [
-    path('hello', views.HelloDjango.as_view(), name='hello'),
     path('reports/report/<int:report_id>', views.ReportDetail.as_view()),
     path('reports/farm/<int:farm_id>', views.ReportList.as_view()),
     path('farms/', views.FarmList.as_view()),

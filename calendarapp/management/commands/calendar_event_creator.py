@@ -20,9 +20,10 @@ def get_pth_percentile(array, percentile):
 def get_given_percentile(array, number):
     sorted_arr = sorted(array)
 
-    for i in range(len(sorted_arr)):
-        if sorted_arr[i] > number:
-            return i/len(sorted_arr)
+    if len(sorted_arr) != 0:
+        for i in range(len(sorted_arr)):
+            if sorted_arr[i] > number:
+                return i/len(sorted_arr)
     return 1
 
 
