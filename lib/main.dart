@@ -21,6 +21,7 @@ import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
+import 'package:astarte/dynamic_heatmap.dart';
 import 'heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
@@ -110,6 +111,7 @@ class Astarte extends StatelessWidget {
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
           '/heatmap': (context) => const Heatmap(),
+          '/dynamic_heatmap': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => const Calendar(),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
