@@ -1,4 +1,9 @@
-from django.shortcuts import render
+import base64
+import io
+
+from PIL import Image
+from django.forms import model_to_dict
+from firebase_admin import auth
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
@@ -7,13 +12,29 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from accounts.models import Profile
 from firebase_auth.authentication import FirebaseAuthentication
 
 
-class SampleView(APIView):
+class GetCurrentUser(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
-    def get(self, request):
-        print(request.user)
-        return Response({"message": "Hello, you are authenticated!"})
+    def post(self, request):
+        token = request.data['token']
+        if not token:
+            return None
+        decoded_token = auth.verify_id_token(token)
+        firebase_uid = decoded_token.get('uid')
+        user_profile = Profile.objects.select_related('user').get(user__username=firebase_uid)
+        profile_dict = model_to_dict(user_profile)
+
+        image = Image.open(user_profile.profile_photo)
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format='PNG')
+        img_byte_arr = img_byte_arr.getvalue()
+        encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+        profile_dict['profile_photo'] = encoded_image
+
+        # Get or create a Django user with the Firebase UID as the username
+        return Response(profile_dict)
