@@ -1,5 +1,9 @@
+import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/farm_detail.dart';
+import 'package:astarte/new_post.dart';
+import 'package:astarte/posts.dart';
+import 'package:astarte/theme/astarte_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logging/logging.dart';
@@ -18,8 +22,9 @@ import 'package:astarte/sign_up.dart';
 import 'package:astarte/farm_data_form.dart';
 import 'package:astarte/calendar.dart';
 import 'package:astarte/pests_and_diseases.dart';
-import 'heatmap.dart';
-import 'network_manager/services/farm_data_service.dart';
+import 'package:astarte/dynamic_heatmap.dart';
+import 'package:astarte/utils/parameters.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +32,19 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  void sendTokenToServer(String? token) async {
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('${GENERAL_URL}app/send_token'));
+    final tokens = <String, String>{'token': token as String};
+    request.fields.addEntries(tokens.entries);
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print('Token sent successfully!');
+    } else {
+      print('Failed to send token!');
+    }
+  }
 
   // get user permission for sending notifications on iOS
   NotificationSettings settings = await messaging.requestPermission(
@@ -38,8 +56,18 @@ void main() async {
     provisional: false,
     sound: true,
   );
+  messaging.getToken().then((token) {
+    print('Token: $token');
+    sendTokenToServer(token); // Send the token to your Django backend
+  });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print('notification: ${message.notification}');
+    }
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {
       print('notification: ${message.notification}');
     }
@@ -55,19 +83,25 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(providers: [
-      Provider(
-        create: (_) => SensorDataService.create(),
-        dispose: (_, SensorDataService service) => service.client.dispose(),
-      ),
-      Provider(
-        create: (_) => FarmDataService.create(),
-        dispose: (_, FarmDataService service) => service.client.dispose(),
-      ),
-    ],
+    return MultiProvider(
+      providers: [
+        Provider(
+          create: (_) => SensorDataService.create(),
+          dispose: (_, SensorDataService service) => service.client.dispose(),
+        ),
+        Provider(
+          create: (_) => PostsService.create(),
+          dispose: (_, PostsService service) => service.client.dispose(),
+        ),
+        Provider(
+          create: (_) => FarmDataService.create(),
+          dispose: (_, FarmDataService service) => service.client.dispose(),
+        ),
+      ],
       child: MaterialApp(
         title: 'ASTARTE',
-        initialRoute: '/',
+        theme: AstarteTheme.lightTheme,
+        initialRoute: '/sign_in',
         routes: {
           // When navigating to the "/" route, build the FirstScreen widget.
           '/': (context) => const HomePage(),
@@ -81,10 +115,12 @@ class Astarte extends StatelessWidget {
           '/farms': (context) => const Farms(),
           '/farm_detail': (context) => const FarmDetail(),
           '/farm_data_form': (context) => const FarmData(),
-          '/heatmap': (context) => const Heatmap(),
+          '/dynamic_heatmap': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
-          '/calendar': (context) => Calendar(),
-          '/pests-and-diseases': (context) => PestsAndDiseases(),
+          '/calendar': (context) => const Calendar(),
+          '/pests-and-diseases': (context) => const PestsAndDiseases(),
+          '/posts': (context) => const Posts(),
+          '/create-post': (context) => const NewPost(),
         },
       ),
     );

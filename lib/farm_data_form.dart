@@ -1,3 +1,4 @@
+import 'package:astarte/theme/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
@@ -16,15 +17,14 @@ class FarmData extends StatelessWidget {
     final formData = ModalRoute.of(context)?.settings.arguments as FormData?;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Farm Data'),
-        backgroundColor: const Color.fromRGBO(211, 47, 47, 1),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-      ),
+          title: const Text('Farm Data'),
+          backgroundColor: CustomColors.astarteRed,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
       body: FarmDataForm(formData: formData),
       drawer: NavBar(context),
     );
@@ -42,24 +42,31 @@ class FarmDataForm extends StatefulWidget {
 
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _dateController = TextEditingController(text: _date);
+  late final TextEditingController _dateController =
+      TextEditingController(text: _date);
 
   late String _farmName;
   late String _date;
+  late String _parcelNo;
+  late String _temperature;
   late String _moisture;
   late String _phosphorus;
   late String _potassium;
   late String _nitrogen;
+  late String _ph;
 
   @override
   void initState() {
     super.initState();
     _farmName = widget.formData?.farmName ?? '';
     _date = widget.formData?.date ?? '';
+    _parcelNo = widget.formData?.parcelNo.toString() ?? '';
+    _temperature = widget.formData?.temperature.toString() ?? '';
     _moisture = widget.formData?.moisture.toString() ?? '';
     _phosphorus = widget.formData?.phosphorus.toString() ?? '';
     _potassium = widget.formData?.potassium.toString() ?? '';
     _nitrogen = widget.formData?.nitrogen.toString() ?? '';
+    _ph = widget.formData?.ph.toString() ?? '';
   }
 
   Future<void> _selectDate() async {
@@ -72,9 +79,9 @@ class _FarmDataFormState extends State<FarmDataForm> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color.fromRGBO(211, 47, 47, 1),
+              primary: CustomColors.astarteRed,
               onPrimary: Colors.white,
-              surface:Color.fromRGBO(211, 47, 47, 1),
+              surface: CustomColors.astarteRed,
               onSurface: Colors.black,
             ),
             dialogBackgroundColor: Colors.white,
@@ -183,6 +190,42 @@ class _FarmDataFormState extends State<FarmDataForm> {
                 ),
                 TextFormField(
                   enabled: widget.formData == null,
+                  initialValue: _parcelNo,
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _parcelNo = value;
+                  },
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                    labelText: 'parcelNo',
+                  ),
+                ),
+                TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _temperature,
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _temperature = value;
+                  },
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                    labelText: 'Temperature',
+                  ),
+                ),
+                TextFormField(
+                  enabled: widget.formData == null,
                   initialValue: _moisture,
                   validator: (value) {
                     return _validateNumericalField(value);
@@ -253,63 +296,88 @@ class _FarmDataFormState extends State<FarmDataForm> {
                     labelText: 'Nitrogen',
                   ),
                 ),
+                TextFormField(
+                  enabled: widget.formData == null,
+                  initialValue: _ph,
+                  validator: (value) {
+                    return _validateNumericalField(value);
+                  },
+                  onChanged: (value) {
+                    _ph = value;
+                  },
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                    labelText: 'PH',
+                  ),
+                ),
                 Visibility(
                   visible: widget.formData == null,
                   child: Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              side: const BorderSide(color: Color.fromRGBO(211, 47, 47, 1))
-                          )
+                    padding: const EdgeInsets.all(30.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    side: const BorderSide(
+                                        color:
+                                            Color.fromRGBO(211, 47, 47, 1)))),
+                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                            const EdgeInsets.all(12.0)),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color.fromRGBO(211, 47, 47, 1)),
                       ),
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          const EdgeInsets.all(12.0)
-                      ),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(211, 47, 47, 1)),
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() != true) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fill in all fields'),
+                            ),
+                          );
+                        }
+                        Position _position = await _getUserLocation();
+                        final response = await Provider.of<SensorDataService>(
+                                context,
+                                listen: false)
+                            .saveSensorData(SensorData((b) => b
+                              ..farmName = _farmName
+                              ..formDate = _date
+                              ..parcelNo = double.parse(_parcelNo)
+                              ..temperature = double.parse(_temperature)
+                              ..moisture = double.parse(_moisture)
+                              ..phosphorus = double.parse(_phosphorus)
+                              ..potassium = double.parse(_potassium)
+                              ..nitrogen = double.parse(_nitrogen)
+                              ..ph = double.parse(_ph)
+                              ..latitude = _position.latitude
+                              ..longitude = _position.longitude));
+                        if (response.isSuccessful) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Data Saved Successfully'),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Your data was not saved. Please try again.'),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('Submit Data',
+                          style: TextStyle(fontSize: 16)),
                     ),
-                    onPressed: () async {
-                      if (_formKey.currentState?.validate() != true) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please fill in all fields'),
-                          ),
-                        );
-                      }
-                      Position _position = await _getUserLocation();
-                      final response = await Provider.of<SensorDataService>(context, listen: false).saveSensorData(
-                          SensorData(
-                                  (b) => b
-                                    ..farmName = _farmName
-                                    ..formDate = _date
-                                    ..moisture = double.parse(_moisture)
-                                    ..phosphorus = double.parse(_phosphorus)
-                                    ..potassium = double.parse(_potassium)
-                                    ..nitrogen = double.parse(_nitrogen)
-                                    ..latitude = _position.latitude
-                                    ..longitude = _position.longitude
-                          ));
-                      if (response.isSuccessful) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Data Saved Successfully'),
-                          ),
-                        );
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Your data was not saved. Please try again.'),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('Submit Data', style: TextStyle(fontSize: 16)),
                   ),
-                ),
                 ),
               ],
             ),

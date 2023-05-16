@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:astarte/theme/colors.dart';
+import 'package:astarte/utils/auth_validator.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:astarte/validator.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignInForm extends StatefulWidget {
@@ -122,9 +124,11 @@ class _SignInFormState extends State<SignInForm> {
         .user;
 
     if (user != null) {
-      setState(() {
+      setState(() async {
         _success = true;
         _userEmail = user.email!;
+        parameters.TOKEN = await user.getIdToken();
+        print('auth token: ${parameters.TOKEN}');
         Navigator.popUntil(context, ModalRoute.withName('/'));
       });
     } else {
@@ -184,7 +188,7 @@ class MyApp extends StatelessWidget {
                         child: Text(
                           'Hi there! Nice to see you again.',
                           style:
-                          TextStyle(color: Colors.grey[500], fontSize: 15),
+                              TextStyle(color: Colors.grey[500], fontSize: 15),
                         ),
                       )
                     ],
@@ -282,7 +286,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.only(top: 60),
+              padding: const EdgeInsets.only(top: 35),
               width: 300,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -316,18 +320,20 @@ class MyApp extends StatelessWidget {
     );
 
     return Scaffold(
-      body: ListView(
+        body: Container(
+      color: const Color.fromRGBO(237, 230, 231, 1),
+      child: ListView(
         children: [
           Image.asset(
-            'assets/images/astarte.jpg',
-            width: 100,
-            height: 100,
+            'assets/icons/launcher_icon.png',
+            width: 200,
+            height: 200,
             fit: BoxFit.contain,
           ),
           titleSection,
           credentialsSection,
         ],
       ),
-    );
+    ));
   }
 }

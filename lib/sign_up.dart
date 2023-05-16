@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:astarte/theme/colors.dart';
+import 'package:astarte/utils/auth_validator.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:astarte/validator.dart';
+import 'package:flutter/material.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -42,7 +44,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
-                        color: Colors.red,
+                        color: CustomColors.astarteRed,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Email',
@@ -61,7 +63,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
                     labelStyle: const TextStyle(
-                        color: Colors.red,
+                        color: CustomColors.astarteRed,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Password',
@@ -78,7 +80,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             Container(
               padding: const EdgeInsets.only(top: 30),
-              child: TextButton(
+              child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _register();
@@ -86,14 +88,6 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
                 child: Container(
                   alignment: Alignment.center,
-                  height: 50,
-                  width: 300,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                  ),
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(color: Colors.white, fontSize: 25),
@@ -103,9 +97,10 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             Container(
               alignment: Alignment.center,
-              child: TextButton(onPressed: (){
-                Navigator.pushNamed(context, '/sign_in');
-              },
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sign_in');
+                },
                 child: const Text("Already have an account?"),
               ),
             )
@@ -129,13 +124,13 @@ class _SignUpFormState extends State<SignUpForm> {
         .user;
 
     if (user != null) {
-      setState(() {
+      setState(() async {
         _success = true;
         _userEmail = user.email!;
-
+        parameters.TOKEN = await user.getIdToken();
+        print('auth token: ${parameters.TOKEN}');
       });
       Navigator.popUntil(context, ModalRoute.withName('/'));
-
     } else {
       setState(() {
         _success = false;
@@ -160,11 +155,11 @@ class SignUp extends StatelessWidget {
                 /*2*/
                 Container(
                   padding: const EdgeInsets.only(top: 8, bottom: 30),
-                  child: Text(
+                  child: const Text(
                     'ASTARTE',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.red[700],
+                        color: CustomColors.astarteRed,
                         fontSize: 35),
                   ),
                 ),

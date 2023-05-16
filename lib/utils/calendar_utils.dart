@@ -4,6 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:astarte/utils/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:table_calendar/table_calendar.dart';
@@ -35,10 +36,28 @@ class Event {
       required this.date,
       this.importance});
 
+  Map<String, dynamic> toDict()
+  {
+    return{
+      'title': title,
+      'type': eventType,
+      'date': date.toIso8601String(),
+      'importance': importance
+    };
+  }
+
   get() => ListTile(
         title: Text(title),
         trailing: cEventImages[eventType],
       );
+
+  getImage() => cEventImages[eventType];
+
+  Event.fromMap(Map<String, dynamic> map)
+      : title = map['title'],
+        eventType = map['type'],
+        date = DateTime.parse(map['date']),
+        importance = map['importance'];
 }
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
@@ -100,7 +119,7 @@ Future<void> getCalendarData() async {
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'POST', Uri.parse('pythoneverywhere.com/astarte/app/calendar_data'));
+        'POST', Uri.parse('${GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
 
@@ -117,7 +136,7 @@ Future<void> getCalendarData() async {
             eventType: event['event_type'] as int,
             date: date,
             importance: event['importance'] as int);
-        source[date] != null?source[date]?.add(temp): source[date] = [temp];
+        source[date] != null ? source[date]?.add(temp) : source[date] = [temp];
       }
       kEvents.addAll(source);
     } else {
