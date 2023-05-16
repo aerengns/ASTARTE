@@ -4,18 +4,20 @@ import json
 
 from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from accounts.models import Profile
 from calendarapp.models import Event
+from firebase_auth.authentication import FirebaseAuthentication
 from workers.models import Worker
 from PIL import Image
 
 
 class WorkerDataAPI(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         print('Request recevied')
@@ -25,7 +27,7 @@ class WorkerDataAPI(APIView):
     def post(self, request, *args, **kwargs):
         print('Request POST received')
 
-        workers = Worker.objects.all()
+        workers = Worker.objects.filter(profile__user_type=Profile.UserTypes.WORKER)
         data = []
         for worker in workers:
             try:

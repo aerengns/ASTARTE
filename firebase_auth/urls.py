@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SampleView
+from .views import GetCurrentUser
 
 urlpatterns = [
-    path('sample/', SampleView.as_view(), name='sample_view'),
+    path('get_user', GetCurrentUser.as_view(), name='get-current-user'),
 ]
