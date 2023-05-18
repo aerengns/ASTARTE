@@ -1,3 +1,4 @@
+import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
@@ -83,7 +84,7 @@ class _SignUpFormState extends State<SignUpForm> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _register();
+                    _register(context);
                   }
                 },
                 child: Container(
@@ -115,23 +116,38 @@ class _SignUpFormState extends State<SignUpForm> {
     super.dispose();
   }
 
-  void _register() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    final User? user = (await auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ))
-        .user;
+  void _register(context) async {
+    User? user;
+    try {
+      FirebaseAuth auth = FirebaseAuth.instance;
+      user = (await auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ))
+          .user;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+      ));
+    }
 
     if (user != null) {
       final token = await user.getIdToken();
       final currentUser = await parameters.requestCurrentUser(token);
       setState(() async {
         _success = true;
-        _userEmail = user.email!;
+        _userEmail = user?.email ?? '';
         parameters.TOKEN = token;
         parameters.setCurrentUser(currentUser);
         Navigator.popUntil(context, ModalRoute.withName('/'));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const Profile(),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please create your profile'),
+        ));
       });
     } else {
       setState(() {

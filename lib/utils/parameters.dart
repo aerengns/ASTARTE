@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
+String GENERAL_URL = 'http://127.0.0.1:8000/';
 String TOKEN = '';
 Map<String, dynamic> currentUser = {};
+late Uint8List defaultImageBytes;
 
 Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   try {
@@ -29,10 +31,12 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
 
       // Decode the base64 encoded image data
       final Uint8List decodedImage = base64.decode(encodedImage);
-      data['profile_photo'] = Image.memory(
-        decodedImage,
-        fit: BoxFit.cover,
-      );
+      data['profile_photo'] = decodedImage;
+
+      // Retrieve the bytes from the image asset
+      ByteData byteData = await rootBundle.load('assets/images/worker_default.png');
+      defaultImageBytes = byteData.buffer.asUint8List();
+
       return data;
     } else {
       print(response.reasonPhrase);
@@ -64,14 +68,42 @@ String getCurrentUserEmail() {
   return '';
 }
 
+String getCurrentUserAbout() {
+  if (currentUser.isNotEmpty) {
+    return currentUser['about'];
+  }
+  return '';
+}
+
+String getCurrentUserType() {
+  if (currentUser.isNotEmpty) {
+    final userTypes = {
+      'W': 'Worker',
+      'F': 'Farm Owner',
+      'A': 'Agronomist',
+    };
+    return userTypes[currentUser['user_type']] ?? '';
+  }
+  return '';
+}
+
 Image getCurrentUserImage() {
+  if (currentUser.isNotEmpty) {
+    return Image.memory(
+      currentUser['profile_photo'],
+      fit: BoxFit.cover,
+    );
+  }
+  return Image.asset(
+    'assets/images/worker_default.png',
+    fit: BoxFit.cover,
+  );
+}
+
+Uint8List getCurrentUserImageBytes() {
   if (currentUser.isNotEmpty) {
     return currentUser['profile_photo'];
   }
-  return Image.network(
-    'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
-    fit: BoxFit.cover,
-    width: 90,
-    height: 90,
-  );
+  return defaultImageBytes;
+
 }
