@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-String GENERAL_URL = 'http://127.0.0.1:8000/';
+String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
 String TOKEN = '';
-Map<String, dynamic> currentUser = {};
 late Uint8List defaultImageBytes;
 
 Future<Map<String, dynamic>> requestCurrentUser(String token) async {
@@ -48,62 +47,54 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   }
 }
 
-Map<String, dynamic> getCurrentUser() => currentUser;
+class CurrentUser extends ChangeNotifier{
+  String _name = '';
+  String _surname = '';
+  String _email = '';
+  String _about = '';
+  String _userType = 'W';
+  Uint8List _profilePhoto = Uint8List(0);
 
-void setCurrentUser(Map<String, dynamic> newUser) {
-  currentUser = newUser;
-}
-
-String getCurrentUserName() {
-  if (currentUser.isNotEmpty) {
-    return '${currentUser['name']} ${currentUser['surname']}';
-  }
-  return '';
-}
-
-String getCurrentUserEmail() {
-  if (currentUser.isNotEmpty) {
-    return currentUser['email'];
-  }
-  return '';
-}
-
-String getCurrentUserAbout() {
-  if (currentUser.isNotEmpty) {
-    return currentUser['about'];
-  }
-  return '';
-}
-
-String getCurrentUserType() {
-  if (currentUser.isNotEmpty) {
+  String get username => '$_name $_surname';
+  String get name => _name;
+  String get surname => _surname;
+  String get email => _email;
+  String get about => _about;
+  Uint8List get profilePhotoBytes => _profilePhoto;
+  String get userType {
     final userTypes = {
       'W': 'Worker',
       'F': 'Farm Owner',
       'A': 'Agronomist',
     };
-    return userTypes[currentUser['user_type']] ?? '';
+    return userTypes[_userType] ?? 'Worker';
   }
-  return '';
-}
-
-Image getCurrentUserImage() {
-  if (currentUser.isNotEmpty) {
+  Image get profilePhoto {
     return Image.memory(
-      currentUser['profile_photo'],
+      _profilePhoto,
       fit: BoxFit.cover,
     );
   }
-  return Image.asset(
-    'assets/images/worker_default.png',
-    fit: BoxFit.cover,
-  );
-}
 
-Uint8List getCurrentUserImageBytes() {
-  if (currentUser.isNotEmpty) {
-    return currentUser['profile_photo'];
+  void setUser(Map<String, dynamic> newUser)
+  {
+    _name = newUser['name'];
+    _surname = newUser['surname'];
+    _email = newUser['email'];
+    _about = newUser['about'];
+    _userType = newUser['user_type'];
+    _profilePhoto = newUser['profile_photo'];
+    notifyListeners();
   }
-  return defaultImageBytes;
 
+  void resetUser()
+  {
+    _name = '';
+    _surname = '';
+    _email = '';
+    _about = '';
+    _userType = 'W';
+    _profilePhoto = defaultImageBytes;
+    notifyListeners();
+  }
 }

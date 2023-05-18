@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
@@ -9,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar(BuildContext context, {Key? key}) : super(key: key);
@@ -20,6 +20,7 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   @override
   Widget build(context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
       child: ListView(
@@ -27,10 +28,10 @@ class _NavBarState extends State<NavBar> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(parameters.getCurrentUserName()),
-            accountEmail: Text(parameters.getCurrentUserEmail()),
+            accountName: Text(currentUser.username),
+            accountEmail: Text(currentUser.email),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: parameters.getCurrentUserImage().image,
+              backgroundImage: currentUser.profilePhoto.image,
             ),
             decoration: const BoxDecoration(
               color: Colors.blue,
@@ -147,7 +148,7 @@ class _NavBarState extends State<NavBar> {
               await FirebaseAuth.instance.signOut();
               setState(() {
                 parameters.TOKEN = '';
-                parameters.setCurrentUser({});
+                currentUser.resetUser();
               });
               if (!mounted) return;
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -223,12 +224,13 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(parameters.getCurrentUserName()),
+            Text(currentUser.username),
             IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
@@ -255,12 +257,12 @@ class _ProfileState extends State<Profile> {
               child: CircleAvatar(
                 minRadius: 75,
                 maxRadius: 100,
-                backgroundImage: parameters.getCurrentUserImage().image,
+                backgroundImage: currentUser.profilePhoto.image,
               ),
             ),
             const SizedBox(height: 16.0),
             Text(
-              parameters.getCurrentUserName(),
+              currentUser.username,
               style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
@@ -268,7 +270,7 @@ class _ProfileState extends State<Profile> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              parameters.getCurrentUserType(),
+              currentUser.userType,
               style: const TextStyle(
                 fontSize: 16.0,
                 color: Colors.grey,
@@ -284,7 +286,7 @@ class _ProfileState extends State<Profile> {
             ),
             const SizedBox(height: 8.0),
             Text(
-              parameters.getCurrentUserAbout(),
+              currentUser.about,
               style: const TextStyle(
                 fontSize: 16.0,
               ),
@@ -367,23 +369,27 @@ class _EditProfileState extends State<EditProfile> {
 
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
-  final _aboutController = TextEditingController(text: parameters.getCurrentUserAbout());
-  final _emailController = TextEditingController(text: parameters.getCurrentUserEmail());
+  final _aboutController = TextEditingController();
+  final _emailController = TextEditingController();
 
-  Uint8List _image = parameters.getCurrentUserImageBytes();
+  late Uint8List _image;
 
-  @override
-  void initState() {
-    super.initState();
-    String username = parameters.getCurrentUserName();
-    if (username.split(' ').length != 1) {
-      _nameController.text = username.split(' ')[0];
-      _surnameController.text = username.split(' ')[1];
-    }
-  }
+  bool init = true;
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
+    _nameController.text = currentUser.name;
+    _surnameController.text = currentUser.surname;
+    _emailController.text = currentUser.email;
+    _aboutController.text = currentUser.about;
+    if(init) {
+      setState(() {
+        _image = currentUser.profilePhotoBytes;
+      });
+      init=false;
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CustomColors.astarteRed,
@@ -406,7 +412,10 @@ class _EditProfileState extends State<EditProfile> {
                     CircleAvatar(
                       minRadius: 75,
                       maxRadius: 125,
-                      backgroundImage: Image.memory(_image, fit: BoxFit.cover,).image,
+                      backgroundImage: Image.memory(
+                        _image,
+                        fit: BoxFit.cover,
+                      ).image,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -420,7 +429,7 @@ class _EditProfileState extends State<EditProfile> {
                           child: const Text('Select Photo From Gallery'),
                         ),
                         ElevatedButton(
-                          onPressed: (){
+                          onPressed: () {
                             setState(() {
                               _image = parameters.defaultImageBytes;
                             });
@@ -471,13 +480,13 @@ class _EditProfileState extends State<EditProfile> {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final String response = await _saveProfile();
+                    final String response = await _saveProfile(currentUser);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(response),
                       ),
                     );
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
+                    Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -513,7 +522,7 @@ class _EditProfileState extends State<EditProfile> {
     setState(() => _image = imageTemporary.readAsBytesSync());
   }
 
-  Future<String> _saveProfile() async {
+  Future<String> _saveProfile(currentUser) async {
     // Retrieve form field values
     final String name = _nameController.text;
     final String surname = _surnameController.text;
@@ -538,9 +547,10 @@ class _EditProfileState extends State<EditProfile> {
       http.StreamedResponse response = await request.send();
       if (response.statusCode == 200) {
         String newMessage = await response.stream.bytesToString();
-        //TODO: parameters.setCurrentUser(parameters.getCurrentUser());
+        final newCurrentUser =
+            await parameters.requestCurrentUser(parameters.TOKEN);
+        currentUser.setUser(newCurrentUser);
         return newMessage;
-
       } else {
         return response.reasonPhrase.toString();
       }

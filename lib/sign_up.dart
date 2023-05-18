@@ -4,6 +4,7 @@ import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -28,6 +29,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
     return Form(
         key: _formKey,
         child: Column(
@@ -84,7 +86,7 @@ class _SignUpFormState extends State<SignUpForm> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _register(context);
+                    _register(context, currentUser);
                   }
                 },
                 child: Container(
@@ -116,7 +118,7 @@ class _SignUpFormState extends State<SignUpForm> {
     super.dispose();
   }
 
-  void _register(context) async {
+  void _register(context, currentUser) async {
     User? user;
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
@@ -133,12 +135,12 @@ class _SignUpFormState extends State<SignUpForm> {
 
     if (user != null) {
       final token = await user.getIdToken();
-      final currentUser = await parameters.requestCurrentUser(token);
+      final newCurrentUser = await parameters.requestCurrentUser(token);
       setState(() async {
         _success = true;
         _userEmail = user?.email ?? '';
         parameters.TOKEN = token;
-        parameters.setCurrentUser(currentUser);
+        currentUser.setUser(newCurrentUser);
         Navigator.popUntil(context, ModalRoute.withName('/'));
         Navigator.of(context).push(
           MaterialPageRoute(
