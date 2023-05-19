@@ -7,4 +7,5 @@ class CustomColors {
   static const Color astarteGrey = Color.fromRGBO(0, 7, 10, 0.2);
   static const Color astarteDarkGrey = Color.fromARGB(255, 34, 41, 42);
   static const Color astarteLightBlue = Color.fromARGB(255, 133, 208, 222);
+  static const Color astarteBlack = Color.fromRGBO(0, 0, 0, 1);
 }

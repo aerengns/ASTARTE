@@ -88,7 +88,6 @@ Future<List<Worker>> getWorkerData() async {
           email: worker['email'],
           about: worker['about'],
           event: event,
-          //TODO: profilePhoto: Image.memory(decodedImage),
           profilePhoto: Image.memory(
             decodedImage,
             fit: BoxFit.cover,

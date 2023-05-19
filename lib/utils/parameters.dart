@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
 String TOKEN = '';
-Map<String, dynamic> currentUser = {};
+late Uint8List defaultImageBytes;
 
 Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   try {
@@ -29,10 +30,12 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
 
       // Decode the base64 encoded image data
       final Uint8List decodedImage = base64.decode(encodedImage);
-      data['profile_photo'] = Image.memory(
-        decodedImage,
-        fit: BoxFit.cover,
-      );
+      data['profile_photo'] = decodedImage;
+
+      // Retrieve the bytes from the image asset
+      ByteData byteData = await rootBundle.load('assets/images/worker_default.png');
+      defaultImageBytes = byteData.buffer.asUint8List();
+
       return data;
     } else {
       print(response.reasonPhrase);
@@ -44,34 +47,54 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   }
 }
 
-Map<String, dynamic> getCurrentUser() => currentUser;
+class CurrentUser extends ChangeNotifier{
+  String _name = '';
+  String _surname = '';
+  String _email = '';
+  String _about = '';
+  String _userType = 'W';
+  Uint8List _profilePhoto = Uint8List(0);
 
-void setCurrentUser(Map<String, dynamic> newUser) {
-  currentUser = newUser;
-}
-
-String getCurrentUserName() {
-  if (currentUser.isNotEmpty) {
-    return '${currentUser['name']} ${currentUser['surname']}';
+  String get username => '$_name $_surname';
+  String get name => _name;
+  String get surname => _surname;
+  String get email => _email;
+  String get about => _about;
+  Uint8List get profilePhotoBytes => _profilePhoto;
+  String get userType {
+    final userTypes = {
+      'W': 'Worker',
+      'F': 'Farm Owner',
+      'A': 'Agronomist',
+    };
+    return userTypes[_userType] ?? 'Worker';
   }
-  return '';
-}
-
-String getCurrentUserEmail() {
-  if (currentUser.isNotEmpty) {
-    return currentUser['email'];
+  Image get profilePhoto {
+    return Image.memory(
+      _profilePhoto,
+      fit: BoxFit.cover,
+    );
   }
-  return '';
-}
 
-Image getCurrentUserImage() {
-  if (currentUser.isNotEmpty) {
-    return currentUser['profile_photo'];
+  void setUser(Map<String, dynamic> newUser)
+  {
+    _name = newUser['name'];
+    _surname = newUser['surname'];
+    _email = newUser['email'];
+    _about = newUser['about'];
+    _userType = newUser['user_type'];
+    _profilePhoto = newUser['profile_photo'];
+    notifyListeners();
   }
-  return Image.network(
-    'https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png',
-    fit: BoxFit.cover,
-    width: 90,
-    height: 90,
-  );
+
+  void resetUser()
+  {
+    _name = '';
+    _surname = '';
+    _email = '';
+    _about = '';
+    _userType = 'W';
+    _profilePhoto = defaultImageBytes;
+    notifyListeners();
+  }
 }

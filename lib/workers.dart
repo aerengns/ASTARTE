@@ -137,7 +137,7 @@ class WorkerCard extends StatelessWidget {
                 child: CircleAvatar(
                   minRadius: 29,
                   maxRadius: 33,
-                  child: ClipOval(child: worker.profilePhoto),
+                  backgroundImage: worker.profilePhoto?.image,
                 ),
               ),
               Text("${worker.name} ${worker.surname}"),
@@ -197,9 +197,7 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
               child: CircleAvatar(
                 minRadius: 45,
                 maxRadius: 75,
-                child: ClipOval(
-                  child: _worker.profilePhoto,
-                ),
+                backgroundImage: _worker.profilePhoto?.image,
               ),
             ),
             const SizedBox(height: 16.0),
