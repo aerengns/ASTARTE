@@ -2,7 +2,9 @@ import base64
 import io
 
 from PIL import Image
+from django.core.files.base import ContentFile
 from django.forms import model_to_dict
+from django.http import HttpResponseBadRequest, HttpResponse
 from firebase_admin import auth
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -38,3 +40,38 @@ class GetCurrentUser(APIView):
 
         # Get or create a Django user with the Firebase UID as the username
         return Response(profile_dict)
+
+
+class SaveProfile(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    @staticmethod
+    def save_base64_image(image_data, image_field):
+        # Decode the base64 string into binary data
+        decoded_image = base64.b64decode(image_data)
+
+        # Create a ContentFile object from the binary data
+        content_file = ContentFile(decoded_image)
+
+        # Assign the ContentFile to the ImageField
+        image_field.save('my_image.jpg', content_file)
+
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+        decoded_token = auth.verify_id_token(token)
+        firebase_uid = decoded_token.get('uid')
+        try:
+            user_profile = Profile.objects.select_related('user').get(user__username=firebase_uid)
+            user_profile.name = request.data.get('name')
+            user_profile.surname = request.data.get('surname')
+            user_profile.email = request.data.get('email')
+            user_profile.about = request.data.get('about')
+            image_data = request.data.get('profile_photo')
+            if image_data:
+                self.save_base64_image(image_data, user_profile.profile_photo)
+
+            user_profile.save()
+        except Profile.DoesNotExist:
+            return HttpResponseBadRequest("Failed!")
+        return HttpResponse("Success!")
