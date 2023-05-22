@@ -118,20 +118,14 @@ class _LogsState extends State<Logs> {
     final endDate = selectedEndDate != null
         ? DateFormat('yyyy-MM-dd').format(selectedEndDate!)
         : '';
-    final user = await FirebaseAuth.instance.currentUser!;
-    final idToken = await user.getIdToken();
-    print(idToken);
-    // your endpoint and request method
-
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('http://127.0.0.1:8000/reports/npk_report/'));
-    final Uri $url = Uri.parse(
-        '${GENERAL_URL}app/reports/get_logs/${selectedFarm}?start_date=$startDate&end_date=$endDate');
-    final response = await http.get($url);
-
-    if (response.statusCode == 200) {
+    final response =
+        await Provider.of<SensorDataService>(context, listen: false)
+            .getLogData(selectedFarm, startDate, endDate);
+    if (response.isSuccessful) {
+      String new_message = await response.bodyString;
       setState(() {
-        logs = json.decode(response.body);
+        logs = jsonDecode(new_message);
+        ;
         _isExpandedList = List<bool>.filled(logs.length, false);
       });
     } else {

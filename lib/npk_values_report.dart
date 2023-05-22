@@ -85,36 +85,6 @@ class _NPKReportsState extends State<NPKReport> {
     });
   }
 
-  /*void _addDropdown() {
-    setState(() {
-      _widgets.add(
-        Center(
-          child: DropdownButton<Farm>(
-            value: selectedFarm,
-            icon: const Icon(
-              Icons.arrow_drop_down_circle,
-              color: CustomColors.astarteRed,
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedFarm = value!;
-                getNData(selectedFarm.id)
-                    .whenComplete(() => _addNValueContainer());
-              });
-              print(selectedFarm.name);
-            },
-            items: farms.map((farm) {
-              return DropdownMenuItem<Farm>(
-                value: farm,
-                child: Text(farm.name),
-              );
-            }).toList(),
-          ),
-        ),
-      );
-    });
-  }*/
-
   void _addNValueContainer() {
     setState(() {
       // Remove the old report container if it exists

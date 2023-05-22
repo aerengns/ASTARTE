@@ -33,6 +33,10 @@ abstract class SensorDataService extends ChopperService {
   @Get(path: '/get_farms')
   Future<Response> getFarmList();
 
+  @Get(path: '/get_logs/{farm}')
+  Future<Response> getLogData(
+      @Path('farm') String selectedFarm, String startDate, String endDate);
+
   static SensorDataService create() {
     final client = ChopperClient(
         baseUrl: Uri.parse('${GENERAL_URL}app/'),
