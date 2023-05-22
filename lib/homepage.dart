@@ -35,9 +35,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 32.0),
               ElevatedButton(
-                onPressed: () {
-                  // Navigate to the farm management screen
-                },
+                onPressed: () => Navigator.pushNamed(context, '/farms'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
                   padding: const EdgeInsets.symmetric(
@@ -51,9 +49,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
-                  // Navigate to the task management screen
-                },
+                onPressed:  () => Navigator.pushNamed(context, '/workers'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   padding: const EdgeInsets.symmetric(
@@ -63,13 +59,11 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text('Manage Tasks'),
+                child: const Text('Manage Workers'),
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
-                  // Navigate to the communication screen
-                },
+                onPressed: () => Navigator.pushNamed(context, '/posts'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.orange,
                   padding: const EdgeInsets.symmetric(
