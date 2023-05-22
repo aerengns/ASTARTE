@@ -117,8 +117,8 @@ class SendFarmList(BaseReportAPI):
 
 
 class LogSenderAPI(APIView):
-  permission_classes = [AllowAny]
-  authentication_classes = []
+  permission_classes = [IsAuthenticated]
+  authentication_classes = [FirebaseAuthentication]
 
   def get(self, request, *args, **kwargs):
     farm_id = int(kwargs.get('farm_id'))
@@ -127,7 +127,7 @@ class LogSenderAPI(APIView):
     except Farm.DoesNotExist:
       return Response(status=404)
 
-    user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2' # Assuming you want to use the authenticated user
+    user = request.user
     report_values = FarmParcelReportLog.objects.filter(
       farm__owner__username=user,
       farm_id=farm_id,
