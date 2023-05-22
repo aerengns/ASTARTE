@@ -18,33 +18,38 @@ class BaseReportAPI(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
-
-    def get_weekly_values(self, key, user, farm_id):
+    def get_weekly_values(self, key, user, farm_id, start_date, end_date):
         current_date = date.today()
-        seven_days_before = current_date - timedelta(days=7)
+        if not start_date:
+            start_date=current_date
+        if not end_date:
+            end_date = current_date - timedelta(days=7)
         report_values = FarmParcelReportLog.objects.filter(
-            date_collected__gte=seven_days_before,
+            date_collected__range=(start_date, end_date),
             farm__owner__username=user,
             farm_id=farm_id,
         ).order_by('date_collected')
         days = []
         for data in report_values:
             day = data.date_collected
-            days.append(day.strftime("%A"))
+            days.append(day.strftime('%Y-%m-%d'))
         return report_values.values_list(key, flat=True), days
 
-    def get_weekly_values_for_multiple_keys(self, keys, user, farm_id):
+    def get_weekly_values_for_multiple_keys(self, keys, user, farm_id, start_date, end_date):
         current_date = date.today()
-        seven_days_before = current_date - timedelta(days=7)
+        if not start_date:
+            start_date=current_date
+        if not end_date:
+            end_date = current_date - timedelta(days=7)
         report_values = FarmParcelReportLog.objects.filter(
-            date_collected__gte=seven_days_before,
+            date_collected__range=(start_date, end_date),
             farm__owner__username=user,
             farm_id=farm_id
         ).order_by('date_collected')
         days = []
         for data in report_values:
             day = data.date_collected
-            days.append(day.strftime("%A"))
+            days.append(day.strftime('%Y-%m-%d'))
         return report_values.values_list(keys[0], flat=True), report_values.values_list(keys[1], flat=True),\
             report_values.values_list(keys[2], flat=True), days
 
@@ -57,8 +62,11 @@ class HumidityReportAPI(BaseReportAPI):
             farm = Farm.objects.get(id=farm_id)
         except:
             Response(status=404)
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
         user = request.user
-        humidity_levels, days = self.get_weekly_values('moisture', user, farm_id)
+        humidity_levels, days = self.get_weekly_values('moisture', user, farm_id, start_date, end_date)
         return Response(data={'days': days, 'humidity_levels': humidity_levels})
 
 
@@ -70,11 +78,14 @@ class NPKReportAPI(BaseReportAPI):
             farm = Farm.objects.get(id=farm_id)
         except:
             Response(status=404)
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
         user = request.user
         n_values, p_values, k_values, days = self.get_weekly_values_for_multiple_keys(['nitrogen',
                                                                                        'phosphorus',
                                                                                        'potassium'],
-                                                                                      user, farm_id)
+                                                                                      user, farm_id, start_date, end_date)
 
         return Response(data={'days': days, 'n_values': n_values, 'p_values': p_values, 'k_values': k_values})
 
@@ -87,8 +98,11 @@ class TemperatureReportAPI(BaseReportAPI):
             farm = Farm.objects.get(id=farm_id)
         except:
             Response(status=404)
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
         user = request.user
-        temperatures, days = self.get_weekly_values('temperature', user, farm_id)
+        temperatures, days = self.get_weekly_values('temperature', user, farm_id, start_date, end_date)
         return Response(data={'days': days, 'temperatures': temperatures})
 
 
@@ -103,25 +117,44 @@ class SendFarmList(BaseReportAPI):
 
 
 class LogSenderAPI(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = []
+  permission_classes = [AllowAny]
+  authentication_classes = []
 
-    def get(self, request, *args, **kwargs):
-        farm_id = int(kwargs.get('farm_id'))
-        try:
-            farm = Farm.objects.get(id=farm_id)
-        except:
-            Response(status=404)
-        user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2'
-        report_values = FarmParcelReportLog.objects.filter(
-            farm__owner__username=user,
-            farm_id=farm_id,
-        ).order_by('-date_collected')
-        logs = report_values.values('id', 'farm__name', 'parcel', 'moisture', 'phosphorus', 'potassium', 'nitrogen', 'temperature',
-                                         'ph', 'latitude', 'longitude', 'date_collected')
+  def get(self, request, *args, **kwargs):
+    farm_id = int(kwargs.get('farm_id'))
+    try:
+      farm = Farm.objects.get(id=farm_id)
+    except Farm.DoesNotExist:
+      return Response(status=404)
 
+    user = 'CWEaTZSAWuZ0MBuIRV99gkVwITN2' # Assuming you want to use the authenticated user
+    report_values = FarmParcelReportLog.objects.filter(
+      farm__owner__username=user,
+      farm_id=farm_id,
+    ).order_by('-date_collected')
 
-        return Response(data=logs)
+    if 'start_date' in request.GET and 'end_date' in request.GET:
+      start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+      end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
+      report_values = report_values.filter(date_collected__range=(start_date, end_date))
+
+    logs = report_values.values(
+      'id',
+      'farm__name',
+      'parcel',
+      'moisture',
+      'phosphorus',
+      'potassium',
+      'nitrogen',
+      'temperature',
+      'ph',
+      'latitude',
+      'longitude',
+      'date_collected'
+    )
+
+    return Response(data=logs)
+
 
 
 class SaveReportData(APIView):
@@ -153,6 +186,5 @@ class SaveReportData(APIView):
             message = "new report is created"
         else:
             message = f"farm {farm.name} with parcel_no:{parcel.no} is changed"
-        print(message)
         return Response(message)
 
