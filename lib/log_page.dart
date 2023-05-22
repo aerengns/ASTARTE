@@ -2,10 +2,14 @@ import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:astarte/utils/reports_util.dart';
+import 'package:astarte/utils/date_filter.dart';
+import 'package:astarte/utils/farm_selection_dropdown.dart';
+import 'package:chopper/chopper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:async/async.dart';
+import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -25,22 +29,17 @@ class _LogsState extends State<Logs> {
   List<bool> _isExpandedList = [];
   List<Farm> farms = [];
   String selectedFarm = "";
+  DateTime selectedStartDate = DateTime.now().subtract(Duration(days: 1));
+  DateTime selectedEndDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    addRangeFilter();
     fillFarms().whenComplete(() => _addDropdown());
   }
 
-  final List<Widget> _widgets = [
-    Image.asset(
-      'assets/images/astarte.jpg',
-      width: 100,
-      height: 100,
-      fit: BoxFit.contain,
-    ),
-    const Text("Select a Farm"),
-  ];
+  final List<Widget> _widgets = [];
 
   @override
   Widget build(BuildContext context) {
@@ -55,31 +54,36 @@ class _LogsState extends State<Logs> {
     );
   }
 
+  void addRangeFilter() {
+    setState(() {
+      _widgets.add(DateFilter(
+        onStartDateSelected: (date) {
+          setState(() {
+            selectedStartDate = date;
+            getLogData(selectedFarm).whenComplete(() => _addLogContainer());
+          });
+        },
+        onEndDateSelected: (date) {
+          setState(() {
+            selectedEndDate = date;
+            getLogData(selectedFarm).whenComplete(() => _addLogContainer());
+          });
+        },
+      ));
+    });
+  }
+
   void _addDropdown() {
     setState(() {
-      _widgets.add(
-        Center(
-          child: DropdownButton<String>(
-            value: selectedFarm,
-            icon: const Icon(
-              Icons.arrow_drop_down_circle,
-              color: CustomColors.astarteRed,
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedFarm = value!;
-              });
-              getLogData(selectedFarm).whenComplete(() => _addLogContainer());
-            },
-            items: farms.map((farm) {
-              return DropdownMenuItem<String>(
-                value: farm.id,
-                child: Text(farm.name),
-              );
-            }).toList(),
-          ),
-        ),
-      );
+      _widgets.add(DropDown(
+        farms: farms,
+        onFarmSelected: (farm) {
+          setState(() {
+            selectedFarm = farm;
+            getLogData(farm).whenComplete(() => _addLogContainer());
+          });
+        },
+      ));
     });
   }
 
@@ -91,8 +95,15 @@ class _LogsState extends State<Logs> {
           child: ListView.builder(
             itemCount: logs.length,
             itemBuilder: (context, index) {
-              final log = logs[index];
-              return _buildLogContainer(log, index);
+              return LogsPart(
+                log: logs[index],
+                index: index,
+                onLogSelected: (isExpanded) {
+                  setState(() {
+                    _isExpandedList[index] = isExpanded;
+                  });
+                },
+              );
             },
           ),
         ),
@@ -100,90 +111,22 @@ class _LogsState extends State<Logs> {
     });
   }
 
-  Widget _buildLogContainerOld(dynamic log) {
-    final date = DateTime.parse(log['date_collected']);
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    return Container(
-      // Customize the container's appearance as needed
-      padding: EdgeInsets.all(16.0),
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Farm Name: ${log['farm__name']}'),
-          Text('Parcel: ${log['parcel']}'),
-          Text('Moisture: ${log['moisture']}'),
-          Text('Phosphorus: ${log['phosphorus']}'),
-          Text('Potassium: ${log['potassium']}'),
-          Text('Nitrogen: ${log['nitrogen']}'),
-          Text('Temperature: ${log['temperature']}'),
-          Text('pH: ${log['ph']}'),
-          Text('Latitude: ${log['latitude']}'),
-          Text('Longitude: ${log['longitude']}'),
-          Text('Date Collected: ${formattedDate}'),
-          // Add more Text widgets or other widgets to display the log data
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLogContainer(Map<String, dynamic> log, int index) {
-    final date = DateTime.parse(log['date_collected']);
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    return Container(
-      // Customize the container's appearance as needed
-      padding: EdgeInsets.all(16.0),
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: ExpansionPanelList(
-        elevation: 1,
-        expandedHeaderPadding: EdgeInsets.zero,
-        expansionCallback: (int panelIndex, bool isExpanded) {
-          setState(() {
-            _isExpandedList[index] = !isExpanded;
-          });
-        },
-        children: [
-          ExpansionPanel(
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return ListTile(
-                title: Text(
-                    'Farm Name: ${log['farm__name']}, Parcel: ${log['parcel']}'),
-              );
-            },
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Moisture: ${log['moisture']}'),
-                Text('Phosphorus: ${log['phosphorus']}'),
-                Text('Potassium: ${log['potassium']}'),
-                Text('Nitrogen: ${log['nitrogen']}'),
-                Text('Temperature: ${log['temperature']}'),
-                Text('pH: ${log['ph']}'),
-                Text('Latitude: ${log['latitude']}'),
-                Text('Longitude: ${log['longitude']}'),
-                Text('Date Collected: $formattedDate'),
-                // Add more Text widgets or other widgets to display the log data
-              ],
-            ),
-            isExpanded: _isExpandedList[index],
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> getLogData(String selectedFarm) async {
-    final Uri $url =
-        Uri.parse('${GENERAL_URL}app/reports/get_logs/${selectedFarm}');
+    final startDate = selectedStartDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedStartDate!)
+        : '';
+    final endDate = selectedEndDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedEndDate!)
+        : '';
+    final user = await FirebaseAuth.instance.currentUser!;
+    final idToken = await user.getIdToken();
+    print(idToken);
+    // your endpoint and request method
+
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://127.0.0.1:8000/reports/npk_report/'));
+    final Uri $url = Uri.parse(
+        '${GENERAL_URL}app/reports/get_logs/${selectedFarm}?start_date=$startDate&end_date=$endDate');
     final response = await http.get($url);
 
     if (response.statusCode == 200) {
@@ -204,6 +147,7 @@ class _LogsState extends State<Logs> {
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
       dynamic data = jsonDecode(new_message);
+      farms.add(Farm(name: "----------", id: ""));
       for (dynamic n in data) {
         farms.add(Farm(name: n[0], id: n[1].toString()));
       }
@@ -211,9 +155,113 @@ class _LogsState extends State<Logs> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Temperature report failed to load. Please try again.'),
+          content: Text('Logs failed to load. Please try again.'),
         ),
       );
     }
+  }
+}
+
+class LogsPart extends StatefulWidget {
+  const LogsPart(
+      {Key? key,
+      required this.log,
+      required this.index,
+      required this.onLogSelected})
+      : super(key: key);
+
+  final Map<String, dynamic> log;
+  final int index;
+  final Function(bool isExpanded) onLogSelected;
+  @override
+  State<LogsPart> createState() => _LogsPartState();
+}
+
+class _LogsPartState extends State<LogsPart> {
+  String selectedFarm = "";
+  late Map<String, dynamic> _log;
+  late int _index;
+  bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _log = widget.log;
+    _index = widget.index;
+  }
+
+  Widget build(BuildContext context) {
+    return _buildLogContainer(_log, _index);
+  }
+
+  Widget _buildLogContainer(Map<String, dynamic> log, int index) {
+    final date = DateTime.parse(log['date_collected']);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+    return Container(
+      // Customize the container's appearance as needed
+      padding: const EdgeInsets.all(4.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      decoration: BoxDecoration(
+        color: CustomColors.astarteBrown,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: ExpansionPanelList(
+        elevation: 1,
+        expandedHeaderPadding: EdgeInsets.zero,
+        expansionCallback: (int panelIndex, bool isExpanded) {
+          setState(() {
+            _isExpanded = !isExpanded;
+            widget.onLogSelected(_isExpanded);
+          });
+        },
+        children: [
+          ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return ListTile(
+                title: Text(
+                  'Farm: ${log['farm__name']} - $formattedDate',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            },
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDataItem('Moisture', ' ${log['moisture']}'),
+                _buildDataItem('Phosphorus', '${log['phosphorus']}'),
+                _buildDataItem('Potassium', ' ${log['potassium']}'),
+                _buildDataItem('Nitrogen', ' ${log['nitrogen']}'),
+                _buildDataItem('Temperature', '${log['temperature']}'),
+                _buildDataItem('pH', '${log['ph']}'),
+                _buildDataItem('Latitude', '${log['latitude']}'),
+                _buildDataItem('Longitude', '${log['longitude']}'),
+                _buildDataItem('Date Collected', '$formattedDate'),
+              ],
+            ),
+            isExpanded: _isExpanded,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDataItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0, left: 20.0),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(value),
+        ],
+      ),
+    );
   }
 }

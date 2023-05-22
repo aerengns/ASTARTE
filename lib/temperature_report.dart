@@ -1,18 +1,14 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
-import 'package:astarte/theme/colors.dart';
-import 'package:astarte/utils/parameters.dart';
 import 'package:astarte/utils/reports_util.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:astarte/utils/date_filter.dart';
+import 'package:astarte/utils/farm_selection_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
-import 'package:async/async.dart';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
-
-import 'network_manager/services/sensor_data_service.dart';
 
 class TemperatureReport extends StatefulWidget {
   const TemperatureReport({Key? key}) : super(key: key);
@@ -25,30 +21,25 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   String data_x = "";
   List<Farm> farms = [];
   String selectedFarm = "";
+  DateTime selectedStartDate = DateTime.now().subtract(Duration(days: 1));
+  DateTime selectedEndDate = DateTime.now();
   DateTime? _startDate;
   DateTime? _endDate;
 
   @override
   void initState() {
     super.initState();
+    addRangeFilter();
     fillFarms().whenComplete(() => _addDropdown());
   }
 
-  final List<Widget> _widgets = [
-    Image.asset(
-      'assets/images/astarte.jpg',
-      width: 100,
-      height: 100,
-      fit: BoxFit.contain,
-    ),
-    const Text("Select a Farm"),
-  ];
+  final List<Widget> _widgets = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AstarteAppBar(
-        title: 'Reports',
+        title: 'Temperature Report',
       ),
       body: Column(
         children: _widgets,
@@ -57,32 +48,43 @@ class _TemperatureReportsState extends State<TemperatureReport> {
     );
   }
 
-  void _addDropdown() {
+  void addRangeFilter() {
     setState(() {
-      _widgets.add(
-        Center(
-          child: DropdownButton<String>(
-            value: selectedFarm,
-            icon: const Icon(
-              Icons.arrow_drop_down_circle,
-              color: CustomColors.astarteRed,
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedFarm = value!;
-              });
+      _widgets.add(DateFilter(
+        onStartDateSelected: (date) {
+          setState(() {
+            selectedStartDate = date;
+            if (selectedFarm != "") {
               getTemperatureData(selectedFarm)
                   .whenComplete(() => _addTemperatureValueContainer());
-            },
-            items: farms.map((farm) {
-              return DropdownMenuItem<String>(
-                value: farm.id,
-                child: Text(farm.name),
-              );
-            }).toList(),
-          ),
-        ),
-      );
+            }
+          });
+        },
+        onEndDateSelected: (date) {
+          setState(() {
+            selectedEndDate = date;
+            if (selectedFarm != "") {
+              getTemperatureData(selectedFarm)
+                  .whenComplete(() => _addTemperatureValueContainer());
+            }
+          });
+        },
+      ));
+    });
+  }
+
+  void _addDropdown() {
+    setState(() {
+      _widgets.add(DropDown(
+        farms: farms,
+        onFarmSelected: (farm) {
+          setState(() {
+            selectedFarm = farm;
+            getTemperatureData(selectedFarm)
+                .whenComplete(() => _addTemperatureValueContainer());
+          });
+        },
+      ));
     });
   }
 
@@ -129,9 +131,15 @@ class _TemperatureReportsState extends State<TemperatureReport> {
   }
 
   Future<void> getTemperatureData(String selectedFarm) async {
+    final startDate = selectedStartDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedStartDate!)
+        : '';
+    final endDate = selectedEndDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedEndDate!)
+        : '';
     final response =
         await Provider.of<SensorDataService>(context, listen: false)
-            .getTemperatureReport(selectedFarm);
+            .getTemperatureReport(selectedFarm, startDate, endDate);
 
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
@@ -142,13 +150,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
       for (dynamic temperature in data['temperatures']) {
         data_y.add(temperature as double);
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Temperature report failed to load. Please try again.'),
-        ),
-      );
-    }
+    } else {}
   }
 
   Future<void> fillFarms() async {
@@ -159,6 +161,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
       dynamic data = jsonDecode(new_message);
+      farms.add(Farm(name: "----------", id: ""));
       for (dynamic n in data) {
         farms.add(Farm(name: n[0], id: n[1].toString()));
       }
@@ -166,7 +169,7 @@ class _TemperatureReportsState extends State<TemperatureReport> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Temperature report failed to load. Please try again.'),
+          content: Text('Farm filling failed to load. Please try again.'),
         ),
       );
     }

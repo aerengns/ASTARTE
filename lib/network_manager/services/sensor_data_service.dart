@@ -19,13 +19,16 @@ abstract class SensorDataService extends ChopperService {
   Future<Response> saveSensorData(@Body() SensorData data);
 
   @Get(path: '/temperature_report/{farm}')
-  Future<Response> getTemperatureReport(@Path('farm') String selectedFarm);
+  Future<Response> getTemperatureReport(
+      @Path('farm') String selectedFarm, String startDate, String endDate);
 
   @Get(path: '/npk_report/{farm}')
-  Future<Response> getNpkReport(@Path('farm') String selectedFarm);
+  Future<Response> getNpkReport(
+      @Path('farm') String selectedFarm, String startDate, String endDate);
 
   @Get(path: '/humidity_report/{farm}')
-  Future<Response> getHumidityReport(@Path('farm') String selectedFarm);
+  Future<Response> getHumidityReport(
+      @Path('farm') String selectedFarm, String startDate, String endDate);
 
   @Get(path: '/get_farms')
   Future<Response> getFarmList();

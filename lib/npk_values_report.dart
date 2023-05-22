@@ -1,15 +1,12 @@
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
-import 'package:astarte/theme/colors.dart';
-import 'package:astarte/utils/parameters.dart';
-import 'package:built_value/built_value.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:astarte/utils/date_filter.dart';
+import 'package:astarte/utils/farm_selection_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
-import 'package:async/async.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:astarte/utils/reports_util.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
@@ -25,29 +22,24 @@ class _NPKReportsState extends State<NPKReport> {
   List<double> data_k = [];
   String data_x = "";
   List<Farm> farms = [];
-  Farm selectedFarm = Farm(name: "Select a Farm", id: "0");
+  String selectedFarm = "";
+  DateTime selectedStartDate = DateTime.now().subtract(Duration(days: 1));
+  DateTime selectedEndDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    addRangeFilter();
     fillFarms().whenComplete(() => _addDropdown());
   }
 
-  final List<Widget> _widgets = [
-    Image.asset(
-      'assets/images/astarte.jpg',
-      width: 100,
-      height: 100,
-      fit: BoxFit.contain,
-    ),
-    const Text("Select a Farm"),
-  ];
+  final List<Widget> _widgets = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AstarteAppBar(
-        title: 'Reports',
+        title: 'NPK Report',
       ),
       body: Column(
         children: _widgets,
@@ -56,7 +48,44 @@ class _NPKReportsState extends State<NPKReport> {
     );
   }
 
+  void addRangeFilter() {
+    setState(() {
+      _widgets.add(DateFilter(
+        onStartDateSelected: (date) {
+          setState(() {
+            selectedStartDate = date;
+            if (selectedFarm != "") {
+              getNData(selectedFarm).whenComplete(() => _addNValueContainer());
+            }
+          });
+        },
+        onEndDateSelected: (date) {
+          setState(() {
+            selectedEndDate = date;
+            if (selectedFarm != "") {
+              getNData(selectedFarm).whenComplete(() => _addNValueContainer());
+            }
+          });
+        },
+      ));
+    });
+  }
+
   void _addDropdown() {
+    setState(() {
+      _widgets.add(DropDown(
+        farms: farms,
+        onFarmSelected: (farm) {
+          setState(() {
+            selectedFarm = farm;
+            getNData(selectedFarm).whenComplete(() => _addNValueContainer());
+          });
+        },
+      ));
+    });
+  }
+
+  /*void _addDropdown() {
     setState(() {
       _widgets.add(
         Center(
@@ -84,7 +113,7 @@ class _NPKReportsState extends State<NPKReport> {
         ),
       );
     });
-  }
+  }*/
 
   void _addNValueContainer() {
     setState(() {
@@ -108,15 +137,12 @@ class _NPKReportsState extends State<NPKReport> {
                   data: $data_x,
                 },
                 yAxis: [{
-                  name: 'n',
                   type: 'value',
                 },
                 {
-                  name: 'p',
                   type: 'value',
                 },
                 {
-                  name: 'k',
                   type: 'value',
                 }],
                 legend: {
@@ -175,9 +201,15 @@ class _NPKReportsState extends State<NPKReport> {
   }
 
   Future<void> getNData(String selectedFarm) async {
+    final startDate = selectedStartDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedStartDate!)
+        : '';
+    final endDate = selectedEndDate != null
+        ? DateFormat('yyyy-MM-dd').format(selectedEndDate!)
+        : '';
     final response =
         await Provider.of<SensorDataService>(context, listen: false)
-            .getNpkReport(selectedFarm);
+            .getNpkReport(selectedFarm, startDate, endDate);
 
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
@@ -196,11 +228,11 @@ class _NPKReportsState extends State<NPKReport> {
         data_k.add(n as double);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Temperature report failed to load. Please try again.'),
+          content: Text('NPK report failed to load. Please try again.'),
         ),
-      );
+      );*/
     }
   }
 
@@ -212,14 +244,15 @@ class _NPKReportsState extends State<NPKReport> {
     if (response.isSuccessful) {
       String new_message = await response.bodyString;
       dynamic data = jsonDecode(new_message);
+      farms.add(Farm(name: "----------", id: ""));
       for (dynamic n in data) {
         farms.add(Farm(name: n[0], id: n[1].toString()));
       }
-      selectedFarm = farms[0];
+      selectedFarm = farms[0].id;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Temperature report failed to load. Please try again.'),
+          content: Text('Farm filling failed to load. Please try again.'),
         ),
       );
     }
