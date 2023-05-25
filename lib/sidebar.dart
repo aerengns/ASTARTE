@@ -66,6 +66,11 @@ class _NavBarState extends State<NavBar> {
                   onTap: () =>
                       Navigator.pushNamed(context, '/temperature_report'),
                 ),
+                ListTile(
+                  title: const Text('PH Report'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () => Navigator.pushNamed(context, '/ph_report'),
+                ),
               ]),
           MyExpansionTile(
               title: const Text('Worker'),

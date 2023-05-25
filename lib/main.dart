@@ -12,6 +12,7 @@ import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
 import 'package:astarte/humidity_report.dart';
+import 'package:astarte/ph_report.dart';
 import 'package:astarte/npk_values_report.dart';
 import 'package:astarte/temperature_report.dart';
 import 'package:astarte/workers.dart';
@@ -107,6 +108,7 @@ class Astarte extends StatelessWidget {
           '/humidity_report': (context) => HumidityReport(),
           '/npk_report': (context) => NPKReport(),
           '/temperature_report': (context) => TemperatureReport(),
+          '/ph_report': (context) => PHReport(),
           '/logs': (context) => Logs(),
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
