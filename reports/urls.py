@@ -5,6 +5,7 @@ urlpatterns = [
     path('reports/humidity_report/<slug:farm_id>', views.HumidityReportAPI.as_view(), name='humidity_report'),
     path('reports/npk_report/<slug:farm_id>', views.NPKReportAPI.as_view(), name='npk_report'),
     path('reports/temperature_report/<slug:farm_id>', views.TemperatureReportAPI.as_view(), name='temperature_report'),
+    path('reports/ph_report/<slug:farm_id>', views.PhReportAPI.as_view(), name='ph_report'),
     path('reports/get_logs/<slug:farm_id>', views.LogSenderAPI.as_view(), name='get_logs'),
     path('reports/get_farms', views.SendFarmList.as_view(), name='save_report'),
     path('reports', views.SaveReportData.as_view(), name='save_report'),
