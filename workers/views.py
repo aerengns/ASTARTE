@@ -26,8 +26,10 @@ class WorkerDataAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         print('Request POST received')
-
-        workers = Worker.objects.filter(profile__user_type=Profile.UserTypes.WORKER)
+        current_worker = Worker.objects.get(profile__user=request.user)
+        workers = Worker.objects.filter(profile__user_type=Profile.UserTypes.WORKER,
+                                        permission_level__lte=current_worker.permission_level).exclude(
+            id=current_worker.id)
         data = []
         for worker in workers:
             try:
