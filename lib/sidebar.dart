@@ -92,6 +92,7 @@ class _NavBarState extends State<NavBar> {
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   onTap: () => Navigator.pushNamed(context, '/workers'),
                 ),
+                if(currentUser.userType == 'Worker')
                 ListTile(
                   leading: const Icon(Icons.work_off_rounded),
                   title: const Text('Finish Job'),
