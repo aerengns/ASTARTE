@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -37,7 +37,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:51039',
 ]
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '144.122.71.171']
 
 # Application definition
 
@@ -155,6 +155,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = '/opt/env/astarte/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '/opt/env/astarte/static/')
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
