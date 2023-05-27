@@ -5,7 +5,7 @@ import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
-import 'package:astarte/utils/parameters.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:built_collection/built_collection.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +153,7 @@ class PostList extends StatelessWidget {
                                                   .createReply(post.id!,
                                                 PostData((b) => b
                                                   ..message = replyController.text
-                                                  ..username = getCurrentUserName()
+                                                  ..username = Provider.of<parameters.CurrentUser>(context).username
                                               ),
                                               );
 
