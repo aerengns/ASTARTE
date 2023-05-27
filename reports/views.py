@@ -109,6 +109,22 @@ class TemperatureReportAPI(BaseReportAPI):
         return Response(data={'days': days, 'temperatures': temperatures})
 
 
+class PhReportAPI(BaseReportAPI):
+
+    def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except:
+            Response(status=404)
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
+        user = request.user
+        phs, days = self.get_weekly_values('ph', user, farm_id, start_date, end_date)
+        return Response(data={'days': days, 'phs': phs})
+
+
 class SendFarmList(BaseReportAPI):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
