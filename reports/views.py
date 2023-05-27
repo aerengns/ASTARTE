@@ -160,7 +160,6 @@ class LogSenderAPI(APIView):
         logs = report_values.values(
             'id',
             'farm__name',
-            'parcel',
             'moisture',
             'phosphorus',
             'potassium',
