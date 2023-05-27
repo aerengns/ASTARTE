@@ -153,7 +153,7 @@ class PostList extends StatelessWidget {
                                                   .createReply(post.id!,
                                                 PostData((b) => b
                                                   ..message = replyController.text
-                                                  ..username = Provider.of<parameters.CurrentUser>(context).username
+                                                  ..username = Provider.of<parameters.CurrentUser>(context, listen: false).username
                                               ),
                                               );
 
