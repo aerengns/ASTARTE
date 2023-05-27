@@ -158,7 +158,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = '/opt/env/astarte/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '/opt/env/astarte/static/')
+    os.path.join(BASE_DIR, '/opt/env/astarte/staticfiles/')
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
