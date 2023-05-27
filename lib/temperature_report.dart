@@ -150,7 +150,13 @@ class _TemperatureReportsState extends State<TemperatureReport> {
       for (dynamic temperature in data['temperatures']) {
         data_y.add(temperature as double);
       }
-    } else {}
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Temperature report failed to load. Please try again.'),
+        ),
+      );
+    }
   }
 
   Future<void> fillFarms() async {
