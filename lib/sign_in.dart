@@ -1,3 +1,4 @@
+import 'package:astarte/sidebar.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -119,14 +120,13 @@ class _SignInFormState extends State<SignInForm> {
   void _signInWithEmailAndPassword(currentUser) async {
     User? user;
     try {
-    FirebaseAuth auth = FirebaseAuth.instance;
+      FirebaseAuth auth = FirebaseAuth.instance;
       user = (await auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       ))
           .user;
-    }
-    catch (e) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
@@ -141,10 +141,17 @@ class _SignInFormState extends State<SignInForm> {
         parameters.TOKEN = token;
         currentUser.setUser(newCurrentUser);
         Navigator.popUntil(context, ModalRoute.withName('/'));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Welcome ${currentUser.username}'),
-        ));
-
+        if (newCurrentUser['email'] == '') {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const Profile(),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Welcome ${currentUser.username}'),
+          ));
+        }
       });
     } else {
       setState(() {

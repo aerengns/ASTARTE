@@ -250,7 +250,6 @@ class _WorkerCardDetailState extends State<WorkerCardDetail> {
                     height: 30,
                     child: const Icon(Icons.hotel_rounded),
                   ),
-                // TODO: Add remove job
                 ElevatedButton(
                   onPressed: () => Navigator.push(
                       context,

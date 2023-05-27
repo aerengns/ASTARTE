@@ -55,6 +55,7 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.popUntil(context, ModalRoute.withName('/')),
           ),
+          if(currentUser.userType != 'Worker')
           MyExpansionTile(
               title: const Text('Reports'),
               leading: const Icon(Icons.addchart),
@@ -93,24 +94,20 @@ class _NavBarState extends State<NavBar> {
                   onTap: () => {},
                 ),
               ]),
+          if(currentUser.userType != 'Worker')
           ListTile(
             leading: const Icon(Icons.warehouse_rounded),
             title: const Text('Farms'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/farms'),
           ),
+          if(currentUser.userType != 'Worker')
           ListTile(
             leading: const Icon(Icons.attach_file),
             title: const Text('Logs'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/logs'),
           ),
-          // ListTile(
-          //   leading: const Icon(Icons.camera_alt_rounded),
-          //   title: const Text('Photo Upload'),
-          //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
-          //   onTap: () => Navigator.pushNamed(context, '/photo-upload'),
-          // ),
           ListTile(
             leading: const Icon(Icons.map_rounded),
             title: const Text('Dynamic Heatmap'),
