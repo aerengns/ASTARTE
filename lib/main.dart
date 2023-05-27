@@ -1,3 +1,4 @@
+import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/new_post.dart';
@@ -112,6 +113,7 @@ class Astarte extends StatelessWidget {
           '/humidity_report': (context) => HumidityReport(),
           '/npk_report': (context) => NPKReport(),
           '/temperature_report': (context) => TemperatureReport(),
+          '/logs': (context) => Logs(),
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),

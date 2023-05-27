@@ -52,8 +52,10 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getTemperatureReport(String selectedFarm) {
-    final Uri $url = Uri.parse('/reports/temperature_report/${selectedFarm}');
+  Future<Response<dynamic>> getTemperatureReport(
+      String selectedFarm, String startDate, String endDate) {
+    final Uri $url = Uri.parse(
+        '/reports/temperature_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
     final Request $request = Request(
       'GET',
       $url,
@@ -63,8 +65,10 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getNpkReport(String selectedFarm) {
-    final Uri $url = Uri.parse('/reports/npk_report/${selectedFarm}');
+  Future<Response<dynamic>> getNpkReport(
+      String selectedFarm, String startDate, String endDate) {
+    final Uri $url = Uri.parse(
+        '/reports/npk_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
     final Request $request = Request(
       'GET',
       $url,
@@ -74,8 +78,10 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
-  Future<Response<dynamic>> getHumidityReport(String selectedFarm) {
-    final Uri $url = Uri.parse('/reports/humidity_report/${selectedFarm}');
+  Future<Response<dynamic>> getHumidityReport(
+      String selectedFarm, String startDate, String endDate) {
+    final Uri $url = Uri.parse(
+        '/reports/humidity_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
     final Request $request = Request(
       'GET',
       $url,
@@ -87,6 +93,19 @@ class _$SensorDataService extends SensorDataService {
   @override
   Future<Response<dynamic>> getFarmList() {
     final Uri $url = Uri.parse('/reports/get_farms');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getLogData(
+      String selectedFarm, String startDate, String endDate) {
+    final Uri $url = Uri.parse(
+        '/reports/get_logs/${selectedFarm}?start_date=$startDate&end_date=$endDate');
     final Request $request = Request(
       'GET',
       $url,
