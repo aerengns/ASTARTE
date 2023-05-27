@@ -198,11 +198,11 @@ class _NPKReportsState extends State<NPKReport> {
         data_k.add(n as double);
       }
     } else {
-      /*ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('NPK report failed to load. Please try again.'),
         ),
-      );*/
+      );
     }
   }
 
