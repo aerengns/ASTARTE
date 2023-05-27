@@ -75,7 +75,7 @@ class _NewPostFormState extends State<NewPostForm> {
                   (b) => b
                     ..image = encodedImage
                     ..message = _postText
-                    ..username = Provider.of<parameters.CurrentUser>(context).username;
+                    ..username = Provider.of<parameters.CurrentUser>(context).username
           )
       );
 
