@@ -53,9 +53,11 @@ class _$SensorDataService extends SensorDataService {
 
   @override
   Future<Response<dynamic>> getTemperatureReport(
-      String selectedFarm, String startDate, String endDate) {
-    final Uri $url = Uri.parse(
-        '/reports/temperature_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse('/reports/temperature_report/${selectedFarm}');
     final Request $request = Request(
       'GET',
       $url,
@@ -66,9 +68,11 @@ class _$SensorDataService extends SensorDataService {
 
   @override
   Future<Response<dynamic>> getPHReport(
-      String selectedFarm, String startDate, String endDate) {
-    final Uri $url = Uri.parse(
-        '/reports/ph_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse('/reports/ph_report/${selectedFarm}');
     final Request $request = Request(
       'GET',
       $url,
@@ -79,9 +83,11 @@ class _$SensorDataService extends SensorDataService {
 
   @override
   Future<Response<dynamic>> getNpkReport(
-      String selectedFarm, String startDate, String endDate) {
-    final Uri $url = Uri.parse(
-        '/reports/npk_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse('/reports/npk_report/${selectedFarm}');
     final Request $request = Request(
       'GET',
       $url,
@@ -92,9 +98,11 @@ class _$SensorDataService extends SensorDataService {
 
   @override
   Future<Response<dynamic>> getHumidityReport(
-      String selectedFarm, String startDate, String endDate) {
-    final Uri $url = Uri.parse(
-        '/reports/humidity_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse('/reports/humidity_report/${selectedFarm}');
     final Request $request = Request(
       'GET',
       $url,
@@ -116,9 +124,11 @@ class _$SensorDataService extends SensorDataService {
 
   @override
   Future<Response<dynamic>> getLogData(
-      String selectedFarm, String startDate, String endDate) {
-    final Uri $url = Uri.parse(
-        '/reports/get_logs/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse('/reports/get_logs/${selectedFarm}');
     final Request $request = Request(
       'GET',
       $url,
