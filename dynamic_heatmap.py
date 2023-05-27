@@ -34,7 +34,7 @@ def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_
     return sensor_locations
 
 
-def plot_heatmap(zi, sensors, farm_corners):
+def plot_heatmap(zi, sensors, farm_corners, color='Blues'):
     corners_np = np.array(farm_corners)
 
     min_width, max_width = np.min(corners_np[:,0]), np.max(corners_np[:,0])
@@ -43,7 +43,7 @@ def plot_heatmap(zi, sensors, farm_corners):
     # Plot the interpolated data with red dots at the sensor locations
     fig, ax = plt.subplots()
     im = ax.imshow(zi*11, extent=[min_width, max_width, min_height, max_height], origin='lower')
-    im.set_cmap('Blues')
+    im.set_cmap(color)
 
     plt.scatter(sensors[:,0], sensors[:,1], c='red')
 
