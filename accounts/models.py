@@ -36,3 +36,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class DeviceToken(models.Model):
+    token = models.CharField(max_length=200)
+    user_type = models.CharField(max_length=1, choices=Profile.UserTypes.choices)
