@@ -1,14 +1,3 @@
-import base64
-
-from django.shortcuts import render
-import os
-
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.views import View
-from django.core.files import File  # you need this somewhere
-import urllib
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -44,7 +33,7 @@ class PostCreate(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class Reply(APIView):
+class ReplyView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
