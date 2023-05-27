@@ -9,12 +9,6 @@ class BooleanAsIntegerField(serializers.IntegerField):
         return int(value)
 
 
-class FarmParcelReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FarmReport
-        fields = '__all__'
-
-
 class FarmReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = FarmReport

@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from backendcore.models import FarmReport, Farm
-from backendcore.serializers import FarmParcelReportSerializer, FarmSerializer
+from backendcore.serializers import FarmSerializer, FarmReportSerializer
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -31,12 +31,12 @@ class ReportDetail(APIView):
 
     def get(self, request, report_id):
         report = self.get_object(report_id)
-        serializer = FarmParcelReportSerializer(report)
+        serializer = FarmReportSerializer(report)
         return Response(serializer.data)
 
     def put(self, request, report_id):
         report = self.get_object(report_id)
-        serializer = FarmParcelReportSerializer(report, data=request.data)
+        serializer = FarmReportSerializer(report, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -54,11 +54,11 @@ class ReportList(APIView):
 
     def get(self, request, farm_id):
         reports = FarmReport.objects.filter(farm_id=farm_id)
-        serializer = FarmParcelReportSerializer(reports, many=True)
+        serializer = FarmReportSerializer(reports, many=True)
         return Response(serializer.data)
 
     def post(self, request, farm_id):
-        serializer = FarmParcelReportSerializer(data=request.data)
+        serializer = FarmReportSerializer(data=request.data)
         farm = Farm.objects.get(id=farm_id)
         if serializer.is_valid():
             report = serializer.save()
