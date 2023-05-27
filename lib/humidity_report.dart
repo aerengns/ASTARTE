@@ -151,11 +151,11 @@ class _ReportsState extends State<HumidityReport> {
         data_y.add(humidity_level as double);
       }
     } else {
-      /*ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Humidity report failed to load. Please try again.'),
         ),
-      );*/
+      );
       return;
     }
   }
