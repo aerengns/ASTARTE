@@ -25,6 +25,7 @@ import 'package:astarte/pests_and_diseases.dart';
 import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,7 +76,12 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   _setupLogging();
-  runApp(const Astarte());
+  runApp(
+      ChangeNotifierProvider(
+        create: (_) => CurrentUser(),
+        child: const Astarte(),
+      ),
+  );
 }
 
 class Astarte extends StatelessWidget {

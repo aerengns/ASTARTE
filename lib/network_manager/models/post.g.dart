@@ -21,6 +21,9 @@ class _$PostDataSerializer implements StructuredSerializer<PostData> {
       'message',
       serializers.serialize(object.message,
           specifiedType: const FullType(String)),
+      'username',
+      serializers.serialize(object.username,
+          specifiedType: const FullType(String)),
     ];
     Object? value;
     value = object.id;
@@ -62,6 +65,10 @@ class _$PostDataSerializer implements StructuredSerializer<PostData> {
           result.message = serializers.deserialize(value,
               specifiedType: const FullType(String))! as String;
           break;
+        case 'username':
+          result.username = serializers.deserialize(value,
+              specifiedType: const FullType(String))! as String;
+          break;
       }
     }
 
@@ -76,12 +83,17 @@ class _$PostData extends PostData {
   final String? image;
   @override
   final String message;
+  @override
+  final String username;
 
   factory _$PostData([void Function(PostDataBuilder)? updates]) =>
       (new PostDataBuilder()..update(updates))._build();
 
-  _$PostData._({this.id, this.image, required this.message}) : super._() {
+  _$PostData._(
+      {this.id, this.image, required this.message, required this.username})
+      : super._() {
     BuiltValueNullFieldError.checkNotNull(message, r'PostData', 'message');
+    BuiltValueNullFieldError.checkNotNull(username, r'PostData', 'username');
   }
 
   @override
@@ -97,7 +109,8 @@ class _$PostData extends PostData {
     return other is PostData &&
         id == other.id &&
         image == other.image &&
-        message == other.message;
+        message == other.message &&
+        username == other.username;
   }
 
   @override
@@ -106,6 +119,7 @@ class _$PostData extends PostData {
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, image.hashCode);
     _$hash = $jc(_$hash, message.hashCode);
+    _$hash = $jc(_$hash, username.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -115,7 +129,8 @@ class _$PostData extends PostData {
     return (newBuiltValueToStringHelper(r'PostData')
           ..add('id', id)
           ..add('image', image)
-          ..add('message', message))
+          ..add('message', message)
+          ..add('username', username))
         .toString();
   }
 }
@@ -135,6 +150,10 @@ class PostDataBuilder implements Builder<PostData, PostDataBuilder> {
   String? get message => _$this._message;
   set message(String? message) => _$this._message = message;
 
+  String? _username;
+  String? get username => _$this._username;
+  set username(String? username) => _$this._username = username;
+
   PostDataBuilder();
 
   PostDataBuilder get _$this {
@@ -143,6 +162,7 @@ class PostDataBuilder implements Builder<PostData, PostDataBuilder> {
       _id = $v.id;
       _image = $v.image;
       _message = $v.message;
+      _username = $v.username;
       _$v = null;
     }
     return this;
@@ -168,7 +188,9 @@ class PostDataBuilder implements Builder<PostData, PostDataBuilder> {
             id: id,
             image: image,
             message: BuiltValueNullFieldError.checkNotNull(
-                message, r'PostData', 'message'));
+                message, r'PostData', 'message'),
+            username: BuiltValueNullFieldError.checkNotNull(
+                username, r'PostData', 'username'));
     replace(_$result);
     return _$result;
   }

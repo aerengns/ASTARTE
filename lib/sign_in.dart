@@ -1,9 +1,9 @@
-import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -28,6 +28,7 @@ class _SignInFormState extends State<SignInForm> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
     return Form(
         key: _formKey,
         child: Column(
@@ -84,7 +85,7 @@ class _SignInFormState extends State<SignInForm> {
               child: TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _signInWithEmailAndPassword();
+                    _signInWithEmailAndPassword(currentUser);
                   }
                 },
                 child: Container(
@@ -115,21 +116,35 @@ class _SignInFormState extends State<SignInForm> {
     super.dispose();
   }
 
-  void _signInWithEmailAndPassword() async {
+  void _signInWithEmailAndPassword(currentUser) async {
+    User? user;
+    try {
     FirebaseAuth auth = FirebaseAuth.instance;
-    final User? user = (await auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ))
-        .user;
+      user = (await auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ))
+          .user;
+    }
+    catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+      ));
+    }
 
     if (user != null) {
-      setState(() async {
+      final token = await user.getIdToken();
+      final newCurrentUser = await parameters.requestCurrentUser(token);
+      setState(() {
         _success = true;
-        _userEmail = user.email!;
-        parameters.TOKEN = await user.getIdToken();
-        print('auth token: ${parameters.TOKEN}');
+        _userEmail = user?.email ?? '';
+        parameters.TOKEN = token;
+        currentUser.setUser(newCurrentUser);
         Navigator.popUntil(context, ModalRoute.withName('/'));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Welcome ${currentUser.username}'),
+        ));
+
       });
     } else {
       setState(() {

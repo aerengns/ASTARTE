@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:astarte/utils/parameters.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -57,11 +57,11 @@ class Worker {
 Future<List<Worker>> getWorkerData() async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/workers_data'));
+        'POST', Uri.parse('${parameters.GENERAL_URL}app/workers_data'));
 
     request.headers.addAll(headers);
 
@@ -71,7 +71,6 @@ Future<List<Worker>> getWorkerData() async {
       String newMessage = await response.stream.bytesToString();
       dynamic data = jsonDecode(newMessage);
       List<Worker> source = [];
-      bool once = true;
       for (dynamic worker in data) {
         // Get the base64 encoded image data from the JSON response
         final String encodedImage = worker['profile_photo'];
@@ -89,7 +88,6 @@ Future<List<Worker>> getWorkerData() async {
           email: worker['email'],
           about: worker['about'],
           event: event,
-          //TODO: profilePhoto: Image.memory(decodedImage),
           profilePhoto: Image.memory(
             decodedImage,
             fit: BoxFit.cover,
@@ -111,11 +109,11 @@ Future<List<Worker>> getWorkerData() async {
 Future<List<Event>> getAvailableJobs() async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request =
-        http.MultipartRequest('GET', Uri.parse('${GENERAL_URL}app/jobs_data'));
+        http.MultipartRequest('GET', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'));
 
     request.headers.addAll(headers);
 
@@ -148,11 +146,11 @@ Future<List<Event>> getAvailableJobs() async {
 Future<bool> assignJob(Worker worker, Event event) async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request =
-        http.MultipartRequest('POST', Uri.parse('${GENERAL_URL}app/jobs_data'))
+        http.MultipartRequest('POST', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'))
           ..headers.addAll(headers)
           ..fields['worker'] = jsonEncode(worker.toDict())
           ..fields['event'] = jsonEncode(event.toDict());
