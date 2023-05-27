@@ -65,6 +65,19 @@ class _$SensorDataService extends SensorDataService {
   }
 
   @override
+  Future<Response<dynamic>> getPHReport(
+      String selectedFarm, String startDate, String endDate) {
+    final Uri $url = Uri.parse(
+        '/reports/ph_report/${selectedFarm}?start_date=$startDate&end_date=$endDate');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> getNpkReport(
       String selectedFarm, String startDate, String endDate) {
     final Uri $url = Uri.parse(
