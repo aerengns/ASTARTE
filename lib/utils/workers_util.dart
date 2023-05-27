@@ -11,6 +11,7 @@ class Worker {
   final String name;
   final String surname;
   final String email;
+  final int permissionLevel;
   Event? event;
   String? about;
   Image? profilePhoto;
@@ -19,6 +20,7 @@ class Worker {
       {required this.name,
       required this.surname,
       required this.email,
+      required this.permissionLevel,
       this.event,
       this.about,
       this.profilePhoto});
@@ -30,7 +32,8 @@ class Worker {
       'email': email,
       'event': event?.toDict(),
       'about': about,
-      'image': ''
+      'image': '',
+      'permissionLevel': permissionLevel,
     };
   }
 
@@ -92,6 +95,7 @@ Future<List<Worker>> getWorkerData() async {
             decodedImage,
             fit: BoxFit.cover,
           ),
+          permissionLevel: worker['permission_level'],
         );
         source.add(temp);
       }
