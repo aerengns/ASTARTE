@@ -18,28 +18,31 @@ abstract class SensorDataService extends ChopperService {
   @Post()
   Future<Response> saveSensorData(@Body() SensorData data);
 
-  @Get(path: '/temperature_report/{farm}')
-  Future<Response> getTemperatureReport(
-      @Path('farm') String selectedFarm, String startDate, String endDate);
+  @Get(
+      path:
+          '/temperature_report/{farm}?start_date={startDate}&end_date={endDate}')
+  Future<Response> getTemperatureReport(@Path('farm') String selectedFarm,
+      @Path('startDate') String startDate, @Path('endDate') String endDate);
 
-  @Get(path: '/ph_report/{farm}')
-  Future<Response> getPHReport(
-      @Path('farm') String selectedFarm, String startDate, String endDate);
+  @Get(path: '/ph_report/{farm}?start_date={startDate}&end_date={endDate}')
+  Future<Response> getPHReport(@Path('farm') String selectedFarm,
+      @Path('startDate') String startDate, @Path('endDate') String endDate);
 
-  @Get(path: '/npk_report/{farm}')
-  Future<Response> getNpkReport(
-      @Path('farm') String selectedFarm, String startDate, String endDate);
+  @Get(path: '/npk_report/{farm}?start_date={startDate}&end_date={endDate}')
+  Future<Response> getNpkReport(@Path('farm') String selectedFarm,
+      @Path('startDate') String startDate, @Path('endDate') String endDate);
 
-  @Get(path: '/humidity_report/{farm}')
-  Future<Response> getHumidityReport(
-      @Path('farm') String selectedFarm, String startDate, String endDate);
+  @Get(
+      path: '/humidity_report/{farm}?start_date={startDate}&end_date={endDate}')
+  Future<Response> getHumidityReport(@Path('farm') String selectedFarm,
+      @Path('startDate') String startDate, @Path('endDate') String endDate);
 
   @Get(path: '/get_farms')
   Future<Response> getFarmList();
 
-  @Get(path: '/get_logs/{farm}')
-  Future<Response> getLogData(
-      @Path('farm') String selectedFarm, String startDate, String endDate);
+  @Get(path: '/get_logs/{farm}?start_date={startDate}&end_date={endDate}')
+  Future<Response> getLogData(@Path('farm') String selectedFarm,
+      @Path('startDate') String startDate, @Path('endDate') String endDate);
 
   static SensorDataService create() {
     final client = ChopperClient(
