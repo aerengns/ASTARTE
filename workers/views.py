@@ -19,11 +19,6 @@ class WorkerDataAPI(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
-    def get(self, request):
-        print('Request recevied')
-
-        return Response('Hello from ASTARTE!')
-
     def post(self, request, *args, **kwargs):
         print('Request POST received')
         current_worker = Worker.objects.get(profile__user=request.user)
