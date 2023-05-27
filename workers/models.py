@@ -21,4 +21,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Profile)
 def save_user_profile(sender, instance, **kwargs):
-    instance.worker.save()
+    worker = instance.worker
+    worker.email = instance.email
+    worker.name = instance.name
+    worker.surname = instance.surname
+    worker.about = instance.about
+    worker.profile_photo = instance.profile_photo
+    worker.save()
