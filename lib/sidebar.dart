@@ -55,33 +55,34 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.popUntil(context, ModalRoute.withName('/')),
           ),
-          if(currentUser.userType != 'Worker')
-          MyExpansionTile(
-              title: const Text('Reports'),
-              leading: const Icon(Icons.addchart),
-              children: <Widget>[
-                ListTile(
-                  title: const Text('Humidity Reports'),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                  onTap: () => Navigator.pushNamed(context, '/humidity_report'),
-                ),
-                ListTile(
-                  title: const Text('NPK Values Report'),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                  onTap: () => Navigator.pushNamed(context, '/npk_report'),
-                ),
-                ListTile(
-                  title: const Text('Temperatures Report'),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                  onTap: () =>
-                      Navigator.pushNamed(context, '/temperature_report'),
-                ),
-                ListTile(
-                  title: const Text('PH Report'),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                  onTap: () => Navigator.pushNamed(context, '/ph_report'),
-                ),
-              ]),
+          if (currentUser.userType != 'Worker')
+            MyExpansionTile(
+                title: const Text('Reports'),
+                leading: const Icon(Icons.addchart),
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('Humidity Reports'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/humidity_report'),
+                  ),
+                  ListTile(
+                    title: const Text('NPK Values Report'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () => Navigator.pushNamed(context, '/npk_report'),
+                  ),
+                  ListTile(
+                    title: const Text('Temperatures Report'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/temperature_report'),
+                  ),
+                  ListTile(
+                    title: const Text('PH Report'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () => Navigator.pushNamed(context, '/ph_report'),
+                  ),
+                ]),
           MyExpansionTile(
               title: const Text('Worker'),
               leading: const Icon(Icons.person_rounded),
@@ -100,20 +101,20 @@ class _NavBarState extends State<NavBar> {
                   onTap: () => {},
                 ),
               ]),
-          if(currentUser.userType != 'Worker')
-          ListTile(
-            leading: const Icon(Icons.warehouse_rounded),
-            title: const Text('Farms'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/farms'),
-          ),
-          if(currentUser.userType != 'Worker')
-          ListTile(
-            leading: const Icon(Icons.attach_file),
-            title: const Text('Logs'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/logs'),
-          ),
+          if (currentUser.userType != 'Worker')
+            ListTile(
+              leading: const Icon(Icons.warehouse_rounded),
+              title: const Text('Farms'),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              onTap: () => Navigator.pushNamed(context, '/farms'),
+            ),
+          if (currentUser.userType != 'Worker')
+            ListTile(
+              leading: const Icon(Icons.attach_file),
+              title: const Text('Logs'),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              onTap: () => Navigator.pushNamed(context, '/logs'),
+            ),
           ListTile(
             leading: const Icon(Icons.map_rounded),
             title: const Text('Dynamic Heatmap'),
@@ -137,17 +138,6 @@ class _NavBarState extends State<NavBar> {
             title: const Text('Get Help'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/posts'),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings_rounded),
-            title: const Text('Settings'),
-            onTap: () => null,
-          ),
-          ListTile(
-            leading: const Icon(Icons.description_rounded),
-            title: const Text('Policies'),
-            onTap: () => null,
           ),
           const Divider(),
           ListTile(
@@ -392,11 +382,11 @@ class _EditProfileState extends State<EditProfile> {
     _surnameController.text = currentUser.surname;
     _emailController.text = currentUser.email;
     _aboutController.text = currentUser.about;
-    if(init) {
+    if (init) {
       setState(() {
         _image = currentUser.profilePhotoBytes;
       });
-      init=false;
+      init = false;
     }
 
     return Scaffold(
