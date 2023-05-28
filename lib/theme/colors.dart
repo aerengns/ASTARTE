@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomColors {
   static const Color astarteRed = Color.fromRGBO(211, 47, 47, 1);
+  static const Color astarteGreen = Color.fromRGBO(4, 110, 19, 1.0);
   static const Color astarteCyan = Color.fromRGBO(47, 211, 211, 1);
   static const Color astarteYellow = Color.fromRGBO(211, 149, 47, 1);
   static const Color astarteBlue = Color.fromRGBO(47, 47, 211, 1);

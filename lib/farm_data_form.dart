@@ -5,7 +5,7 @@ import 'package:astarte/network_manager/models/sensor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:provider/provider.dart';
-import 'package:astarte/farms.dart';
+import 'package:astarte/farm_sensor_data.dart';
 
 import 'network_manager/services/sensor_data_service.dart';
 
@@ -60,13 +60,10 @@ class _FarmDataFormState extends State<FarmDataForm> {
     super.initState();
     _farmName = widget.formData?.farmName ?? '';
     _date = widget.formData?.date ?? '';
-    _parcelNo = widget.formData?.parcelNo.toString() ?? '';
-    _temperature = widget.formData?.temperature.toString() ?? '';
     _moisture = widget.formData?.moisture.toString() ?? '';
     _phosphorus = widget.formData?.phosphorus.toString() ?? '';
     _potassium = widget.formData?.potassium.toString() ?? '';
     _nitrogen = widget.formData?.nitrogen.toString() ?? '';
-    _ph = widget.formData?.ph.toString() ?? '';
   }
 
   Future<void> _selectDate() async {

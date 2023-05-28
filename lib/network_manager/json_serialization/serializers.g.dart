@@ -7,6 +7,8 @@ part of 'serializers.dart';
 // **************************************************************************
 
 Serializers _$serializers = (new Serializers().toBuilder()
+      ..add(FarmData.serializer)
+      ..add(FarmReportData.serializer)
       ..add(HumidityReport.serializer)
       ..add(NpkReport.serializer)
       ..add(PostData.serializer)
