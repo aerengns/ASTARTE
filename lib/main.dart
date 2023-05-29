@@ -28,6 +28,8 @@ import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import 'network_manager/services/farm_data_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -99,6 +101,10 @@ class Astarte extends StatelessWidget {
         Provider(
           create: (_) => PostsService.create(),
           dispose: (_, PostsService service) => service.client.dispose(),
+        ),
+        Provider(
+          create: (_) => FarmDataService.create(),
+          dispose: (_, FarmDataService service) => service.client.dispose(),
         ),
       ],
       child: MaterialApp(
