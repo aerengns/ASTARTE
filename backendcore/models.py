@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from django.contrib.auth.models import User
@@ -21,6 +22,12 @@ class Farm(BaseAbstractModel):
     name = models.CharField(max_length=100)
     area = models.FloatField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class FarmCornerPoint(BaseAbstractModel):
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    latitude = models.FloatField(validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)])
+    longitude = models.FloatField(validators=[MinValueValidator(-180.0), MaxValueValidator(180.0)])
 
 
 class FarmReport(BaseAbstractModel):

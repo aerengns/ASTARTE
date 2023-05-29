@@ -109,6 +109,11 @@ class FarmList(APIView):
         serializer = FarmSerializer(reports, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+        print(request.POST)
+        return Response()
+
+
 
 class GetTokenCredentials(APIView):
     permission_classes = [IsAuthenticated]
