@@ -6,6 +6,15 @@ import 'package:astarte/utils/dynamic_heatmap_utils.dart';
 
 import 'package:astarte/sidebar.dart';
 
+const List<Color> colorPalettePH = [
+  Color.fromRGBO(255, 109, 109, 1),
+  Color.fromRGBO(255, 153, 154, 1),
+  Color.fromRGBO(255, 197, 196, 1),
+  Color.fromRGBO(200, 199, 255, 1),
+  Color.fromRGBO(120, 119, 255, 1),
+  Color.fromRGBO(41, 40, 255, 1),
+];
+
 bool isExist(List<List<int>> sensorLocations, List<int> currLocation) {
   for (int i = 0; i < sensorLocations.length; i++) {
     if (sensorLocations[i][0] == currLocation[0] &&
@@ -30,21 +39,21 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
 
   @override
   void initState() {
-    dynamic_heatmap = _initExampleData();
+    dynamic_heatmap = _initExampleData('moisture');
     super.initState();
   }
 
-  Widget _initExampleData() {
+  Widget _initExampleData(String heatmapType) {
     HeatmapData heatmapDataPower;
     return FutureBuilder<DynamicHeatmap>(
-      future: getHeatmapData(),
+      future: getHeatmapData(heatmapType),
       builder: (context, snapshot) {
         List<String> rows;
         List<String> columns;
         List<double> values;
         List<List<int>> sensor_locations;
 
-        const String unit = 'moisture';
+        String unit = heatmapType;
         List<int> current_location;
         final List<HeatmapItem> items = [];
 
@@ -80,13 +89,25 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             }
           }
         }
+        List<Color> color = colorPaletteBlue;
+        if (heatmapType == 'moisture')
+          color = colorPaletteBlue;
+        else if (heatmapType == 'n')
+          color = colorPaletteGreen;
+        else if (heatmapType == 'p')
+          color = colorPaletteRed;
+        else if (heatmapType == 'k')
+          color = colorPaletteDeepOrange;
+        else if (heatmapType == 'temperature')
+          color = colorPaletteTemperature;
+        else if (heatmapType == 'ph') color = colorPalettePH;
 
         heatmapDataPower = HeatmapData(
           rows: rows,
           columns: columns,
           radius: 1,
           items: items,
-          colorPalette: colorPaletteBlue,
+          colorPalette: color,
         );
 
         return Heatmap(
@@ -112,7 +133,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   Widget build(BuildContext context) {
     final title = selectedItem != null
         ? '${(selectedItem!.value * (100 / 9)).toStringAsFixed(2)} ${selectedItem!.unit}'
-        : '--- moisture';
+        : '---';
     final subtitle = selectedItem != null
         ? '${selectedItem!.xAxisLabel} ${selectedItem!.yAxisLabel}'
         : '---';
@@ -129,7 +150,145 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _switchImage,
-              child: Text("Switch"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // Background color
+                foregroundColor: Colors.white, // Text color
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 5, vertical: 5), // Button padding
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(10), // Button border radius
+                ),
+              ),
+              child: const Text("Change View"),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('moisture');
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor: Colors.blue, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("moisture"),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('n');
+                      isTrue = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor: Colors.green, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("n"),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('p');
+                      isTrue = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor: Colors.red, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("p"),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('k');
+                      isTrue = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor: Colors.orange, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("k"),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('temperature');
+                      isTrue = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor:
+                        Color.fromARGB(255, 75, 21, 2), // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("temperature"),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      dynamic_heatmap = _initExampleData('ph');
+                      isTrue = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Background color
+                    foregroundColor: Colors.purple, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10), // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // Button border radius
+                    ),
+                  ),
+                  child: Text("ph"),
+                ),
+              ],
             ),
           ],
         ),
