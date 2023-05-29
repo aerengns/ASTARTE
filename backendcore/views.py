@@ -14,9 +14,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from firebase_auth.authentication import FirebaseAuthentication
 
-from dynamic_heatmap import dynamic_heatmap, find_rows_and_columns_of, plot_heatmap
+
 import numpy as np
 from random import random
+
+from scripts.dynamic_heatmap import dynamic_heatmap, plot_heatmap, find_rows_and_columns_of
 
 
 class ReportDetail(APIView):
