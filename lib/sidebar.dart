@@ -93,13 +93,13 @@ class _NavBarState extends State<NavBar> {
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   onTap: () => Navigator.pushNamed(context, '/workers'),
                 ),
-                if(currentUser.userType == 'Worker')
-                ListTile(
-                  leading: const Icon(Icons.work_off_rounded),
-                  title: const Text('Finish Job'),
-                  trailing: const Icon(Icons.check_circle_rounded),
-                  onTap: () => {},
-                ),
+                if (currentUser.userType == 'Worker')
+                  ListTile(
+                    leading: const Icon(Icons.work_off_rounded),
+                    title: const Text('Finish Job'),
+                    trailing: const Icon(Icons.check_circle_rounded),
+                    onTap: () => {},
+                  ),
               ]),
           if (currentUser.userType != 'Worker')
             ListTile(
@@ -138,6 +138,12 @@ class _NavBarState extends State<NavBar> {
             title: const Text('Get Help'),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/posts'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_rounded),
+            title: const Text('Sensor'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/serial'),
           ),
           const Divider(),
           ListTile(

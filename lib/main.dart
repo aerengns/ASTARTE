@@ -3,6 +3,7 @@ import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
 import 'package:astarte/new_post.dart';
 import 'package:astarte/posts.dart';
+import 'package:astarte/serial.dart';
 import 'package:astarte/theme/astarte_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -78,10 +79,10 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   _setupLogging();
   runApp(
-      ChangeNotifierProvider(
-        create: (_) => CurrentUser(),
-        child: const Astarte(),
-      ),
+    ChangeNotifierProvider(
+      create: (_) => CurrentUser(),
+      child: const Astarte(),
+    ),
   );
 }
 
@@ -117,6 +118,7 @@ class Astarte extends StatelessWidget {
           '/ph_report': (context) => PHReport(),
           '/logs': (context) => Logs(),
           '/workers': (context) => const Workers(),
+          '/serial': (context) => ExampleApp(),
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
           '/dynamic_heatmap': (context) => HeatmapPage(),
