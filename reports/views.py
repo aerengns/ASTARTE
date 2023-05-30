@@ -181,18 +181,16 @@ class SaveReportData(APIView):
     def get(self, request, *args):
         return Response("get recieved")
 
-    def post(self, request):
+    def post(self, request, farm_id):
         byte_object = request.body
         string_object = byte_object.decode('utf-8')
         object_dict = json.loads(string_object)
-        object_dict.pop('parcelNo')
         date = object_dict.pop('formDate')
-        farm_name = object_dict.pop('farmName')
-        object_dict.update({'farm': Farm.objects.get(name=farm_name)})
+        object_dict.update({'farm': Farm.objects.get(id=farm_id)})
         object_dict.update({'date_collected': datetime.datetime.strptime(date, '%d-%m-%Y').strftime('%Y-%m-%d')})
         obj = FarmReport.objects.create(**object_dict)
         obj.save()
         log = FarmReportLog(**object_dict)
         log.save()
-        message = f"New report created for farm: {farm_name}"
+        message = f"New report created for farm: {farm_id}"
         return Response(message)
