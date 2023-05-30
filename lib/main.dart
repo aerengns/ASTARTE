@@ -61,7 +61,7 @@ void main() async {
     sound: true,
   );
   messaging.getToken().then((token) {
-    print('Token: $token');
+    print('Sending token to backend.');
     sendTokenToServer(token); // Send the token to your Django backend
   });
 

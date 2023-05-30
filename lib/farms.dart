@@ -24,10 +24,8 @@ class _FarmsState extends State<Farms> {
           Padding(padding: EdgeInsets.only(bottom: 20)),
           const DataList(),
           ElevatedButton(
-            onPressed: () {
-              // TODO: add
-            },
-            child: const Text('Add New Data', style: TextStyle(fontSize: 20)),
+            onPressed: () => Navigator.pushNamed(context, '/create_farm'),
+            child: const Text('Add New Farm', style: TextStyle(fontSize: 20)),
           ),
         ],
       ),

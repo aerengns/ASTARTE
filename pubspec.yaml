@@ -52,6 +52,7 @@ dependencies:
   fl_heatmap: ^0.3.0
   intl: ^0.17.0
   geolocator: ^9.0.2
+  built_collection: ^5.1.0
 
 flutter_icons:
   image_path: "assets/icons/launcher_icon.png" 

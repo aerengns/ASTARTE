@@ -7,12 +7,12 @@ import 'package:built_collection/built_collection.dart';
 part 'farm_data.g.dart';
 
 abstract class FarmReportData implements Built<FarmReportData, FarmReportDataBuilder> {
-  double get moisture;
-  double get phosphorus;
-  double get potassium;
-  double get nitrogen;
-  double get temperature;
-  double get ph;
+  double? get moisture;
+  double? get phosphorus;
+  double? get potassium;
+  double? get nitrogen;
+  double? get temperature;
+  double? get ph;
 
   FarmReportData._();
 
@@ -28,7 +28,7 @@ abstract class FarmData implements Built<FarmData, FarmDataBuilder> {
   String get updated_at;
   int get is_active;
   String get name;
-  double get area;
+  double? get area;
   int get owner;
   FarmReportData? get latest_farm_report;
   FarmData._();
