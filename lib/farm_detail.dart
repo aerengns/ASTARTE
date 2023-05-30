@@ -6,7 +6,8 @@ import 'package:fl_heatmap/fl_heatmap.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'network_manager/models/farm_data.dart';
+import 'farm_data_form.dart';
+import 'network_manager/models/farm_data.dart' as FarmDataModel;
 
 class FarmDetail extends StatefulWidget {
   FarmDetail({Key? key, required this.farmId}) : super(key: key);
@@ -29,7 +30,7 @@ class _FarmDetailState extends State<FarmDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FarmData>(
+    return FutureBuilder<FarmDataModel.FarmData>(
       future: Provider.of<FarmDataService>(context, listen: false)
           .getFarm(widget.farmId)
           .then((response) => response.body!),
@@ -52,18 +53,6 @@ class _FarmDetailState extends State<FarmDetail> {
                   // Create links to reports and photos pages.
                   Row(
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navigate to reports page.
-                            Navigator.pushNamed(context, '/humidity_report');
-                          },
-                          child: const Text('Reports'),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -101,8 +90,8 @@ class _FarmDetailState extends State<FarmDetail> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Wrap(
-                          children: const [
+                        const Wrap(
+                          children: [
                             Icon(
                               Icons.wb_cloudy_rounded,
                               size: 20,
@@ -157,8 +146,8 @@ class _FarmDetailState extends State<FarmDetail> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Wrap(
-                          children: const [
+                        const Wrap(
+                          children: [
                             Icon(
                               Icons.account_tree_rounded,
                               size: 20,
@@ -226,11 +215,11 @@ class _FarmDetailState extends State<FarmDetail> {
                       borderRadius: BorderRadius.circular(8),
                       color: CustomColors.astarteGrey,
                     ),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Wrap(
-                          children: const [
+                          children: [
                             Icon(
                               Icons.house_rounded,
                               size: 20,
@@ -248,8 +237,7 @@ class _FarmDetailState extends State<FarmDetail> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          'Doing well',
+                        Text('Doing well',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -258,6 +246,26 @@ class _FarmDetailState extends State<FarmDetail> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to reports page.
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => FarmData(farmId: widget.farmId)),
+                            );
+                          },
+                          child: const Text('Add new report data'),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -15,8 +15,8 @@ abstract class SensorDataService extends ChopperService {
   @Get(path: '/{name}')
   Future<Response<SensorData>> getFarmSensorData(@Path('name') String farmName);
 
-  @Post()
-  Future<Response> saveSensorData(@Body() SensorData data);
+  @Post(path: '/{farm_id}')
+  Future<Response> saveSensorData(@Body() SensorData data, @Path('farm_id') int farmId);
 
   @Get(
       path:
