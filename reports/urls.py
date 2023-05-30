@@ -9,5 +9,5 @@ urlpatterns = [
     path('reports/get_logs/<slug:farm_id>', views.LogSenderAPI.as_view(), name='get_logs'),
     path('reports/get_farms', views.SendFarmList.as_view(), name='save_report'),
     path('reports', views.SaveReportData.as_view(), name='save_report'),
-    path('reports/<slug:farm_name>', views.SaveReportData.as_view(), name='save_report'),
+    path('reports/<int:farm_id>', views.SaveReportData.as_view(), name='save_report'),
 ]
