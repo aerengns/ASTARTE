@@ -1,6 +1,7 @@
 import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/network_manager/services/calendar_events_service.dart';
 import 'package:astarte/new_post.dart';
 import 'package:astarte/posts.dart';
 import 'package:astarte/theme/astarte_theme.dart';
@@ -106,6 +107,10 @@ class Astarte extends StatelessWidget {
           create: (_) => FarmDataService.create(),
           dispose: (_, FarmDataService service) => service.client.dispose(),
         ),
+        Provider(
+          create: (_) => CalendarEventsService.create(),
+          dispose: (_, CalendarEventsService service) => service.client.dispose(),
+        )
       ],
       child: MaterialApp(
         title: 'ASTARTE',

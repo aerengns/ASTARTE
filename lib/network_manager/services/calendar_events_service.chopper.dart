@@ -1,40 +1,42 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'farm_data_service.dart';
+part of 'calendar_events_service.dart';
 
 // **************************************************************************
 // ChopperGenerator
 // **************************************************************************
 
 // ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
-class _$FarmDataService extends FarmDataService {
-  _$FarmDataService([ChopperClient? client]) {
+class _$CalendarEventsService extends CalendarEventsService {
+  _$CalendarEventsService([ChopperClient? client]) {
     if (client == null) return;
     this.client = client;
   }
 
   @override
-  final definitionType = FarmDataService;
+  final definitionType = CalendarEventsService;
 
   @override
-  Future<Response<BuiltList<FarmData>>> getFarms() {
-    final Uri $url = Uri.parse('/farms');
+  Future<Response<BuiltList<CustomEvent>>> getCalendarData(String date) {
+    final Uri $url = Uri.parse('/create_event');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<BuiltList<FarmData>, FarmData>($request);
+    return client.send<BuiltList<CustomEvent>, CustomEvent>($request);
   }
 
   @override
-  Future<Response<FarmData>> getFarm(int farmId) {
-    final Uri $url = Uri.parse('/farms/${farmId}');
+  Future<Response<dynamic>> createCustomEvent(CustomEvent event) {
+    final Uri $url = Uri.parse('/create_event');
+    final $body = event;
     final Request $request = Request(
-      'GET',
+      'POST',
       $url,
       client.baseUrl,
+      body: $body,
     );
-    return client.send<FarmData, FarmData>($request);
+    return client.send<dynamic, dynamic>($request);
   }
 }

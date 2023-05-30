@@ -7,7 +7,7 @@ part of 'farm_data.dart';
 // **************************************************************************
 
 Serializer<FarmReportData> _$farmReportDataSerializer =
-new _$FarmReportDataSerializer();
+    new _$FarmReportDataSerializer();
 Serializer<FarmData> _$farmDataSerializer = new _$FarmDataSerializer();
 
 class _$FarmReportDataSerializer
@@ -166,8 +166,8 @@ class _$FarmDataSerializer implements StructuredSerializer<FarmData> {
           break;
         case 'latest_farm_report':
           result.latest_farm_report.replace(serializers.deserialize(value,
-              specifiedType: const FullType(FarmReportData))!
-          as FarmReportData);
+                  specifiedType: const FullType(FarmReportData))!
+              as FarmReportData);
           break;
       }
     }
@@ -195,11 +195,11 @@ class _$FarmReportData extends FarmReportData {
 
   _$FarmReportData._(
       {required this.moisture,
-        required this.phosphorus,
-        required this.potassium,
-        required this.nitrogen,
-        required this.temperature,
-        required this.ph})
+      required this.phosphorus,
+      required this.potassium,
+      required this.nitrogen,
+      required this.temperature,
+      required this.ph})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         moisture, r'FarmReportData', 'moisture');
@@ -250,12 +250,12 @@ class _$FarmReportData extends FarmReportData {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'FarmReportData')
-      ..add('moisture', moisture)
-      ..add('phosphorus', phosphorus)
-      ..add('potassium', potassium)
-      ..add('nitrogen', nitrogen)
-      ..add('temperature', temperature)
-      ..add('ph', ph))
+          ..add('moisture', moisture)
+          ..add('phosphorus', phosphorus)
+          ..add('potassium', potassium)
+          ..add('nitrogen', nitrogen)
+          ..add('temperature', temperature)
+          ..add('ph', ph))
         .toString();
   }
 }
@@ -361,13 +361,13 @@ class _$FarmData extends FarmData {
 
   _$FarmData._(
       {required this.id,
-        required this.created_at,
-        required this.updated_at,
-        required this.is_active,
-        required this.name,
-        required this.area,
-        required this.owner,
-        this.latest_farm_report})
+      required this.created_at,
+      required this.updated_at,
+      required this.is_active,
+      required this.name,
+      required this.area,
+      required this.owner,
+      this.latest_farm_report})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'FarmData', 'id');
     BuiltValueNullFieldError.checkNotNull(
@@ -419,14 +419,14 @@ class _$FarmData extends FarmData {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'FarmData')
-      ..add('id', id)
-      ..add('created_at', created_at)
-      ..add('updated_at', updated_at)
-      ..add('is_active', is_active)
-      ..add('name', name)
-      ..add('area', area)
-      ..add('owner', owner)
-      ..add('latest_farm_report', latest_farm_report))
+          ..add('id', id)
+          ..add('created_at', created_at)
+          ..add('updated_at', updated_at)
+          ..add('is_active', is_active)
+          ..add('name', name)
+          ..add('area', area)
+          ..add('owner', owner)
+          ..add('latest_farm_report', latest_farm_report))
         .toString();
   }
 }
