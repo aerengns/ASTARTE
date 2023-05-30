@@ -27,3 +27,7 @@ class Event(models.Model):
     importance = models.IntegerField(choices=EVENT_IMPORTANCE_CHOICES)
     # reason = models.CharField(null=True, blank=True, max_length=255)
 
+
+class CustomEvent(models.Model):
+    description = models.CharField(max_length=255)
+    date = models.DateTimeField()
