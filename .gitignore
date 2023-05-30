@@ -24,7 +24,6 @@ migrate_working_dir/
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
-/ios/Runner.xcodeproj/project.pbxproj
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -50,3 +49,7 @@ app.*.map.json
 # Generated flutter files
 *.g.dart
 *.chopper.dart
+
+# ios
+/ios/Runner.xcodeproj/project.pbxproj
+/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
