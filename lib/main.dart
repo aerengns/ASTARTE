@@ -2,6 +2,7 @@ import 'package:astarte/create_farm.dart';
 import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/network_manager/services/calendar_events_service.dart';
 import 'package:astarte/new_post.dart';
 import 'package:astarte/posts.dart';
 import 'package:astarte/theme/astarte_theme.dart';
@@ -28,8 +29,9 @@ import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
 import 'network_manager/services/farm_data_service.dart';
+
+String? deviceToken;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,19 +39,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  void sendTokenToServer(String? token) async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/send_token'));
-    final tokens = <String, String>{'token': token as String};
-    request.fields.addEntries(tokens.entries);
-
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      print('Token sent successfully!');
-    } else {
-      print('Failed to send token!');
-    }
-  }
 
   // get user permission for sending notifications on iOS
   NotificationSettings settings = await messaging.requestPermission(
@@ -62,8 +51,8 @@ void main() async {
     sound: true,
   );
   messaging.getToken().then((token) {
-    print('Sending token to backend.');
-    sendTokenToServer(token); // Send the token to your Django backend
+    print('Token: $token');
+    deviceToken = token;
   });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -93,6 +82,9 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      sendTokenToServer(context);
+    });
     return MultiProvider(
       providers: [
         Provider(
@@ -107,6 +99,10 @@ class Astarte extends StatelessWidget {
           create: (_) => FarmDataService.create(),
           dispose: (_, FarmDataService service) => service.client.dispose(),
         ),
+        Provider(
+          create: (_) => CalendarEventsService.create(),
+          dispose: (_, CalendarEventsService service) => service.client.dispose(),
+        )
       ],
       child: MaterialApp(
         title: 'ASTARTE',
@@ -147,4 +143,21 @@ void _setupLogging() {
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
+}
+
+void sendTokenToServer(BuildContext context) async {
+  var request = http.MultipartRequest(
+      'POST', Uri.parse('${GENERAL_URL}app/send_token'));
+  final body = <String, String>{
+    'token': deviceToken as String,
+    'user_type': Provider.of<CurrentUser>(context, listen: false).userType
+  };
+  request.fields.addAll(body);
+
+  http.StreamedResponse response = await request.send();
+  if (response.statusCode == 200) {
+    print('Token sent successfully!');
+  } else {
+    print('Failed to send token!');
+  }
 }

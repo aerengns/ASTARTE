@@ -1,10 +1,14 @@
 import 'dart:math';
 
+import 'package:astarte/network_manager/models/custom_event.dart';
+import 'package:astarte/network_manager/services/calendar_events_service.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/calendar_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:built_collection/built_collection.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({Key? key}) : super(key: key);
@@ -37,6 +41,16 @@ class _CalendarState extends State<Calendar> {
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
     return kEvents[day] ?? [];
+  }
+
+  Future<BuiltList<CustomEvent>> getCustomEvents() async {
+    var date = _selectedDay!.toIso8601String().split('T')[0];
+    final response = await CalendarEventsService.create().getCalendarData(date);
+    if (response.isSuccessful) {
+      return response.body!;
+    } else {
+      throw response.error!;
+    }
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -122,7 +136,82 @@ class _CalendarState extends State<Calendar> {
               _focusedDay = focusedDay;
             },
           ),
-          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        // open a dialog to enter text with max length 255
+                        // add the event to the database
+                        // refresh the calendar
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              final textController = TextEditingController();
+                              return AlertDialog(
+                                title: const Text('Add Event'),
+                                content: TextField(
+                                  controller: textController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Description',
+                                  ),
+                                  maxLength: 255,
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final response = await Provider.of<CalendarEventsService>(context, listen: false)
+                                          .createCustomEvent(
+                                        CustomEvent((b) => b
+                                            ..description = textController.text
+                                            ..date = _selectedDay!.toIso8601String().split('T')[0]
+                                        )
+                                      );
+
+                                      if (response.isSuccessful) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Event created'),
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Could not create event'),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: const Text('Save'),
+                                  ),
+                                ],
+                              );
+                            }
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                    ),
+                    const Text('Add Event', style: TextStyle(fontSize: 16.0)),
+                  ],
+                ),
+            )
+          ),
           Expanded(
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,

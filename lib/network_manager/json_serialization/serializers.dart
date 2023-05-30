@@ -1,3 +1,4 @@
+import 'package:astarte/network_manager/models/custom_event.dart';
 import 'package:astarte/network_manager/models/farm.dart';
 import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/npk_report.dart';
@@ -20,6 +21,7 @@ part 'serializers.g.dart';
   HumidityReport,
   PostData,
   FarmData,
+  CustomEvent,
   Farm,
 ])
 
