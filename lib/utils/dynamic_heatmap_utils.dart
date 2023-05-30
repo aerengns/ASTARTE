@@ -24,14 +24,18 @@ class DynamicHeatmap {
   });
 }
 
-Future<DynamicHeatmap> getHeatmapData(String heatmap_type) async {
+Future<DynamicHeatmap> getHeatmapData(String heatmap_type, int farm_id) async {
   try {
     var headers = {
       'Authorization': 'Bearer ' "token",
     };
     // your endpoint and request method
-    var request = http.MultipartRequest('GET',
-        Uri.parse('http://127.0.0.1:8000/api/v1/get_heatmap/' + heatmap_type));
+    var request = http.MultipartRequest(
+        'GET',
+        Uri.parse('http://127.0.0.1:8000/api/v1/get_heatmap/' +
+            farm_id.toString() +
+            '/' +
+            heatmap_type));
 
     request.headers.addAll(headers);
 

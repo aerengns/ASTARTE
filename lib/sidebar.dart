@@ -93,13 +93,13 @@ class _NavBarState extends State<NavBar> {
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   onTap: () => Navigator.pushNamed(context, '/workers'),
                 ),
-                if(currentUser.userType == 'Worker')
-                ListTile(
-                  leading: const Icon(Icons.work_off_rounded),
-                  title: const Text('Finish Job'),
-                  trailing: const Icon(Icons.check_circle_rounded),
-                  onTap: () => {},
-                ),
+                if (currentUser.userType == 'Worker')
+                  ListTile(
+                    leading: const Icon(Icons.work_off_rounded),
+                    title: const Text('Finish Job'),
+                    trailing: const Icon(Icons.check_circle_rounded),
+                    onTap: () => {},
+                  ),
               ]),
           if (currentUser.userType != 'Worker')
             ListTile(
@@ -115,12 +115,6 @@ class _NavBarState extends State<NavBar> {
               trailing: const Icon(Icons.arrow_forward_ios_rounded),
               onTap: () => Navigator.pushNamed(context, '/logs'),
             ),
-          ListTile(
-            leading: const Icon(Icons.map_rounded),
-            title: const Text('Dynamic Heatmap'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/dynamic_heatmap'),
-          ),
           ListTile(
             leading: const Icon(Icons.calendar_month_rounded),
             title: const Text('Calendar'),
