@@ -357,7 +357,7 @@ class Command(BaseCommand):
                     body=body + ' is expected',
                     image='https://img.icons8.com/plumpy/512/important-event.png',
                 ),
-                token=device_token,
+                token=device_token.token,
             )
             response = messaging.send(message)
             print('Successfully sent message:', message.notification)
