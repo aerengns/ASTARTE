@@ -9,10 +9,9 @@ use('agg')
 from PIL import Image
 
 def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_of_columns=None):
-    corners_np = np.array(farm_corners)
 
-    min_width, max_width = np.min(corners_np[:,0]), np.max(corners_np[:,0])
-    min_height, max_height = np.min(corners_np[:,1]), np.max(corners_np[:,1])
+    min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
+    min_height, max_height = np.min(farm_corners[:,0]), np.max(farm_corners[:,0])
 
     farm_width = max_width - min_width
     farm_height = max_height - min_height
@@ -35,20 +34,19 @@ def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_
 
 
 def plot_heatmap(zi, sensors, farm_corners, color='Blues'):
-    corners_np = np.array(farm_corners)
 
-    min_width, max_width = np.min(corners_np[:,0]), np.max(corners_np[:,0])
-    min_height, max_height = np.min(corners_np[:,1]), np.max(corners_np[:,1])
+    min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
+    min_height, max_height = np.min(farm_corners[:,0]), np.max(farm_corners[:,0])
 
     # Plot the interpolated data with red dots at the sensor locations
     fig, ax = plt.subplots()
-    im = ax.imshow(zi*11, extent=[min_width, max_width, min_height, max_height], origin='lower')
+    im = ax.imshow(zi*10, extent=[min_width, max_width, min_height, max_height], origin='lower')
     im.set_cmap(color)
 
     plt.scatter(sensors[:,0], sensors[:,1], c='red')
 
     for i in range(len(sensors)):
-        ax.annotate(f"{sensors[i,2]*11:.2f}", (sensors[i, 0], sensors[i, 1]), textcoords="offset points", xytext=(0,10), ha='center', color=(0,0,1))
+        ax.annotate(f"{sensors[i,2]:.2f}", (sensors[i, 0], sensors[i, 1]), textcoords="offset points", xytext=(0,10), ha='center', color=(0,0,1))
 
     fig.subplots_adjust(left=0.03, bottom=0.08, right=0.99, top=0.94, wspace=0, hspace=0)
     
@@ -76,34 +74,34 @@ Returns:
 """
 
 
-def dynamic_heatmap(farm_corners: list, sensors: np.array, number_of_rows=None, number_of_columns=None):
+def dynamic_heatmap(farm_corners: np.array, sensors: np.array, number_of_rows=None, number_of_columns=None):
 
-    corners_np = np.array(farm_corners)
+    sensors[:,2] /= 10
 
-    min_width, max_width = np.min(corners_np[:,0]), np.max(corners_np[:,0])
-    min_height, max_height = np.min(corners_np[:,0]), np.max(corners_np[:,0])
-
-    farm_width = max_width - min_width
+    min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
+    min_height, max_height = np.min(farm_corners[:,0]), np.max(farm_corners[:,0])
+    max_val, min_val = np.max(farm_corners), np.min(farm_corners)
+    
+    farm_width = max_val - min_val
     farm_height = max_height - min_height
 
     if number_of_rows is None and number_of_columns is None:
         raise "Please enter number of columns or rows"
     elif number_of_columns is None:
-        number_of_columns = (number_of_rows*farm_height)//farm_width
+        number_of_columns = (number_of_rows*farm_width)//farm_height
     else:
-        number_of_rows = (number_of_columns*farm_width)//farm_height
+        number_of_rows = (number_of_columns*farm_height)//farm_width
 
-
-    x_linspace = np.linspace(min_width, max_width, number_of_rows)
-    y_linspace = np.linspace(min_height, max_height, number_of_columns)
+    x_linspace = np.linspace(min_height, max_height, number_of_rows)
+    y_linspace = np.linspace(min_width, max_width, number_of_columns)
     xi, yi = np.meshgrid(x_linspace, y_linspace)
 
-    x_linspace_heatmap = np.linspace(min_width, max_width, 200)
-    y_linspace_heatmap = np.linspace(min_height, max_height, 200)
+    x_linspace_heatmap = np.linspace(min_height, max_height, 200)
+    y_linspace_heatmap = np.linspace(min_width, max_width, 200)
     xi_heatmap, yi_heatmap = np.meshgrid(x_linspace_heatmap, y_linspace_heatmap)
 
 
-    corners = [np.array(i+[0]) for i in farm_corners]
+    corners = np.pad(farm_corners, [(0,1), (0,1)])
     k = 3
     sensors_count = len(sensors)
     corners_count = len(corners)

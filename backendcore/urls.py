@@ -9,5 +9,5 @@ urlpatterns = [
     path('farms/<int:farm_id>', views.FarmDetail.as_view()),
     path('api-token-auth/', auth_views.obtain_auth_token),
     path('get_credentials/', views.GetTokenCredentials.as_view()),
-    path('get_heatmap/<str:heatmap_type>', views.GetDynamicHeatmap.as_view())
+    path('get_heatmap/<int:farm_id>/<str:heatmap_type>', views.GetDynamicHeatmap.as_view())
 ]
