@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:astarte/sidebar.dart';
 
 class FarmSensorData extends StatefulWidget {
-  const FarmSensorData({Key? key}) : super(key: key);
+  FarmSensorData({Key? key, required this.farmId}) : super(key: key);
+
+  int farmId;
 
   @override
   State<FarmSensorData> createState() => _FarmSensorDataState();
@@ -86,7 +88,6 @@ class DataList extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 leading: const Icon(Icons.newspaper),
-                title: Text(data[index].farmName),
                 subtitle: Text(data[index].formDate),
                 onTap: () {
                   Navigator.pushNamed(context, '/farm_data_form', arguments: data[index]);

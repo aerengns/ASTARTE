@@ -1,4 +1,5 @@
 import 'package:astarte/network_manager/models/custom_event.dart';
+import 'package:astarte/network_manager/models/farm.dart';
 import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/models/npk_report.dart';
 import 'package:astarte/network_manager/models/humidity_report.dart';
@@ -21,5 +22,13 @@ part 'serializers.g.dart';
   PostData,
   FarmData,
   CustomEvent,
+  Farm,
 ])
-final Serializers serializers = (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
+
+final Serializers serializers = (_$serializers.toBuilder()
+  ..addBuilderFactory(
+    const FullType(BuiltList, [FullType(CornerPoint)]),
+        () => ListBuilder<CornerPoint>(),
+  )..addPlugin(StandardJsonPlugin()))
+    .build();
+

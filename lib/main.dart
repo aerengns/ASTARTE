@@ -1,3 +1,4 @@
+import 'package:astarte/create_farm.dart';
 import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
@@ -69,10 +70,10 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   _setupLogging();
   runApp(
-      ChangeNotifierProvider(
-        create: (_) => CurrentUser(),
-        child: const Astarte(),
-      ),
+    ChangeNotifierProvider(
+      create: (_) => CurrentUser(),
+      child: const Astarte(),
+    ),
   );
 }
 
@@ -120,13 +121,13 @@ class Astarte extends StatelessWidget {
           '/logs': (context) => Logs(),
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
-          '/farm_data_form': (context) => const FarmData(),
-          '/dynamic_heatmap': (context) => HeatmapPage(),
+          //'/farm_data_form': (context) => FarmData(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => const Calendar(),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
           '/posts': (context) => const Posts(),
           '/create-post': (context) => const NewPost(),
+          '/create_farm': (context) => const CreateFarm(),
         },
       ),
     );

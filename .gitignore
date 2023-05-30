@@ -45,3 +45,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated flutter files
+*.g.dart
+*.chopper.dart
+
+# ios
+/ios/Runner.xcodeproj/project.pbxproj
+/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
