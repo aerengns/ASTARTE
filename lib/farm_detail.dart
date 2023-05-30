@@ -1,6 +1,8 @@
+import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/network_manager/services/farm_data_service.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
+import 'package:fl_heatmap/fl_heatmap.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,7 +67,12 @@ class _FarmDetailState extends State<FarmDetail> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to reports page.
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      HeatmapPage(farmId: widget.farmId)),
+                            );
                           },
                           child: const Text('HeatMap'),
                         ),
@@ -241,12 +248,14 @@ class _FarmDetailState extends State<FarmDetail> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const Text('Doing well',
+                        const Text(
+                          'Doing well',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             color: CustomColors.astarteGreen,
-                          ),),
+                          ),
+                        ),
                       ],
                     ),
                   ),

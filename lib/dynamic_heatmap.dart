@@ -24,8 +24,9 @@ bool isExist(List<List<int>> sensorLocations, List<int> currLocation) {
 }
 
 class HeatmapPage extends StatefulWidget {
-  const HeatmapPage({Key? key}) : super(key: key);
+  HeatmapPage({Key? key, required this.farmId}) : super(key: key);
 
+  int farmId;
   @override
   State<HeatmapPage> createState() => _DynamicHeatmapState();
 }
@@ -46,7 +47,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   Widget _initExampleData(String heatmapType) {
     HeatmapData heatmapDataPower;
     return FutureBuilder<DynamicHeatmap>(
-      future: getHeatmapData(heatmapType),
+      future: getHeatmapData(heatmapType, 1),
       builder: (context, snapshot) {
         List<String> rows;
         List<String> columns;
@@ -79,7 +80,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             if (!(values[(rows.length - 1 - row) * columns.length + col] ==
                 0)) {
               items.add(HeatmapItem(
-                  value: values[(rows.length - 1 - row) * columns.length + col],
+                  value:
+                      values[(rows.length - 1 - row) * columns.length + col] /
+                          10,
                   style: isExist(sensor_locations, current_location)
                       ? HeatmapItemStyle.hatched
                       : HeatmapItemStyle.filled,
@@ -132,7 +135,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   @override
   Widget build(BuildContext context) {
     final title = selectedItem != null
-        ? '${(selectedItem!.value * (100 / 9)).toStringAsFixed(2)} ${selectedItem!.unit}'
+        ? '${(selectedItem!.value * 100).toStringAsFixed(2)} ${selectedItem!.unit}'
         : '---';
     final subtitle = selectedItem != null
         ? '${selectedItem!.xAxisLabel} ${selectedItem!.yAxisLabel}'
@@ -293,7 +296,6 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
           ],
         ),
       ),
-      drawer: NavBar(context),
     );
   }
 }

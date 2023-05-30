@@ -80,10 +80,10 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   _setupLogging();
   runApp(
-      ChangeNotifierProvider(
-        create: (_) => CurrentUser(),
-        child: const Astarte(),
-      ),
+    ChangeNotifierProvider(
+      create: (_) => CurrentUser(),
+      child: const Astarte(),
+    ),
   );
 }
 
@@ -125,7 +125,6 @@ class Astarte extends StatelessWidget {
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
           '/farm_data_form': (context) => const FarmData(),
-          '/dynamic_heatmap': (context) => HeatmapPage(),
           '/photo-upload': (context) => PhotoUpload(),
           '/calendar': (context) => const Calendar(),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
