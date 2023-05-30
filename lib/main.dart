@@ -28,8 +28,9 @@ import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
 import 'network_manager/services/farm_data_service.dart';
+
+String? deviceToken;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,19 +38,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  void sendTokenToServer(String? token) async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/send_token'));
-    final tokens = <String, String>{'token': token as String};
-    request.fields.addEntries(tokens.entries);
-
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      print('Token sent successfully!');
-    } else {
-      print('Failed to send token!');
-    }
-  }
 
   // get user permission for sending notifications on iOS
   NotificationSettings settings = await messaging.requestPermission(
@@ -63,7 +51,7 @@ void main() async {
   );
   messaging.getToken().then((token) {
     print('Token: $token');
-    sendTokenToServer(token); // Send the token to your Django backend
+    deviceToken = token;
   });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -93,6 +81,9 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      sendTokenToServer(context);
+    });
     return MultiProvider(
       providers: [
         Provider(
@@ -151,4 +142,21 @@ void _setupLogging() {
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
+}
+
+void sendTokenToServer(BuildContext context) async {
+  var request = http.MultipartRequest(
+      'POST', Uri.parse('${GENERAL_URL}app/send_token'));
+  final body = <String, String>{
+    'token': deviceToken as String,
+    'user_type': Provider.of<CurrentUser>(context, listen: false).userType
+  };
+  request.fields.addAll(body);
+
+  http.StreamedResponse response = await request.send();
+  if (response.statusCode == 200) {
+    print('Token sent successfully!');
+  } else {
+    print('Failed to send token!');
+  }
 }
