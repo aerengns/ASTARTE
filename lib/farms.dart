@@ -21,7 +21,7 @@ class _FarmsState extends State<Farms> {
       appBar: const AstarteAppBar(title: 'Farms'),
       body: Column(
         children: [
-          Padding(padding: EdgeInsets.only(bottom: 20)),
+          const Padding(padding: EdgeInsets.only(bottom: 20)),
           const DataList(),
           ElevatedButton(
             onPressed: () => Navigator.pushNamed(context, '/create_farm'),
@@ -95,8 +95,8 @@ class DataList extends StatelessWidget {
                                     color: CustomColors.astarteBlack,
                                   ),
                                 ),
-                                Row(
-                                  children: const [
+                                const Row(
+                                  children: [
                                     Text(
                                       'Location',
                                       style: TextStyle(
@@ -128,7 +128,6 @@ class DataList extends StatelessWidget {
 class FormData {
   String farmName;
   String date;
-  double parcelNo;
   double temperature;
   double moisture;
   double phosphorus;
@@ -140,7 +139,6 @@ class FormData {
       this.farmName,
       this.date,
       this.moisture,
-      this.parcelNo,
       this.temperature,
       this.phosphorus,
       this.potassium,

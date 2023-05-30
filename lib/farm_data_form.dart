@@ -10,7 +10,9 @@ import 'package:astarte/farm_sensor_data.dart';
 import 'network_manager/services/sensor_data_service.dart';
 
 class FarmData extends StatelessWidget {
-  const FarmData({Key? key}) : super(key: key);
+  FarmData({Key? key, required this.farmId}) : super(key: key);
+
+  int farmId;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +27,16 @@ class FarmData extends StatelessWidget {
               Navigator.pop(context);
             },
           )),
-      body: FarmDataForm(formData: formData),
+      body: FarmDataForm(farmId: farmId),
       drawer: NavBar(context),
     );
   }
 }
 
 class FarmDataForm extends StatefulWidget {
-  final FormData? formData;
+  int? farmId;
 
-  const FarmDataForm({Key? key, this.formData}) : super(key: key);
+  FarmDataForm({Key? key, this.farmId}) : super(key: key);
 
   @override
   State<FarmDataForm> createState() => _FarmDataFormState();
@@ -43,11 +45,9 @@ class FarmDataForm extends StatefulWidget {
 class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _dateController =
-      TextEditingController(text: _date);
+      TextEditingController(text: "");
 
-  late String _farmName;
   late String _date;
-  late String _parcelNo;
   late String _temperature;
   late String _moisture;
   late String _phosphorus;
@@ -58,12 +58,6 @@ class _FarmDataFormState extends State<FarmDataForm> {
   @override
   void initState() {
     super.initState();
-    _farmName = widget.formData?.farmName ?? '';
-    _date = widget.formData?.date ?? '';
-    _moisture = widget.formData?.moisture.toString() ?? '';
-    _phosphorus = widget.formData?.phosphorus.toString() ?? '';
-    _potassium = widget.formData?.potassium.toString() ?? '';
-    _nitrogen = widget.formData?.nitrogen.toString() ?? '';
   }
 
   Future<void> _selectDate() async {
@@ -136,28 +130,6 @@ class _FarmDataFormState extends State<FarmDataForm> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _farmName,
-                  validator: (value) {
-                    if (value?.isEmpty == true) {
-                      return 'Please enter a value';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    _farmName = value;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    labelText: 'Farm Name',
-                    hintText: 'Enter Farm Name',
-                  ),
-                ),
-                TextFormField(
                   onTap: () async {
                     FocusScope.of(context).requestFocus(FocusNode());
                     _selectDate().then((value) {
@@ -165,7 +137,6 @@ class _FarmDataFormState extends State<FarmDataForm> {
                     });
                   },
                   controller: _dateController,
-                  enabled: widget.formData == null,
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter a value';
@@ -186,26 +157,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _parcelNo,
-                  validator: (value) {
-                    return _validateNumericalField(value);
-                  },
-                  onChanged: (value) {
-                    _parcelNo = value;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    labelText: 'parcelNo',
-                  ),
-                ),
-                TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _temperature,
+                  // initialValue: _temperature,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -222,8 +174,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _moisture,
+                  // initialValue: _moisture,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -240,8 +191,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _phosphorus,
+                  // initialValue: _phosphorus,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -258,8 +208,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _potassium,
+                  // initialValue: _potassium,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -276,8 +225,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _nitrogen,
+                  // initialValue: _nitrogen,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -294,8 +242,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  enabled: widget.formData == null,
-                  initialValue: _ph,
+                  // initialValue: _ph,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -312,7 +259,6 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 Visibility(
-                  visible: widget.formData == null,
                   child: Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: ElevatedButton(
@@ -344,9 +290,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                                 context,
                                 listen: false)
                             .saveSensorData(SensorData((b) => b
-                              ..farmName = _farmName
                               ..formDate = _date
-                              ..parcelNo = double.parse(_parcelNo)
                               ..temperature = double.parse(_temperature)
                               ..moisture = double.parse(_moisture)
                               ..phosphorus = double.parse(_phosphorus)
@@ -354,7 +298,7 @@ class _FarmDataFormState extends State<FarmDataForm> {
                               ..nitrogen = double.parse(_nitrogen)
                               ..ph = double.parse(_ph)
                               ..latitude = _position.latitude
-                              ..longitude = _position.longitude));
+                              ..longitude = _position.longitude), widget.farmId as int);
                         if (response.isSuccessful) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
