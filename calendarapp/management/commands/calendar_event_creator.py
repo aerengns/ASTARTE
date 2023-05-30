@@ -210,9 +210,25 @@ class Command(BaseCommand):
             res = {}
             if (
                     avg_degree < 4.4 and avg_dew < 4.4 and avg_wind < temp_wind_threshold and avg_cloud < temp_cloud_threshold):
-                res['type'] = 1
+                res['type'] = 2
                 res['reason'] = 'low temperature, dew, wind speed, cloud'
                 res['importance'] = 2
+                self.notifications[current_day].append(res)
+
+    def heat_stress_warning(self, today=1):
+        for i in range(0, 7):
+            current_day = self.int_to_week[(today + i - 1) % 7 + 1]
+            start_index = i * 24
+            avg_degree = sum(
+                self.forecast_data['hourly']['temperature_2m'][start_index:start_index + 8]) / 8
+
+            high_temp_threshold = 40
+
+            res = {}
+            if avg_degree > high_temp_threshold:
+                res['type'] = 3
+                res['reason'] = 'high temperature'
+                res['importance'] = 0
                 self.notifications[current_day].append(res)
 
     def increase_irrigation_alert(self, today=1):
@@ -309,7 +325,7 @@ class Command(BaseCommand):
                     if not intervals:
                         continue
                     res['hours'] = intervals
-                    res['type'] = 0
+                    res['type'] = 1
                     res['reason'] = alert_type[type]
                     res['importance'] = round(2*importance_avg)
                     self.notifications[current_day].append(res)
