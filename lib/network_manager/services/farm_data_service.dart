@@ -5,6 +5,8 @@ import 'package:astarte/network_manager/model_converters/built_value_converter.d
 
 import 'package:astarte/utils/parameters.dart' as parameters;
 
+import '../models/farm.dart';
+
 
 part "farm_data_service.chopper.dart";
 
@@ -13,6 +15,9 @@ abstract class FarmDataService extends ChopperService {
 
   @Get()
   Future<Response<BuiltList<FarmData>>> getFarms();
+
+  @Post()
+  Future<Response> createFarm(@Body() Farm farm);
 
   @Get(path: '/{farm_id}')
   Future<Response<FarmData>> getFarm(@Path('farm_id') int farmId);

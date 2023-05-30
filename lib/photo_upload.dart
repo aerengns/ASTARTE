@@ -105,7 +105,6 @@ class _PhotoUploadState extends State<PhotoUpload> {
             ElevatedButton(
               child: Text('Get the percentage of growth!'),
               onPressed: () {
-                print('Hello');
                 uploadImage();
               },
             ),
