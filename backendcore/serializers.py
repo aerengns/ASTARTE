@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
+
 from .models import FarmReport, Farm, FarmCornerPoint
 
 
@@ -21,10 +23,22 @@ class FarmCornerPointSerializer(serializers.ModelSerializer):
         fields = ['latitude', 'longitude']
 
 
+class CreateFarmSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=225, required=True)
+    cornerPoints = FarmCornerPointSerializer(many=True, required=True)
+
+    def create(self, validated_data):
+        corner_points_data = validated_data.pop('cornerPoints')
+        farm = Farm.objects.create(name=validated_data['name'], owner_id=self.context['user_id'])
+        for corner_point_data in corner_points_data:
+            FarmCornerPoint.objects.create(farm=farm, **corner_point_data)
+        return farm
+
+
 class FarmSerializer(serializers.ModelSerializer):
     is_active = BooleanAsIntegerField()
     latest_farm_report = serializers.SerializerMethodField()
-    corner_points = FarmCornerPointSerializer(many=True)
+    farmcornerpoint_set = FarmCornerPointSerializer(many=True)
 
     class Meta:
         model = Farm
@@ -36,7 +50,7 @@ class FarmSerializer(serializers.ModelSerializer):
             return FarmReportSerializer(latest_report).data
         return None
 
-    def get_corner_points(self, obj):
+    def get_farmcornerpoint_set(self, obj):
         farm_corner_points = obj.farmcornerpoint_set.all()
         if farm_corner_points:
             return FarmCornerPointSerializer(farm_corner_points).data

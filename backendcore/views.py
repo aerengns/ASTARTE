@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from backendcore.models import FarmReport, Farm
-from backendcore.serializers import FarmSerializer, FarmReportSerializer
+from backendcore.serializers import FarmSerializer, FarmReportSerializer, CreateFarmSerializer
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -110,9 +110,14 @@ class FarmList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print(request.POST)
-        return Response()
-
+        serializer = CreateFarmSerializer(data=request.data, context={'user_id': request.user.id})
+        if serializer.is_valid():
+            farm = serializer.save()
+            farm.owner = request.user
+            farm.save()
+            return Response({"status": "success", "farm_id": farm.id}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetTokenCredentials(APIView):
