@@ -27,4 +27,5 @@ urlpatterns += [
     path('app/', include('calendarapp.urls')),
     path('app/', include('workers.urls')),
     path('app/', include('posts.urls')),
+    path('app/', include('accounts.urls')),
 ]
