@@ -90,8 +90,8 @@ class _FarmDetailState extends State<FarmDetail> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Wrap(
-                          children: [
+                        Wrap(
+                          children: const [
                             Icon(
                               Icons.wb_cloudy_rounded,
                               size: 20,
@@ -146,8 +146,8 @@ class _FarmDetailState extends State<FarmDetail> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Wrap(
-                          children: [
+                        Wrap(
+                          children: const [
                             Icon(
                               Icons.account_tree_rounded,
                               size: 20,
@@ -215,11 +215,11 @@ class _FarmDetailState extends State<FarmDetail> {
                       borderRadius: BorderRadius.circular(8),
                       color: CustomColors.astarteGrey,
                     ),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Wrap(
-                          children: [
+                          children: const [
                             Icon(
                               Icons.house_rounded,
                               size: 20,
@@ -237,7 +237,7 @@ class _FarmDetailState extends State<FarmDetail> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text('Doing well',
+                        const Text('Doing well',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,

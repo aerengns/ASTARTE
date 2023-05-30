@@ -95,8 +95,8 @@ class DataList extends StatelessWidget {
                                     color: CustomColors.astarteBlack,
                                   ),
                                 ),
-                                const Row(
-                                  children: [
+                                Row(
+                                  children: const [
                                     Text(
                                       'Location',
                                       style: TextStyle(
