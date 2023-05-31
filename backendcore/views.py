@@ -132,8 +132,8 @@ class GetTokenCredentials(APIView):
         return Response(content)
 
 class GetDynamicHeatmap(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request, farm_id, heatmap_type):
         print('Request recevied')
@@ -161,13 +161,17 @@ class GetDynamicHeatmap(APIView):
         all_reports = FarmReport.objects.filter(farm_id = farm_id, date_collected__year = date.year, 
                                         date_collected__month = date.month, date_collected__day = date.day)
 
-
         if heatmap_type == 'moisture':
-            sensors = np.zeros((10, 3))  # w, h, value
-            for i in range(10):
-                x,y,v = 150+400*random(), 150+400*random(), 100*random()
-                curr = np.array([x,y,v])
-                sensors[i] = curr
+            farm_sensors = []
+            for reports in all_reports:
+                if reports.latitude > max_latitude or reports.latitude < min_latitude or \
+                reports.longitude > max_longitude or reports.longitude < min_longitude:
+                    continue
+                lon, lat = reports.longitude, reports.latitude
+                lon = (lon - min_longitude)*111000
+                lat = (lat - min_latitude)*111000
+                farm_sensors.append([lon, lat, reports.moisture])
+            sensors = np.array(farm_sensors)
 
             number_of_rows = 20
             rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
@@ -190,17 +194,14 @@ class GetDynamicHeatmap(APIView):
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
                     continue
-                
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                print(reports.longitude, reports.latitude)
-                print(lon, lat, reports.nitrogen)
                 farm_sensors.append([lon, lat, reports.nitrogen])
-            
             sensors = np.array(farm_sensors)
             # mult_quofficient = 10/np.max(sensors[:,2])
             # sensors[:,2] = sensors[:,2]*mult_quofficient
+
             
 
             number_of_rows = 20
@@ -218,11 +219,16 @@ class GetDynamicHeatmap(APIView):
             return Response(data=events)
              
         elif heatmap_type == 'p':
-            sensors = np.zeros((20, 3))  # w, h, value
-            for i in range(20):
-                x,y,v = 150+400*random(), 150+400*random(), 100*random()
-                curr = np.array([x,y,v])
-                sensors[i] = curr
+            farm_sensors = []
+            for reports in all_reports:
+                if reports.latitude > max_latitude or reports.latitude < min_latitude or \
+                reports.longitude > max_longitude or reports.longitude < min_longitude:
+                    continue
+                lon, lat = reports.longitude, reports.latitude
+                lon = (lon - min_longitude)*111000
+                lat = (lat - min_latitude)*111000
+                farm_sensors.append([lon, lat, reports.phosphorus])
+            sensors = np.array(farm_sensors)
 
             number_of_rows = 20
             rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
@@ -239,11 +245,17 @@ class GetDynamicHeatmap(APIView):
             return Response(data=events)
         
         elif heatmap_type == 'k':
-            sensors = np.zeros((5, 3))  # w, h, value
-            for i in range(5):
-                x,y,v = 150+400*random(), 150+400*random(), 100*random()
-                curr = np.array([x,y,v])
-                sensors[i] = curr
+            farm_sensors = []
+            for reports in all_reports:
+                if reports.latitude > max_latitude or reports.latitude < min_latitude or \
+                reports.longitude > max_longitude or reports.longitude < min_longitude:
+                    continue
+                lon, lat = reports.longitude, reports.latitude
+                lon = (lon - min_longitude)*111000
+                lat = (lat - min_latitude)*111000
+                farm_sensors.append([lon, lat, reports.potassium])
+
+            sensors = np.array(farm_sensors)
 
             number_of_rows = 20
             rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
@@ -260,11 +272,17 @@ class GetDynamicHeatmap(APIView):
             return Response(data=events)
         
         elif heatmap_type == 'temperature':
-            sensors = np.zeros((5, 3))  # w, h, value
-            for i in range(5):
-                x,y,v = 150+400*random(), 150+400*random(), 100*random()
-                curr = np.array([x,y,v])
-                sensors[i] = curr
+            farm_sensors = []
+            for reports in all_reports:
+                if reports.latitude > max_latitude or reports.latitude < min_latitude or \
+                reports.longitude > max_longitude or reports.longitude < min_longitude:
+                    continue
+                lon, lat = reports.longitude, reports.latitude
+                lon = (lon - min_longitude)*111000
+                lat = (lat - min_latitude)*111000
+                farm_sensors.append([lon, lat, reports.temperature])
+
+            sensors = np.array(farm_sensors)
 
             number_of_rows = 20
             rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners, sensors.copy(), number_of_rows=number_of_rows)
@@ -281,11 +299,17 @@ class GetDynamicHeatmap(APIView):
             return Response(data=events)
         
         elif heatmap_type == 'ph':
-            sensors = np.zeros((5, 3))  # w, h, value
-            for i in range(5):
-                x,y,v = 150+400*random(), 150+400*random(), 100*random()
-                curr = np.array([x,y,v])
-                sensors[i] = curr
+            farm_sensors = []
+            for reports in all_reports:
+                if reports.latitude > max_latitude or reports.latitude < min_latitude or \
+                reports.longitude > max_longitude or reports.longitude < min_longitude:
+                    continue
+                lon, lat = reports.longitude, reports.latitude
+                lon = (lon - min_longitude)*111000
+                lat = (lat - min_latitude)*111000
+                farm_sensors.append([lon, lat, reports.ph])
+
+            sensors = np.array(farm_sensors)
 
             number_of_rows = 20
             rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
