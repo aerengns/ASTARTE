@@ -50,7 +50,7 @@ void main() async {
     provisional: false,
     sound: true,
   );
-  messaging.getToken().then((token) {
+  messaging.getToken(vapidKey: NOTIFICATION_VAPID_KEY).then((token) {
     print('Token: $token');
     deviceToken = token;
   });

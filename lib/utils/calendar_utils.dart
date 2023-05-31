@@ -4,7 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:astarte/utils/parameters.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:table_calendar/table_calendar.dart';
@@ -115,11 +115,11 @@ Color eventMarkerColor(Object? obj) {
 Future<void> getCalendarData() async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/calendar_data'));
+        'POST', Uri.parse('${parameters.GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
 
