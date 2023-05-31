@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-String GENERAL_URL = 'http://192.168.0.12:8000/';
+String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
 String TOKEN = '';
 String NOTIFICATION_VAPID_KEY = 'BBn-BM4feM6Pqx4ECRoBirHpHGlv2U20wohQ4tVFkAoni97gDBw3_4HxxPJbbZNvBpbgx32hBcQKLQ8tI15IASY';
 late Uint8List defaultImageBytes;
