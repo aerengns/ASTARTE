@@ -47,7 +47,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   Widget _initExampleData(String heatmapType) {
     HeatmapData heatmapDataPower;
     return FutureBuilder<DynamicHeatmap>(
-      future: getHeatmapData(heatmapType, 1),
+      future: getHeatmapData(heatmapType, widget.farmId),
       builder: (context, snapshot) {
         List<String> rows;
         List<String> columns;
