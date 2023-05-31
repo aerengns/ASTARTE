@@ -13,6 +13,7 @@ from firebase_auth.authentication import FirebaseAuthentication
 
 class CalendarDataAPI(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = [FirebaseAuthentication]
 
     def post(self, request, *args, **kwargs):
 
