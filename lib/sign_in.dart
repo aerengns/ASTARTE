@@ -140,6 +140,7 @@ class _SignInFormState extends State<SignInForm> {
         _userEmail = user?.email ?? '';
         parameters.TOKEN = token;
         currentUser.setUser(newCurrentUser);
+        parameters.sendTokenToServer(context);
         Navigator.popUntil(context, ModalRoute.withName('/'));
         if (newCurrentUser['email'] == '') {
           Navigator.of(context).push(
