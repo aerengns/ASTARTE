@@ -116,8 +116,8 @@ Future<List<Event>> getAvailableJobs() async {
       'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
-    var request =
-        http.MultipartRequest('GET', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'));
+    var request = http.MultipartRequest(
+        'GET', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'));
 
     request.headers.addAll(headers);
 
@@ -153,11 +153,35 @@ Future<bool> assignJob(Worker worker, Event event) async {
       'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
-    var request =
-        http.MultipartRequest('POST', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'))
-          ..headers.addAll(headers)
-          ..fields['worker'] = jsonEncode(worker.toDict())
-          ..fields['event'] = jsonEncode(event.toDict());
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('${parameters.GENERAL_URL}app/jobs_data'))
+      ..headers.addAll(headers)
+      ..fields['worker'] = jsonEncode(worker.toDict())
+      ..fields['event'] = jsonEncode(event.toDict());
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print(response.reasonPhrase);
+      return false;
+    }
+  } catch (e) {
+    print(e);
+    return false;
+  }
+}
+
+Future<bool> finishJob() async {
+  try {
+    var headers = {
+      'Authorization': parameters.TOKEN,
+    };
+    // your endpoint and request method
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('${parameters.GENERAL_URL}app/job_finish'))
+      ..headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
