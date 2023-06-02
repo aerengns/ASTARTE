@@ -31,8 +31,6 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'network_manager/services/farm_data_service.dart';
 
-String? deviceToken;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -82,9 +80,6 @@ class Astarte extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      sendTokenToServer(context);
-    });
     return MultiProvider(
       providers: [
         Provider(
@@ -101,7 +96,8 @@ class Astarte extends StatelessWidget {
         ),
         Provider(
           create: (_) => CalendarEventsService.create(),
-          dispose: (_, CalendarEventsService service) => service.client.dispose(),
+          dispose: (_, CalendarEventsService service) =>
+              service.client.dispose(),
         )
       ],
       child: MaterialApp(
@@ -143,21 +139,4 @@ void _setupLogging() {
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
-}
-
-void sendTokenToServer(BuildContext context) async {
-  var request = http.MultipartRequest(
-      'POST', Uri.parse('${GENERAL_URL}app/send_token'));
-  final body = <String, String>{
-    'token': deviceToken as String,
-    'user_type': Provider.of<CurrentUser>(context, listen: false).userType
-  };
-  request.fields.addAll(body);
-
-  http.StreamedResponse response = await request.send();
-  if (response.statusCode == 200) {
-    print('Token sent successfully!');
-  } else {
-    print('Failed to send token!');
-  }
 }

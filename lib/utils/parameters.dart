@@ -4,11 +4,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
 String TOKEN = '';
-String NOTIFICATION_VAPID_KEY = 'BBn-BM4feM6Pqx4ECRoBirHpHGlv2U20wohQ4tVFkAoni97gDBw3_4HxxPJbbZNvBpbgx32hBcQKLQ8tI15IASY';
+String NOTIFICATION_VAPID_KEY =
+    'BBn-BM4feM6Pqx4ECRoBirHpHGlv2U20wohQ4tVFkAoni97gDBw3_4HxxPJbbZNvBpbgx32hBcQKLQ8tI15IASY';
 late Uint8List defaultImageBytes;
+String? deviceToken;
 
 Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   try {
@@ -34,7 +37,8 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
       data['profile_photo'] = decodedImage;
 
       // Retrieve the bytes from the image asset
-      ByteData byteData = await rootBundle.load('assets/images/worker_default.png');
+      ByteData byteData =
+          await rootBundle.load('assets/images/worker_default.png');
       defaultImageBytes = byteData.buffer.asUint8List();
 
       return data;
@@ -48,7 +52,7 @@ Future<Map<String, dynamic>> requestCurrentUser(String token) async {
   }
 }
 
-class CurrentUser extends ChangeNotifier{
+class CurrentUser extends ChangeNotifier {
   String _name = '';
   String _surname = '';
   String _email = '';
@@ -70,6 +74,7 @@ class CurrentUser extends ChangeNotifier{
     };
     return userTypes[_userType] ?? 'Worker';
   }
+
   Image get profilePhoto {
     return Image.memory(
       _profilePhoto,
@@ -77,8 +82,7 @@ class CurrentUser extends ChangeNotifier{
     );
   }
 
-  void setUser(Map<String, dynamic> newUser)
-  {
+  void setUser(Map<String, dynamic> newUser) {
     _name = newUser['name'];
     _surname = newUser['surname'];
     _email = newUser['email'];
@@ -88,8 +92,7 @@ class CurrentUser extends ChangeNotifier{
     notifyListeners();
   }
 
-  void resetUser()
-  {
+  void resetUser() {
     _name = '';
     _surname = '';
     _email = '';
@@ -97,5 +100,34 @@ class CurrentUser extends ChangeNotifier{
     _userType = 'W';
     _profilePhoto = defaultImageBytes;
     notifyListeners();
+  }
+
+  Map<String, dynamic> toDict() {
+    return {
+      'name': name,
+      'surname': surname,
+      'email': email,
+      'about': about,
+      'user_type': userType,
+      'profile_photo': profilePhotoBytes,
+    };
+  }
+}
+
+void sendTokenToServer(BuildContext context) async {
+  final currentUser = Provider.of<CurrentUser>(context, listen: false);
+  var request =
+      http.MultipartRequest('POST', Uri.parse('${GENERAL_URL}app/send_token'));
+  final body = <String, String>{
+    'device_token': deviceToken as String,
+    'user': jsonEncode(currentUser.toDict()),
+  };
+  request.fields.addAll(body);
+
+  http.StreamedResponse response = await request.send();
+  if (response.statusCode == 200) {
+    print('Token sent successfully!');
+  } else {
+    print('Failed to send token!');
   }
 }
