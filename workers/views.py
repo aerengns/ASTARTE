@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import Profile
+from backendcore.utils.core_utils import send_notification
 from calendarapp.models import Event
 from firebase_auth.authentication import FirebaseAuthentication
 from workers.models import Worker
@@ -45,9 +46,10 @@ class WorkerDataAPI(APIView):
         return JsonResponse(data, safe=False)
 
 
+# Gets jobs available and assigns them
 class JobDataAPI(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [FirebaseAuthentication]
 
     def get(self, request):
         taken_event_ids = Worker.objects.filter(event__isnull=False).values_list('event_id', flat=True)
@@ -61,7 +63,38 @@ class JobDataAPI(APIView):
             event = Event.objects.get(**event)
             worker.event = event
             worker.save()
+            notification_msg = {
+                'title': 'New Work',
+                'body': 'New work assigned please check for yourself.',
+            }
+            send_notification(worker.profile, notification_msg)
         except Exception as e:
             print(e)
             return HttpResponseBadRequest("Failed!")
         return HttpResponse("Success!")
+
+
+class JobFinishAPI(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [FirebaseAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            worker = request.user.profile.worker
+            if not worker.event:
+                return HttpResponse('Success!')
+            assigner = worker.event.assigner
+            if assigner:
+                send_notification(assigner, {'title': 'Work Done', 'body': f'Work with id: {worker.event_id} is completed successfully.'})
+            else:
+                # TODO: send notification to farm owner
+                pass
+            event = worker.event
+            worker.event = None
+            worker.save()
+            event.delete()
+            return HttpResponse('Success!')
+
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("Failed!")

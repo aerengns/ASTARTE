@@ -40,4 +40,4 @@ def save_user_profile(sender, instance, **kwargs):
 
 class DeviceToken(models.Model):
     token = models.CharField(max_length=200)
-    user_type = models.CharField(max_length=1, choices=Profile.UserTypes.choices)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
