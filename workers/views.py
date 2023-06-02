@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import Profile
+from backendcore.utils.core_utils import send_notification
 from calendarapp.models import Event
 from firebase_auth.authentication import FirebaseAuthentication
 from workers.models import Worker
@@ -61,6 +62,11 @@ class JobDataAPI(APIView):
             event = Event.objects.get(**event)
             worker.event = event
             worker.save()
+            notification_msg = {
+                'title': 'New Work',
+                'body': 'New work assigned please check for yourself.',
+            }
+            send_notification(worker.profile, notification_msg)
         except Exception as e:
             print(e)
             return HttpResponseBadRequest("Failed!")
