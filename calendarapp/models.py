@@ -1,5 +1,7 @@
 from django.db import models
 
+from accounts.models import Profile
+
 
 class Event(models.Model):
     INCREASE_IRRIGATION_EVENT = 0
@@ -28,6 +30,7 @@ class Event(models.Model):
     type = models.IntegerField(choices=EVENT_TYPE_CHOICES)
     date = models.DateTimeField()
     importance = models.IntegerField(choices=EVENT_IMPORTANCE_CHOICES)
+    assigner = models.ForeignKey(Profile, on_delete=models.PROTECT, null=True)
     # reason = models.CharField(null=True, blank=True, max_length=255)
 
 

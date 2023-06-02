@@ -12,12 +12,16 @@ def send_notification(arg, msg):
 
 
 def send_notification_by_token(token: str, msg: dict):
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title=msg['title'],
-            body=msg['body'],
-        ),
-        token=token,
-    )
-    response = messaging.send(message)
-    print('Successfully sent message:', response)
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=msg['title'],
+                body=msg['body'],
+            ),
+            token=token,
+        )
+        response = messaging.send(message)
+        print('Successfully sent message:', response)
+    except Exception as e:
+        print(e)
+        raise Exception("Error while sending notification")
