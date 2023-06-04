@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 String GENERAL_URL = 'https://pythoneverywhere.com/astarte/';
+String WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast';
+String GEOLOCATOR_API_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 String TOKEN = '';
 String NOTIFICATION_VAPID_KEY =
     'BBn-BM4feM6Pqx4ECRoBirHpHGlv2U20wohQ4tVFkAoni97gDBw3_4HxxPJbbZNvBpbgx32hBcQKLQ8tI15IASY';

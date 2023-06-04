@@ -1,14 +1,18 @@
+import 'dart:convert';
+
 import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/network_manager/services/farm_data_service.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'calendar.dart';
 import 'farm_data_form.dart';
+import 'mappings/farm_status_mapping.dart';
+import 'mappings/weather_mapping.dart';
 import 'network_manager/models/farm_data.dart' as FarmDataModel;
 
 class FarmDetail extends StatefulWidget {
@@ -22,20 +26,25 @@ class FarmDetail extends StatefulWidget {
 
 class _FarmDetailState extends State<FarmDetail> {
   // Define variables for temperature, weather, and current values.
-  double airTemperature = 0.0;
-  double soilTemperature = 0.0;
-  String weatherSituation = '';
+
+  late Future<WeatherData>? weatherData;
   double humidityValue = 0.0;
   double nitrogenValue = 0.0;
   double phosphorusValue = 0.0;
   double potassiumValue = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Future<void> _deleteItem() async {
     // Perform the deletion logic here
     int responseCode = await deleteFarm(widget.farmId);
 
     void showSnackBar(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     }
 
     switch (responseCode) {
@@ -80,6 +89,8 @@ class _FarmDetailState extends State<FarmDetail> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           final data = snapshot.data!;
+          String status =
+              getStatus(snapshot.data?.latest_farm_report?.date_collected);
           return Scaffold(
             appBar: AstarteAppBar(title: data.name.toString()),
             body: Padding(
@@ -132,53 +143,82 @@ class _FarmDetailState extends State<FarmDetail> {
                           color: CustomColors.astarteGrey,
                         ),
                         padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Wrap(
-                              children: const [
-                                Icon(
-                                  Icons.wb_cloudy_rounded,
-                                  size: 20,
-                                  color: CustomColors.astarteRed,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Weather',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: CustomColors.astarteRed,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Air Temperature: $airTemperature',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Soil Temperature: $soilTemperature',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Weather Situation: $weatherSituation',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: FutureBuilder<WeatherData>(
+                            future: getWeather(
+                                snapshot.data!.farm_corner.latitude,
+                                snapshot.data!.farm_corner.longitude),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                WeatherData currentWeatherData = snapshot.data!;
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Wrap(
+                                      children: [
+                                        Icon(
+                                          weatherCodeMapping[currentWeatherData
+                                              .weatherCode]!["icon"],
+                                          size: 28,
+                                          color: CustomColors
+                                              .astarteRed, // Customize the icon color as needed
+                                        ),
+                                        SizedBox(width: 5),
+                                        const Text(
+                                          'Weather',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: CustomColors.astarteRed,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      '${weatherCodeMapping[currentWeatherData.weatherCode]!["description"]}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Air Temperature: ${currentWeatherData.temperature} °C',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Wind Speed: ${currentWeatherData.windSpeed} km/h',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Relative Humidity: ${currentWeatherData.relativeHumidity} %',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Soil Moisture: ${currentWeatherData.soilMoisture}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return const CircularProgressIndicator();
+                            }),
                       ),
                       const SizedBox(height: 10),
                       // Display current values.
@@ -191,11 +231,11 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Wrap(
-                              children: const [
+                            const Wrap(
+                              children: [
                                 Icon(
                                   Icons.account_tree_rounded,
-                                  size: 20,
+                                  size: 28,
                                   color: CustomColors.astarteRed,
                                 ),
                                 SizedBox(width: 5),
@@ -203,7 +243,7 @@ class _FarmDetailState extends State<FarmDetail> {
                                   'Soil',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 20,
                                     color: CustomColors.astarteRed,
                                   ),
                                 ),
@@ -249,6 +289,14 @@ class _FarmDetailState extends State<FarmDetail> {
                                 fontSize: 14,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Collected at: ${data.latest_farm_report?.date_collected?.substring(0, 10)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -263,11 +311,11 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Wrap(
-                              children: const [
+                            const Wrap(
+                              children: [
                                 Icon(
                                   Icons.house_rounded,
-                                  size: 20,
+                                  size: 28,
                                   color: CustomColors.astarteRed,
                                 ),
                                 SizedBox(width: 5),
@@ -275,19 +323,19 @@ class _FarmDetailState extends State<FarmDetail> {
                                   'Farm Status',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 20,
                                     color: CustomColors.astarteRed,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Doing well',
+                            SizedBox(height: 12),
+                            Text(
+                              '${farmStatusMapping[status]}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: CustomColors.astarteGreen,
+                                color: farmStatusColorMapping[status],
                               ),
                             ),
                           ],
@@ -338,8 +386,24 @@ class _FarmDetailState extends State<FarmDetail> {
       },
     );
   }
-}
 
+  String getStatus(String? date_collected) {
+    if (date_collected == null) {
+      return "no-data";
+    }
+    DateTime dateTime = DateTime.parse(date_collected);
+    DateTime currentDate = DateTime.now();
+    Duration difference = currentDate.difference(dateTime);
+
+    if (difference.inDays < 3) {
+      return "up-to-date";
+    } else if (difference.inDays >= 3 && difference.inDays <= 14) {
+      return "new-data-soon";
+    } else {
+      return "immediate-reporting";
+    }
+  }
+}
 
 Future<int> deleteFarm(int farmId) async {
   try {
@@ -355,14 +419,12 @@ Future<int> deleteFarm(int farmId) async {
     http.StreamedResponse response = await request.send();
 
     return response.statusCode;
-  }
-  catch (e) {
+  } catch (e) {
     print(e);
   }
 
   return 500;
 }
-
 
 class DeleteConfirmationDialog extends StatelessWidget {
   final VoidCallback onDeleteConfirmed;
@@ -372,17 +434,29 @@ class DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Confirmation', style: TextStyle(fontWeight: FontWeight.bold, color: CustomColors.astarteRed),),
+      title: const Text(
+        'Confirmation',
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: CustomColors.astarteRed),
+      ),
       content: const Text('Are you sure you want to delete this farm?'),
       actions: <Widget>[
         TextButton(
-          child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold, color: CustomColors.astarteBlack),),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: CustomColors.astarteBlack),
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold, color: CustomColors.astarteRed),),
+          child: const Text(
+            'Delete',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: CustomColors.astarteRed),
+          ),
           onPressed: () {
             onDeleteConfirmed();
             Navigator.of(context).pop();
@@ -391,4 +465,42 @@ class DeleteConfirmationDialog extends StatelessWidget {
       ],
     );
   }
+}
+
+class WeatherData {
+  double? temperature;
+  double? windSpeed;
+  int? weatherCode;
+  double? soilMoisture;
+  int? relativeHumidity;
+
+  WeatherData(
+      {this.temperature,
+      this.windSpeed,
+      this.weatherCode,
+      this.soilMoisture,
+      this.relativeHumidity});
+}
+
+Future<WeatherData> getWeather(double latitude, double longitude) async {
+  try {
+    var request = http.MultipartRequest(
+        'GET',
+        Uri.parse(
+            '${parameters.WEATHER_API_URL}?latitude=$latitude&longitude=$longitude&current_weather=true&hourly=soil_moisture_1_3cm,relativehumidity_2m'));
+
+    http.StreamedResponse response = await request.send();
+    String jsonAsString = await response.stream.bytesToString();
+    var data = jsonDecode(jsonAsString);
+
+    return WeatherData(
+        temperature: data['current_weather']['temperature'],
+        windSpeed: data['current_weather']['windspeed'],
+        weatherCode: data['current_weather']['weathercode'],
+        soilMoisture: data['hourly']['soil_moisture_1_3cm'][0],
+        relativeHumidity: data['hourly']['relativehumidity_2m'][0]);
+  } catch (e) {
+    print(e);
+  }
+  return WeatherData();
 }
