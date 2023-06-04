@@ -1,6 +1,7 @@
 from django.db import models
 
 from accounts.models import Profile
+from backendcore.models import Farm
 
 
 class Event(models.Model):
@@ -31,6 +32,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     importance = models.IntegerField(choices=EVENT_IMPORTANCE_CHOICES)
     assigner = models.ForeignKey(Profile, on_delete=models.PROTECT, null=True)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
     # reason = models.CharField(null=True, blank=True, max_length=255)
 
 

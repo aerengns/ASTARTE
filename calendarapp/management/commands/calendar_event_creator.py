@@ -5,6 +5,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from firebase_admin import messaging
+from backendcore.models import Farm, FarmCornerPoint
 
 from accounts.models import DeviceToken
 from calendarapp.models import Event
@@ -126,9 +127,11 @@ class Command(BaseCommand):
     def __init__(self, stdout=None, stderr=None, no_color=False, force_color=False):
         super().__init__(stdout, stderr, no_color, force_color)
 
+        self.forecast_data = dict()
+        self.historical_data = dict()
         # TAKE THE LAST MONTH'S HISTORICAL DATA AND 1 WEEK FORECASTED DATA FROM THE API.
-        self.high_thresholds = {}
-        self.low_thresholds = {}
+        self.high_thresholds = dict()
+        self.low_thresholds = dict()
         FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
         HISTORICAL_DATA_URL = 'https://archive-api.open-meteo.com/v1/era5'
 
@@ -149,60 +152,75 @@ class Command(BaseCommand):
         for i in range(1, 8):
             self.int_to_week[i] = current_day + timedelta(days=i - 1)
             self.week_to_int[current_day + timedelta(days=i - 1)] = i
-            self.notifications[current_day + timedelta(days=i - 1)] = []
 
         self.TODAY = self.int_to_week[current_day.weekday() + 1]
-        # TODAY = 'Tuesday'
 
-        FORECAST_PARAMS = {
-            'latitude': 39.9439,
-            'longitude': 32.8560,
-            'timezone': 'auto',
-            'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
-                       'winddirection_10m', 'soil_moisture_9_27cm', 'cloudcover']
-        }
+        # TODO: selfli seyler farm_id:value dictionarysi seklinde kullanilacak
+        for farm in Farm.objects.all():
+            # TODO: do stuff
+            self.notifications[farm.id] = dict()
+            for i in range(1, 8): 
+                self.notifications[farm.id][current_day + timedelta(days=i - 1)] = []
 
-        HISTORICAL_PARAMS = {
-            'latitude': 39.9439,
-            'longitude': 32.8560,
-            'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
-                       'soil_moisture_7_to_28cm', 'cloudcover']
-        }
+            corner_points = FarmCornerPoint.objects.filter(farm=farm)
+            # for corner_point in corner_points:
+            #     farm_corners.append([corner_point.longitude, corner_point.latitude])
 
-        forecast_r = requests.get(url=FORECAST_URL, params=FORECAST_PARAMS)
+            # TODAY = 'Tuesday'
 
-        HISTORICAL_PARAMS['start_date'] = LAST_MONTH_DATE
-        HISTORICAL_PARAMS['end_date'] = TODAY_DATE
+            FORECAST_PARAMS = {
+                'latitude': corner_points[0].latitude,
+                'longitude': corner_points[0].longitude,
+                'timezone': 'auto',
+                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
+                        'winddirection_10m', 'soil_moisture_9_27cm', 'cloudcover']
+            }
 
-        historical_r = requests.get(
-            url=HISTORICAL_DATA_URL, params=HISTORICAL_PARAMS)
+            HISTORICAL_PARAMS = {
+                'latitude': corner_points[0].latitude,
+                'longitude': corner_points[0].longitude,
+                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
+                        'soil_moisture_7_to_28cm', 'cloudcover']
+            }
 
-        self.forecast_data = forecast_r.json()
-        self.historical_data = historical_r.json()
+            forecast_r = requests.get(url=FORECAST_URL, params=FORECAST_PARAMS)
 
-        # GET HIGH AND LOW THRESHOLDS BASED ON THE LAST MONTH'S DATA. THRESHOLDS ARE SET TO 90TH AND 10TH QUANTILES.
+            HISTORICAL_PARAMS['start_date'] = LAST_MONTH_DATE
+            HISTORICAL_PARAMS['end_date'] = TODAY_DATE
 
-        for i in self.historical_data['hourly']:
-            self.high_thresholds[i] = get_pth_percentile(
-                self.historical_data['hourly'][i], 90)
+            historical_r = requests.get(
+                url=HISTORICAL_DATA_URL, params=HISTORICAL_PARAMS)
 
-        for i in self.historical_data['hourly']:
-            self.low_thresholds[i] = get_pth_percentile(
-                self.historical_data['hourly'][i], 10)
+            current_forecast_data = forecast_r.json()
+            current_historical_data = historical_r.json()
 
-    def frost_warning(self, today=1):
+            self.forecast_data[farm.id] = current_forecast_data
+            self.historical_data[farm.id] = current_historical_data
+
+            # GET HIGH AND LOW THRESHOLDS BASED ON THE LAST MONTH'S DATA. THRESHOLDS ARE SET TO 90TH AND 10TH QUANTILES.
+            self.high_thresholds[farm.id] = dict()
+            self.low_thresholds[farm.id] = dict()
+            for i in current_historical_data['hourly']:
+                self.high_thresholds[farm.id][i] = get_pth_percentile(
+                    current_historical_data['hourly'][i], 90)
+
+            for i in current_historical_data['hourly']:
+                self.low_thresholds[farm.id][i] = get_pth_percentile(
+                    current_historical_data['hourly'][i], 10)
+
+    def frost_warning(self, today=1, farm_id=1):
         # hours, recommendation type, reason
         for i in range(0, 7):
             current_day = self.int_to_week[(today + i - 1) % 7 + 1]
             start_index = i * 24
             avg_degree = sum(
-                self.forecast_data['hourly']['temperature_2m'][start_index:start_index + 8]) / 8
+                self.forecast_data[farm_id]['hourly']['temperature_2m'][start_index:start_index + 8]) / 8
             avg_dew = sum(
-                self.forecast_data['hourly']['dewpoint_2m'][start_index:start_index + 8]) / 8
+                self.forecast_data[farm_id]['hourly']['dewpoint_2m'][start_index:start_index + 8]) / 8
             avg_wind = sum(
-                self.forecast_data['hourly']['windspeed_10m'][start_index:start_index + 8]) / 8
+                self.forecast_data[farm_id]['hourly']['windspeed_10m'][start_index:start_index + 8]) / 8
             avg_cloud = sum(
-                self.forecast_data['hourly']['cloudcover'][start_index:start_index + 8]) / 8
+                self.forecast_data[farm_id]['hourly']['cloudcover'][start_index:start_index + 8]) / 8
 
             # TODO: You may change these thresholds.
             temp_wind_threshold = 5
@@ -214,14 +232,14 @@ class Command(BaseCommand):
                 res['type'] = 2
                 res['reason'] = 'low temperature, dew, wind speed, cloud'
                 res['importance'] = 2
-                self.notifications[current_day].append(res)
+                self.notifications[farm_id][current_day].append(res)
 
-    def heat_stress_warning(self, today=1):
+    def heat_stress_warning(self, today=1, farm_id=1):
         for i in range(0, 7):
             current_day = self.int_to_week[(today + i - 1) % 7 + 1]
             start_index = i * 24
             avg_degree = sum(
-                self.forecast_data['hourly']['temperature_2m'][start_index:start_index + 8]) / 8
+                self.forecast_data[farm_id]['hourly']['temperature_2m'][start_index:start_index + 8]) / 8
 
             high_temp_threshold = 40
 
@@ -230,9 +248,9 @@ class Command(BaseCommand):
                 res['type'] = 3
                 res['reason'] = 'high temperature'
                 res['importance'] = 0
-                self.notifications[current_day].append(res)
+                self.notifications[farm_id][current_day].append(res)
 
-    def increase_irrigation_alert(self, today=1):
+    def increase_irrigation_alert(self, today=1, farm_id = 1):
         alerts = {}
         alerts_importance = {}
         alert_type = {'temperature_2m': 'high temperature', 'relativehumidity_2m': 'low humidity',
@@ -240,8 +258,8 @@ class Command(BaseCommand):
         day = 0
 
         for i, row in enumerate(
-                zip(self.forecast_data['hourly']['temperature_2m'], self.forecast_data['hourly']['relativehumidity_2m'],
-                    self.forecast_data['hourly']['windspeed_10m'])):
+                zip(self.forecast_data[farm_id]['hourly']['temperature_2m'], self.forecast_data[farm_id]['hourly']['relativehumidity_2m'],
+                    self.forecast_data[farm_id]['hourly']['windspeed_10m'])):
             if i % 24 == 0:
                 day += 1
                 alerts[day] = {}
@@ -253,23 +271,23 @@ class Command(BaseCommand):
                 alerts_importance[day]["relativehumidity_2m"] = []
                 alerts_importance[day]["windspeed_10m"] = []
 
-            if row[0] > self.high_thresholds['temperature_2m']:
+            if row[0] > self.high_thresholds[farm_id]['temperature_2m']:
                 alerts[day]['temperature_2m'].append(
-                    self.forecast_data['hourly']['time'][i])
+                    self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["temperature_2m"].append((get_given_percentile(
-                    self.historical_data['hourly']['temperature_2m'], row[0])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['temperature_2m'], row[0])-0.9)*10)
 
-            if row[1] < self.low_thresholds['relativehumidity_2m']:
+            if row[1] < self.low_thresholds[farm_id]['relativehumidity_2m']:
                 alerts[day]['relativehumidity_2m'].append(
-                    self.forecast_data['hourly']['time'][i])
+                    self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["relativehumidity_2m"].append(
-                    (0.1-get_given_percentile(self.historical_data['hourly']['relativehumidity_2m'], row[1]))*10)
+                    (0.1-get_given_percentile(self.historical_data[farm_id]['hourly']['relativehumidity_2m'], row[1]))*10)
 
-            if row[2] > self.high_thresholds['windspeed_10m']:
+            if row[2] > self.high_thresholds[farm_id]['windspeed_10m']:
                 alerts[day]['windspeed_10m'].append(
-                    self.forecast_data['hourly']['time'][i])
+                    self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["windspeed_10m"].append((get_given_percentile(
-                    self.historical_data['hourly']['windspeed_10m'], row[2])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['windspeed_10m'], row[2])-0.9)*10)
 
         for i in range(1, 8):
             current_day = self.int_to_week[(today + i - 2) % 7 + 1]
@@ -286,16 +304,16 @@ class Command(BaseCommand):
                     res['type'] = 0
                     res['reason'] = alert_type[type]
                     res['importance'] = round(2*importance_avg)
-                    self.notifications[current_day].append(res)
+                    self.notifications[farm_id][current_day].append(res)
 
-    def decrease_irrigation_alert(self, today=1):
+    def decrease_irrigation_alert(self, today=1, farm_id=1):
         alerts = {}
         alerts_importance = {}
         alert_type = {'precipitation': 'high precipitation',
                       'soil_moisture_9_27cm': 'high soil moisture'}
         day = 0
-        for i, row in enumerate(zip(self.forecast_data['hourly']['precipitation'],
-                                    self.forecast_data['hourly']['soil_moisture_9_27cm'])):
+        for i, row in enumerate(zip(self.forecast_data[farm_id]['hourly']['precipitation'],
+                                    self.forecast_data[farm_id]['hourly']['soil_moisture_9_27cm'])):
             if i % 24 == 0:
                 day += 1
                 alerts[day] = {}
@@ -304,17 +322,17 @@ class Command(BaseCommand):
                 alerts_importance[day] = {}
                 alerts_importance[day]["precipitation"] = []
                 alerts_importance[day]["soil_moisture_9_27cm"] = []
-            if row[0] > self.high_thresholds['precipitation']:
+            if row[0] > self.high_thresholds[farm_id]['precipitation']:
                 alerts[day]['precipitation'].append(
-                    self.forecast_data['hourly']['time'][i])
+                    self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["precipitation"].append((get_given_percentile(
-                    self.historical_data['hourly']['precipitation'], row[0])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['precipitation'], row[0])-0.9)*10)
 
-            if row[1] > self.high_thresholds['soil_moisture_7_to_28cm']:
+            if row[1] > self.high_thresholds[farm_id]['soil_moisture_7_to_28cm']:
                 alerts[day]['soil_moisture_9_27cm'].append(
-                    self.forecast_data['hourly']['time'][i])
+                    self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["soil_moisture_9_27cm"].append((get_given_percentile(
-                    self.historical_data['hourly']['soil_moisture_7_to_28cm'], row[1])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['soil_moisture_7_to_28cm'], row[1])-0.9)*10)
 
         for i in range(1, 8):
             current_day = self.int_to_week[(today + i - 2) % 7 + 1]
@@ -329,25 +347,28 @@ class Command(BaseCommand):
                     res['type'] = 1
                     res['reason'] = alert_type[type]
                     res['importance'] = round(2*importance_avg)
-                    self.notifications[current_day].append(res)
+                    self.notifications[farm_id][current_day].append(res)
 
     def handle(self, *args, **kwargs):
-        Event.objects.all().delete()
-        self.increase_irrigation_alert(today=self.week_to_int[self.TODAY])
-        self.decrease_irrigation_alert(today=self.week_to_int[self.TODAY])
-        self.frost_warning(today=self.week_to_int[self.TODAY])
 
-        remove_conflicting_events(self.notifications)
         events = []
-        for i in self.notifications:
-            for j in self.notifications[i]:
-                importance = random.randint(0, 2)
-                if importance==0:
-                    self.send_notification(j['reason'])
-                events.append(Event(title=j['reason'], type=j['type'], date=i, importance=importance))
+        for farm in Farm.objects.all():
+            self.increase_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id = farm.id)
+            self.decrease_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id = farm.id)
+            self.frost_warning(today=self.week_to_int[self.TODAY], farm_id = farm.id)
+
+            remove_conflicting_events(self.notifications[farm.id])
+            for i in self.notifications[farm.id]:
+                for j in self.notifications[farm.id][i]:
+                    importance = j['importance']
+                    if importance==2:
+                        self.send_notification(j['reason'])
+                    events.append(Event(title=j['reason'], type=j['type'], date=i, importance=importance, farm_id=farm.id))
+        
         Event.objects.bulk_create(events)
 
     def send_notification(self, body):
+        # TODO: MAKE NOTIFICATION SPECIFIC TO FARM OWNER
         device_tokens = DeviceToken.objects.all()
         for device_token in device_tokens:
             title = 'Critical Event'
