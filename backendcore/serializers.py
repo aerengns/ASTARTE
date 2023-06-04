@@ -14,7 +14,7 @@ class BooleanAsIntegerField(serializers.IntegerField):
 class FarmReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = FarmReport
-        fields = ['moisture', 'phosphorus', 'potassium', 'nitrogen', 'temperature', 'ph']
+        fields = ['moisture', 'phosphorus', 'potassium', 'nitrogen', 'temperature', 'ph', 'date_collected']
 
 
 class FarmCornerPointSerializer(serializers.ModelSerializer):
@@ -39,6 +39,7 @@ class FarmSerializer(serializers.ModelSerializer):
     is_active = BooleanAsIntegerField()
     latest_farm_report = serializers.SerializerMethodField()
     farmcornerpoint_set = FarmCornerPointSerializer(many=True)
+    farm_corner = serializers.SerializerMethodField()
 
     class Meta:
         model = Farm
@@ -54,6 +55,12 @@ class FarmSerializer(serializers.ModelSerializer):
         farm_corner_points = obj.farmcornerpoint_set.all()
         if farm_corner_points:
             return FarmCornerPointSerializer(farm_corner_points).data
+        return None
+
+    def get_farm_corner(self, obj):
+        farm_corner_point = obj.farmcornerpoint_set.first()
+        if farm_corner_point:
+            return FarmCornerPointSerializer(farm_corner_point).data
         return None
 
     def create(self, validated_data):
