@@ -86,15 +86,68 @@ class PostList extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text(
-                            post.username,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              child: Text(
+                                post.username,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ),
+                            const Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              child: Visibility(
+                                visible: post.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
+                                child: IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: const Text('Delete post'),
+                                            content: const Text('Are you sure you want to delete this post?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  final response = await Provider.of<PostsService>(context, listen: false).deletePost(post.id!);
+                                                  if (response.isSuccessful) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('Post deleted'),
+                                                      ),
+                                                    );
+                                                    Navigator.pop(context);
+                                                  } else {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('Could not delete post'),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: const Text('Delete'),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
@@ -201,7 +254,7 @@ class PostList extends StatelessWidget {
                                   shrinkWrap: true,
                                   itemCount: data.length,
                                   itemBuilder: (context, index) {
-                                    final post = data[index];
+                                    final reply = data[index];
                                     return Column(
                                       children: [
                                         Card(
@@ -213,16 +266,67 @@ class PostList extends StatelessWidget {
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                                   children: [
-                                                    Text(
-                                                      post.username,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          reply.username,
+                                                          style: const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                        const Spacer(),
+                                                        Visibility(
+                                                          visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
+                                                          child: IconButton(
+                                                            icon: const Icon(Icons.delete),
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                  context: context,
+                                                                  builder: (context) {
+                                                                    return AlertDialog(
+                                                                      title: const Text('Delete reply'),
+                                                                      content: const Text('Are you sure you want to delete this reply?'),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed: () {
+                                                                            Navigator.pop(context);
+                                                                          },
+                                                                          child: const Text('Cancel'),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed: () async {
+                                                                            final response = await Provider.of<PostsService>(context, listen: false).deleteReply(reply.id!);
+                                                                            if (response.isSuccessful) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                                                const SnackBar(
+                                                                                  content: Text('Reply deleted'),
+                                                                                ),
+                                                                              );
+                                                                              Navigator.pop(context);
+                                                                            } else {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                                                const SnackBar(
+                                                                                  content: Text('Could not delete reply'),
+                                                                                ),
+                                                                              );
+                                                                            }
+                                                                          },
+                                                                          child: const Text('Delete'),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  }
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
+
                                                     const SizedBox(height: 10),
                                                     Text(
-                                                      post.message,
+                                                      reply.message,
                                                       style: Theme.of(context).textTheme.titleMedium,
                                                     ),
                                                   ],
