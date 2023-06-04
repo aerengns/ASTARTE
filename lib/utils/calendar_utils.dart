@@ -36,9 +36,8 @@ class Event {
       required this.date,
       this.importance});
 
-  Map<String, dynamic> toDict()
-  {
-    return{
+  Map<String, dynamic> toDict() {
+    return {
       'title': title,
       'type': eventType,
       'date': date.toIso8601String(),
@@ -112,7 +111,7 @@ Color eventMarkerColor(Object? obj) {
   }
 }
 
-Future<void> getCalendarData() async {
+Future<void> getCalendarData(int farmId) async {
   try {
     var headers = {
       'Authorization': parameters.TOKEN,
@@ -122,6 +121,11 @@ Future<void> getCalendarData() async {
         'POST', Uri.parse('${parameters.GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
+    if (farmId != -1) request.fields['farm_ids'] = farmId.toString();
+
+    // TODO: If a worker opens the calendar
+    // else:
+    //   request.fields['farm_ids'] = getRelatedFarms(worker);
 
     http.StreamedResponse response = await request.send();
 
@@ -138,6 +142,7 @@ Future<void> getCalendarData() async {
             importance: event['importance'] as int);
         source[date] != null ? source[date]?.add(temp) : source[date] = [temp];
       }
+      kEvents.clear();
       kEvents.addAll(source);
     } else {
       print(response.reasonPhrase);
