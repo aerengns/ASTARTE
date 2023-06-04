@@ -38,6 +38,18 @@ class PostCreate(APIView):
         post.delete()
         return Response({'message': 'Post deleted'}, status=status.HTTP_200_OK)
 
+    def put(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        message = request.data
+
+        if not message:
+            return Response({'message': 'Please provide a message'}, status=status.HTTP_400_BAD_REQUEST)
+
+        post.message = message
+        post.save()
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ReplyView(APIView):
     permission_classes = [IsAuthenticated]
@@ -62,3 +74,14 @@ class ReplyView(APIView):
         reply = Reply.objects.get(id=reply_id)
         reply.delete()
         return Response({'message': 'Reply deleted'}, status=status.HTTP_200_OK)
+
+    def put(self, request, reply_id):
+        reply = Reply.objects.get(id=reply_id)
+        message = request.data
+
+        if not message:
+            return Response({'message': 'Please provide a message'}, status=status.HTTP_400_BAD_REQUEST)
+
+        reply.message = message
+        reply.save()
+        return Response({'message': 'Reply updated'}, status=status.HTTP_200_OK)
