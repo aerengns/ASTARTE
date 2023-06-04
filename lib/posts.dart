@@ -105,6 +105,7 @@ class PostList extends StatelessWidget {
                                 visible: post.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
                                 child: IconButton(
                                   icon: const Icon(Icons.edit),
+                                  iconSize: 20,
                                   onPressed: () {
                                     showDialog(
                                         context: context,
@@ -170,6 +171,7 @@ class PostList extends StatelessWidget {
                                 visible: post.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
                                 child: IconButton(
                                   icon: const Icon(Icons.delete),
+                                  iconSize: 20,
                                   onPressed: () {
                                     showDialog(
                                         context: context,
@@ -343,7 +345,7 @@ class PostList extends StatelessWidget {
                                             crossAxisAlignment: CrossAxisAlignment.stretch,
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.all(16.0),
+                                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                                   children: [
@@ -357,75 +359,74 @@ class PostList extends StatelessWidget {
                                                           ),
                                                         ),
                                                         const Spacer(),
-                                                        Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-                                                          child: Visibility(
-                                                            visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
-                                                            child: IconButton(
-                                                              icon: const Icon(Icons.edit),
-                                                              onPressed: () {
-                                                                showDialog(
-                                                                    context: context,
-                                                                    builder: (context) {
-                                                                      final replyController = TextEditingController(text: reply.message);
-                                                                      return AlertDialog(
-                                                                        title: const Text('Edit Reply'),
-                                                                        content: TextField(
-                                                                          controller: replyController,
-                                                                          decoration: const InputDecoration(
-                                                                            border: OutlineInputBorder(),
-                                                                            labelText: 'Message',
-                                                                          ),
+                                                        Visibility(
+                                                          visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
+                                                          child: IconButton(
+                                                            icon: const Icon(Icons.edit),
+                                                            iconSize: 18,
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                  context: context,
+                                                                  builder: (context) {
+                                                                    final replyController = TextEditingController(text: reply.message);
+                                                                    return AlertDialog(
+                                                                      title: const Text('Edit Reply'),
+                                                                      content: TextField(
+                                                                        controller: replyController,
+                                                                        decoration: const InputDecoration(
+                                                                          border: OutlineInputBorder(),
+                                                                          labelText: 'Message',
                                                                         ),
-                                                                        actions: [
-                                                                          TextButton(
-                                                                            onPressed: () {
-                                                                              Navigator.pop(context);
-                                                                            },
-                                                                            child: const Text('Cancel'),
-                                                                          ),
-                                                                          TextButton(
-                                                                            onPressed: () async {
-                                                                              final response = await Provider.of<PostsService>(context, listen: false)
-                                                                                  .updateReply(reply.id!, replyController.text);
+                                                                      ),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed: () {
+                                                                            Navigator.pop(context);
+                                                                          },
+                                                                          child: const Text('Cancel'),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed: () async {
+                                                                            final response = await Provider.of<PostsService>(context, listen: false)
+                                                                                .updateReply(reply.id!, replyController.text);
 
-                                                                              if (response.isSuccessful) {
-                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  const SnackBar(
-                                                                                    content: Text('Reply updated'),
-                                                                                  ),
-                                                                                );
-                                                                                Navigator.pop(context);
-                                                                                Navigator.pop(context);
-                                                                                Navigator.push(
-                                                                                  context,
-                                                                                  PageRouteBuilder(
-                                                                                    pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
-                                                                                    transitionDuration: Duration.zero,
-                                                                                  ),
-                                                                                );
-                                                                              } else {
-                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  const SnackBar(
-                                                                                    content: Text('Could not update reply'),
-                                                                                  ),
-                                                                                );
-                                                                              }
-                                                                            },
-                                                                            child: const Text('Save'),
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    }
-                                                                );
-                                                              },
-                                                            ),
+                                                                            if (response.isSuccessful) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                                                const SnackBar(
+                                                                                  content: Text('Reply updated'),
+                                                                                ),
+                                                                              );
+                                                                              Navigator.pop(context);
+                                                                              Navigator.pop(context);
+                                                                              Navigator.push(
+                                                                                context,
+                                                                                PageRouteBuilder(
+                                                                                  pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                                                  transitionDuration: Duration.zero,
+                                                                                ),
+                                                                              );
+                                                                            } else {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                                                const SnackBar(
+                                                                                  content: Text('Could not update reply'),
+                                                                                ),
+                                                                              );
+                                                                            }
+                                                                          },
+                                                                          child: const Text('Save'),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  }
+                                                              );
+                                                            },
                                                           ),
                                                         ),
                                                         Visibility(
                                                           visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
                                                           child: IconButton(
                                                             icon: const Icon(Icons.delete),
+                                                            iconSize: 18,
                                                             onPressed: () {
                                                               showDialog(
                                                                   context: context,
