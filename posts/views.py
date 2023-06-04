@@ -24,13 +24,19 @@ class PostCreate(APIView):
     def post(self, request):
         message = request.data.get('message')
         image = request.data.get('image')
+        username = request.data.get('username')
 
         if not message:
             return Response({'message': 'Please provide a message'}, status=status.HTTP_400_BAD_REQUEST)
 
-        post = Post.objects.create(message=message, image=image)
+        post = Post.objects.create(message=message, image=image, username=username)
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        post.delete()
+        return Response({'message': 'Post deleted'}, status=status.HTTP_200_OK)
 
 
 class ReplyView(APIView):
@@ -43,10 +49,16 @@ class ReplyView(APIView):
 
     def post(self, request, post_id):
         message = request.data.get('message')
+        username = request.data.get('username')
 
         if not message:
             return Response({'message': 'Please provide a message'}, status=status.HTTP_400_BAD_REQUEST)
 
         post = Post.objects.get(id=post_id)
-        post.replies.create(message=message)
+        post.replies.create(message=message, username=username)
         return Response({'message': 'Reply created'}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, reply_id):
+        reply = Reply.objects.get(id=reply_id)
+        reply.delete()
+        return Response({'message': 'Reply deleted'}, status=status.HTTP_200_OK)
