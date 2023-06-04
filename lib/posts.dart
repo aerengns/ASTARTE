@@ -100,7 +100,72 @@ class PostList extends StatelessWidget {
                             ),
                             const Spacer(),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                              child: Visibility(
+                                visible: post.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
+                                child: IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          final postController = TextEditingController(text: post.message);
+                                          return AlertDialog(
+                                            title: const Text('Edit Post'),
+                                            content: TextField(
+                                              controller: postController,
+                                              decoration: const InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelText: 'Message',
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  final response = await Provider.of<PostsService>(context, listen: false)
+                                                      .updatePost(post.id!, postController.text);
+
+                                                  if (response.isSuccessful) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('Post updated'),
+                                                      ),
+                                                    );
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Navigator.push(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                        pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                        transitionDuration: Duration.zero,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('Could not update post'),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: const Text('Save'),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
                               child: Visibility(
                                 visible: post.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
                                 child: IconButton(
@@ -292,6 +357,71 @@ class PostList extends StatelessWidget {
                                                           ),
                                                         ),
                                                         const Spacer(),
+                                                        Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                                          child: Visibility(
+                                                            visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
+                                                            child: IconButton(
+                                                              icon: const Icon(Icons.edit),
+                                                              onPressed: () {
+                                                                showDialog(
+                                                                    context: context,
+                                                                    builder: (context) {
+                                                                      final replyController = TextEditingController(text: reply.message);
+                                                                      return AlertDialog(
+                                                                        title: const Text('Edit Reply'),
+                                                                        content: TextField(
+                                                                          controller: replyController,
+                                                                          decoration: const InputDecoration(
+                                                                            border: OutlineInputBorder(),
+                                                                            labelText: 'Message',
+                                                                          ),
+                                                                        ),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                            onPressed: () {
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                            child: const Text('Cancel'),
+                                                                          ),
+                                                                          TextButton(
+                                                                            onPressed: () async {
+                                                                              final response = await Provider.of<PostsService>(context, listen: false)
+                                                                                  .updateReply(reply.id!, replyController.text);
+
+                                                                              if (response.isSuccessful) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                                  const SnackBar(
+                                                                                    content: Text('Reply updated'),
+                                                                                  ),
+                                                                                );
+                                                                                Navigator.pop(context);
+                                                                                Navigator.pop(context);
+                                                                                Navigator.push(
+                                                                                  context,
+                                                                                  PageRouteBuilder(
+                                                                                    pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                                                    transitionDuration: Duration.zero,
+                                                                                  ),
+                                                                                );
+                                                                              } else {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                                  const SnackBar(
+                                                                                    content: Text('Could not update reply'),
+                                                                                  ),
+                                                                                );
+                                                                              }
+                                                                            },
+                                                                            child: const Text('Save'),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    }
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ),
                                                         Visibility(
                                                           visible: reply.username == Provider.of<parameters.CurrentUser>(context, listen: false).username,
                                                           child: IconButton(
@@ -347,7 +477,6 @@ class PostList extends StatelessWidget {
                                                         ),
                                                       ],
                                                     ),
-
                                                     const SizedBox(height: 10),
                                                     Text(
                                                       reply.message,
