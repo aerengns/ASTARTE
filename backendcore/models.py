@@ -23,6 +23,11 @@ class Farm(BaseAbstractModel):
     area = models.FloatField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
+# TODO: Make Worker Farm Relation Model to get farm_ids of a worker assigned at.
+# class WorkerFarmRelation(models.Model):
+#     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
+#     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+
 
 class FarmCornerPoint(BaseAbstractModel):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
