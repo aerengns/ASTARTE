@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 
 from django.http import HttpResponse
@@ -17,12 +18,10 @@ class CalendarDataAPI(APIView):
     authentication_classes = [FirebaseAuthentication]
 
     def post(self, request, *args, **kwargs):
-        farm_ids = request.POST.get('farm_ids')
-        print(f'farm_ids: {farm_ids}')
+        farm_ids = json.loads(request.POST.get('farm_ids'))
         events = [{'title': event.title, 'event_type': event.type, 'date': event.date.strftime('%Y-%m-%d'),
                    'importance': event.importance} for event in
                   Event.objects.filter(date__gte=datetime.now() - timedelta(weeks=12), farm_id__in=farm_ids)]
-        print(f'events:{events}')
         return Response(data={'events': events})
 
 

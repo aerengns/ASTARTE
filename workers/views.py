@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import Profile
+from backendcore.models import Farm
 from backendcore.utils.core_utils import send_notification
 from calendarapp.models import Event
 from firebase_auth.authentication import FirebaseAuthentication
@@ -85,7 +86,8 @@ class JobFinishAPI(APIView):
                 return HttpResponse('Success!')
             assigner = worker.event.assigner
             if assigner:
-                send_notification(assigner, {'title': 'Work Done', 'body': f'Work with id: {worker.event_id} is completed successfully.'})
+                send_notification(assigner, {'title': 'Work Done',
+                                             'body': f'Work with id: {worker.event_id} is completed successfully.'})
             else:
                 # TODO: send notification to farm owner
                 pass
@@ -98,3 +100,19 @@ class JobFinishAPI(APIView):
         except Exception as e:
             print(e)
             return HttpResponseBadRequest("Failed!")
+
+
+class WorkerRelatedFarmsAPI(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        worker = request.user.profile.worker
+        farm_ids = []
+        if worker.event:
+            farm_ids = [worker.event.farm.id]
+        if request.user.profile.user_type == Profile.UserTypes.FARM_OWNER:
+            farm_ids += list(Farm.objects.filter(owner=request.user).values_list('id', flat=True))
+        return JsonResponse(farm_ids, safe=False)
+
+
