@@ -129,6 +129,14 @@ class PostList extends StatelessWidget {
                                                       ),
                                                     );
                                                     Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    Navigator.push(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                        pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                        transitionDuration: Duration.zero,
+                                                      ),
+                                                    );
                                                   } else {
                                                     ScaffoldMessenger.of(context).showSnackBar(
                                                       const SnackBar(
@@ -217,6 +225,14 @@ class PostList extends StatelessWidget {
                                                   ),
                                                 );
                                                 Navigator.pop(context);
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                    transitionDuration: Duration.zero,
+                                                  ),
+                                                );
                                               } else {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
@@ -304,6 +320,14 @@ class PostList extends StatelessWidget {
                                                                                 ),
                                                                               );
                                                                               Navigator.pop(context);
+                                                                              Navigator.pop(context);
+                                                                              Navigator.push(
+                                                                                context,
+                                                                                PageRouteBuilder(
+                                                                                  pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+                                                                                  transitionDuration: Duration.zero,
+                                                                                ),
+                                                                              );
                                                                             } else {
                                                                               ScaffoldMessenger.of(context).showSnackBar(
                                                                                 const SnackBar(
