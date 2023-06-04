@@ -130,12 +130,13 @@ class _NavBarState extends State<NavBar> {
               trailing: const Icon(Icons.arrow_forward_ios_rounded),
               onTap: () => Navigator.pushNamed(context, '/logs'),
             ),
-          ListTile(
-            leading: const Icon(Icons.calendar_month_rounded),
-            title: const Text('Calendar'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/calendar'),
-          ),
+          // TODO: MAKE IT WORKER SPECIFIC
+          // ListTile(
+          //   leading: const Icon(Icons.calendar_month_rounded),
+          //   title: const Text('Calendar'),
+          //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
+          //   onTap: () => Navigator.pushNamed(context, '/calendar'),
+          // ),
           ListTile(
             leading: const Icon(Icons.pest_control),
             title: const Text('Pests and Diseases'),

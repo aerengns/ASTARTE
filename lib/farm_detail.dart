@@ -6,6 +6,7 @@ import 'package:fl_heatmap/fl_heatmap.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'calendar.dart';
 import 'farm_data_form.dart';
 import 'network_manager/models/farm_data.dart' as FarmDataModel;
 
@@ -71,10 +72,15 @@ class _FarmDetailState extends State<FarmDetail> {
                       ),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () async {
-                            // Navigate to photos page.
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Calendar(farmId: widget.farmId)),
+                            );
                           },
-                          child: const Text('Photos'),
+                          child: const Text('Calendar'),
                         ),
                       ),
                     ],
@@ -237,7 +243,8 @@ class _FarmDetailState extends State<FarmDetail> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const Text('Doing well',
+                        const Text(
+                          'Doing well',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -256,7 +263,9 @@ class _FarmDetailState extends State<FarmDetail> {
                             // Navigate to reports page.
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => FarmData(farmId: widget.farmId)),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      FarmData(farmId: widget.farmId)),
                             );
                           },
                           child: const Text('Add new report data'),
