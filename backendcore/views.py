@@ -17,6 +17,7 @@ from firebase_auth.authentication import FirebaseAuthentication
 
 import numpy as np
 from random import random
+from time import sleep
 
 from scripts.dynamic_heatmap import dynamic_heatmap, plot_heatmap, find_rows_and_columns_of
 
@@ -162,7 +163,8 @@ class GetDynamicHeatmap(APIView):
                                         date_collected__month = date.month, date_collected__day = date.day)
 
         if heatmap_type == 'moisture':
-            farm_sensors = []
+            sleep(.1)
+            farm_sensorsmoist = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -170,26 +172,28 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.moisture])
-            sensors = np.array(farm_sensors)
+                farm_sensorsmoist.append([lon, lat, reports.moisture])
+            sensorsmoist = np.array(farm_sensorsmoist)
 
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorsmoist[:,2] /= 10
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, zimoist, zi_heatmapmoist = dynamic_heatmap(farm_corners.copy(), sensorsmoist.copy(), number_of_rows=number_of_rows)
 
-            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsmoist.copy(), number_of_rows=number_of_rows)
+            img_bufmoist = plot_heatmap(zi_heatmapmoist, sensorsmoist.copy(), farm_corners.copy(), color='Blues', heatmap_type=heatmap_type)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners.copy(), color='Blues')
+            img_byte_arrmoist = img_bufmoist.getvalue()
+            encoded_imagemoist = base64.b64encode(img_byte_arrmoist).decode('utf-8')
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            eventsmoist = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zimoist.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imagemoist}
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
-
-            return Response(data=events)
+            return Response(data=eventsmoist)
         
         elif heatmap_type == 'n':
+            sleep(.2)
 
-            farm_sensors = []
+            farm_sensorsn = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -197,29 +201,29 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.nitrogen])
-            sensors = np.array(farm_sensors)
-            # mult_quofficient = 10/np.max(sensors[:,2])
-            # sensors[:,2] = sensors[:,2]*mult_quofficient
-
+                farm_sensorsn.append([lon, lat, reports.nitrogen])
+            sensorsn = np.array(farm_sensorsn)
             
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorsn[:,2] /= 200
 
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, zin, zi_heatmapn = dynamic_heatmap(farm_corners.copy(), sensorsn.copy(), number_of_rows=number_of_rows)
             
-            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsn.copy(), number_of_rows=number_of_rows)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners.copy(), color='Greens')
+            img_bufn = plot_heatmap(zi_heatmapn, sensorsn.copy(), farm_corners.copy(), color='Greens', heatmap_type=heatmap_type)
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            img_byte_arrn = img_bufn.getvalue()
+            encoded_imagen = base64.b64encode(img_byte_arrn).decode('utf-8')
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
+            eventsn = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zin.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imagen}
 
-            return Response(data=events)
+            return Response(data=eventsn)
              
         elif heatmap_type == 'p':
-            farm_sensors = []
+            sleep(.3)
+            farm_sensorsp = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -227,25 +231,29 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.phosphorus])
-            sensors = np.array(farm_sensors)
+                farm_sensorsp.append([lon, lat, reports.phosphorus])
+            sensorsp = np.array(farm_sensorsp)
+
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorsp[:,2] /= 200
 
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, zip, zi_heatmapp = dynamic_heatmap(farm_corners.copy(), sensorsp.copy(), number_of_rows=number_of_rows)
 
-            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsp.copy(), number_of_rows=number_of_rows)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners.copy(), color='Reds')
+            img_bufp = plot_heatmap(zi_heatmapp, sensorsp.copy(), farm_corners.copy(), color='Reds', heatmap_type=heatmap_type)
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            img_byte_arrp = img_bufp.getvalue()
+            encoded_imagep = base64.b64encode(img_byte_arrp).decode('utf-8')
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
+            eventsp = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zip.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imagep}
 
-            return Response(data=events)
+            return Response(data=eventsp)
         
         elif heatmap_type == 'k':
-            farm_sensors = []
+            sleep(.4)
+            farm_sensorsk = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -253,26 +261,30 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.potassium])
+                farm_sensorsk.append([lon, lat, reports.potassium])
 
-            sensors = np.array(farm_sensors)
+            sensorsk = np.array(farm_sensorsk)
+
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorsk[:,2] /= 200
 
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, zik, zi_heatmapk = dynamic_heatmap(farm_corners.copy(), sensorsk.copy(), number_of_rows=number_of_rows)
 
-            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsk.copy(), number_of_rows=number_of_rows)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners.copy(), color='Oranges')
+            img_bufk = plot_heatmap(zi_heatmapk, sensorsk.copy(), farm_corners.copy(), color='Oranges', heatmap_type=heatmap_type)
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            img_byte_arrk = img_bufk.getvalue()
+            encoded_imagek = base64.b64encode(img_byte_arrk).decode('utf-8')
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
+            eventsk = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zik.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imagek}
 
-            return Response(data=events)
+            return Response(data=eventsk)
         
         elif heatmap_type == 'temperature':
-            farm_sensors = []
+            sleep(.5)
+            farm_sensorstemp = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -280,26 +292,29 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.temperature])
+                farm_sensorstemp.append([lon, lat, reports.temperature])
+            sensorstemp = np.array(farm_sensorstemp)
 
-            sensors = np.array(farm_sensors)
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorstemp[:,2] = (sensorstemp[:,2]+40)/12
 
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners, sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, zitemp, zi_heatmaptemp = dynamic_heatmap(farm_corners, sensorstemp.copy(), number_of_rows=number_of_rows)
 
-            sensor_locations = find_rows_and_columns_of(farm_corners, sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners, sensorstemp.copy(), number_of_rows=number_of_rows)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners, color='YlOrRd')
+            img_buftemp = plot_heatmap(zi_heatmaptemp, sensorstemp.copy(), farm_corners, color='YlOrRd', heatmap_type=heatmap_type)
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            img_byte_arrtemp = img_buftemp.getvalue()
+            encoded_imagetemp = base64.b64encode(img_byte_arrtemp).decode('utf-8')
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
+            eventstemp = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zitemp.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imagetemp}
 
-            return Response(data=events)
+            return Response(data=eventstemp)
         
         elif heatmap_type == 'ph':
-            farm_sensors = []
+            sleep(.6)
+            farm_sensorsph = []
             for reports in all_reports:
                 if reports.latitude > max_latitude or reports.latitude < min_latitude or \
                 reports.longitude > max_longitude or reports.longitude < min_longitude:
@@ -307,20 +322,22 @@ class GetDynamicHeatmap(APIView):
                 lon, lat = reports.longitude, reports.latitude
                 lon = (lon - min_longitude)*111000
                 lat = (lat - min_latitude)*111000
-                farm_sensors.append([lon, lat, reports.ph])
-
-            sensors = np.array(farm_sensors)
+                farm_sensorsph.append([lon, lat, reports.ph])
+            sensorsph = np.array(farm_sensorsph)
+            
+            # MAKE SENSOR VALUES BETWEEN 0-10
+            sensorsph[:,2] = (sensorsph[:,2]-3)/(0.6)
 
             number_of_rows = 20
-            rows, columns, zi, zi_heatmap = dynamic_heatmap(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            rows, columns, ziph, zi_heatmapph = dynamic_heatmap(farm_corners.copy(), sensorsph.copy(), number_of_rows=number_of_rows)
 
-            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensors.copy(), number_of_rows=number_of_rows)
+            sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsph.copy(), number_of_rows=number_of_rows)
 
-            img_buf = plot_heatmap(zi_heatmap, sensors.copy(), farm_corners.copy(), color='RdPu')
+            img_bufph = plot_heatmap(zi_heatmapph, sensorsph.copy(), farm_corners.copy(), color='RdPu', heatmap_type=heatmap_type)
 
-            img_byte_arr = img_buf.getvalue()
-            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            img_byte_arrph = img_bufph.getvalue()
+            encoded_imageph = base64.b64encode(img_byte_arrph).decode('utf-8')
 
-            events = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(zi).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_image}
+            eventsph = {'rows': np.flip(rows), 'columns': columns, 'items': np.nan_to_num(ziph.T).flatten(), 'sensor_locations': sensor_locations, 'heatmap_image': encoded_imageph}
 
-            return Response(data=events)
+            return Response(data=eventsph)
