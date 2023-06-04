@@ -119,10 +119,9 @@ class Astarte extends StatelessWidget {
           '/farms': (context) => const Farms(),
           //'/farm_data_form': (context) => FarmData(),
           '/photo-upload': (context) => PhotoUpload(),
-          // TODO: MAKE IT WORKER SPECIFIC
-          // '/calendar': (context) => Calendar(
-          //       farmId: -1,
-          //     ),
+          '/calendar': (context) => Calendar(
+                farmId: -1,
+              ),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
           '/posts': (context) => const Posts(),
           '/create-post': (context) => const NewPost(),

@@ -196,3 +196,30 @@ Future<bool> finishJob() async {
     return false;
   }
 }
+
+Future<List<int>> getRelatedFarms() async {
+  try {
+    var headers = {
+      'Authorization': parameters.TOKEN,
+    };
+    // your endpoint and request method
+    var request = http.MultipartRequest(
+        'GET', Uri.parse('${parameters.GENERAL_URL}app/related_farms'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String newMessage = await response.stream.bytesToString();
+      List<dynamic> data = jsonDecode(newMessage);
+      return data.whereType<int>().toList();
+    } else {
+      print(response.reasonPhrase);
+      return [];
+    }
+  } catch (e) {
+    print(e);
+    return [];
+  }
+}

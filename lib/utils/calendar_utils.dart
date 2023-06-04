@@ -5,6 +5,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:astarte/utils/parameters.dart' as parameters;
+import 'package:astarte/utils/workers_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:table_calendar/table_calendar.dart';
@@ -62,27 +63,7 @@ class Event {
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
   equals: isSameDay,
   hashCode: getHashCode,
-)..addAll(_kEventSource);
-
-final _kEventSource = {
-  kToday: [
-    Event(
-        title: 'You should do some watering',
-        eventType: wateringEvent,
-        date: kToday),
-    Event(
-        title: 'Water please I am dying here',
-        eventType: wateringEvent,
-        date: kToday),
-  ],
-  kToday.add(const Duration(days: 1)): [
-    Event(
-        title: "FROST INCOMING!!",
-        eventType: frostEvent,
-        date: kToday.add(const Duration(days: 1)),
-        importance: criticalEvent),
-  ]
-};
+);
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -121,11 +102,11 @@ Future<void> getCalendarData(int farmId) async {
         'POST', Uri.parse('${parameters.GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
-    if (farmId != -1) request.fields['farm_ids'] = farmId.toString();
-
-    // TODO: If a worker opens the calendar
-    // else:
-    //   request.fields['farm_ids'] = getRelatedFarms(worker);
+    if (farmId != -1) {
+      request.fields['farm_ids'] = jsonEncode([farmId]);
+    } else {
+      request.fields['farm_ids'] = jsonEncode(await getRelatedFarms());
+    }
 
     http.StreamedResponse response = await request.send();
 
