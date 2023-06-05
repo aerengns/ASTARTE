@@ -273,7 +273,7 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Icon(
@@ -302,7 +302,7 @@ class MyApp extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () {},
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           FaIcon(
