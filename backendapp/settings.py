@@ -17,8 +17,6 @@ import environ
 import firebase_admin
 from firebase_admin import credentials
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -164,3 +162,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
 
 FIREBASE_CONFIG = BASE_DIR / 'keyfile.json'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 12042880

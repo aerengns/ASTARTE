@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Get one farm for all users, send related weather notification
 
-        for user in User.objects.filter(is_active=True):
+        for user in User.objects.filter(is_active=True)[:3]:
             context = {'title': 'Daily reminder', 'body': random.choice(MOTIVATIONAL_MESSAGES)}
             try:
                 send_notification(user.profile, context)
