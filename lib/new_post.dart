@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:astarte/network_manager/models/post.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
+import 'package:astarte/posts.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
@@ -86,6 +87,14 @@ class _NewPostFormState extends State<NewPostForm> {
           ),
         );
         Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const Posts(),
+            transitionDuration: Duration.zero,
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

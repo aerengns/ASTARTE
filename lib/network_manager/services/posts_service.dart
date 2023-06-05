@@ -19,6 +19,15 @@ abstract class PostsService extends ChopperService {
       @Body() PostData data
       );
 
+  @Delete(path: '/delete_post/{post_id}')
+  Future<Response> deletePost(@Path('post_id') int postId);
+
+  @Put(path: '/update_post/{post_id}')
+  Future<Response> updatePost(
+      @Path('post_id') int postId,
+      @Body() String message,
+      );
+
   @Get(path: '/reply/{post_id}')
   Future<Response<BuiltList<PostData>>> getReplies(@Path('post_id') int postId);
 
@@ -26,6 +35,17 @@ abstract class PostsService extends ChopperService {
   Future<Response> createReply(
       @Path('post_id') int postId,
       @Body() PostData data
+      );
+
+  @Delete(path: '/delete_reply/{reply_id}')
+  Future<Response> deleteReply(
+      @Path('reply_id') int replyId
+      );
+
+  @Put(path: '/update_reply/{reply_id}')
+  Future<Response> updateReply(
+      @Path('reply_id') int replyId,
+      @Body() String message,
       );
 
   static PostsService create() {
