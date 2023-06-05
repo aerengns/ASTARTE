@@ -104,7 +104,13 @@ class _SignUpFormState extends State<SignUpForm> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/sign_in');
                 },
-                child: const Text("Already have an account?"),
+                child: const Text(
+                  'Already have an account?',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
+                ),
               ),
             )
           ],
@@ -229,18 +235,20 @@ class SignUp extends StatelessWidget {
     );
 
     return Scaffold(
-      body: ListView(
-        children: [
-          Image.asset(
-            'assets/images/astarte.jpg',
-            width: 100,
-            height: 100,
-            fit: BoxFit.contain,
+        body: Container(
+          color: const Color.fromRGBO(237, 230, 231, 1),
+          child: ListView(
+            children: [
+              Image.asset(
+                'assets/icons/launcher_icon.png',
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+              titleSection,
+              credentialsSection,
+            ],
           ),
-          titleSection,
-          credentialsSection,
-        ],
-      ),
-    );
+        ));
   }
 }
