@@ -103,6 +103,7 @@ class Astarte extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'ASTARTE',
         theme: AstarteTheme.lightTheme,
         initialRoute: '/sign_in',
