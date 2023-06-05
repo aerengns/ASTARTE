@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
+import 'package:astarte/utils/workers_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,7 +99,21 @@ class _NavBarState extends State<NavBar> {
                     leading: const Icon(Icons.work_off_rounded),
                     title: const Text('Finish Job'),
                     trailing: const Icon(Icons.check_circle_rounded),
-                    onTap: () => {},
+                    onTap: () => {
+                      finishJob().then((returnVal) {
+                        if (returnVal) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Successful'),
+                          ));
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Unsuccessful'),
+                          ));
+                        }
+                      })
+                    },
                   ),
               ]),
           if (currentUser.userType != 'Worker')
@@ -115,18 +130,13 @@ class _NavBarState extends State<NavBar> {
               trailing: const Icon(Icons.arrow_forward_ios_rounded),
               onTap: () => Navigator.pushNamed(context, '/logs'),
             ),
-          ListTile(
-            leading: const Icon(Icons.map_rounded),
-            title: const Text('Dynamic Heatmap'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/dynamic_heatmap'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.calendar_month_rounded),
-            title: const Text('Calendar'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/calendar'),
-          ),
+          // TODO: MAKE IT WORKER SPECIFIC
+          // ListTile(
+          //   leading: const Icon(Icons.calendar_month_rounded),
+          //   title: const Text('Calendar'),
+          //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
+          //   onTap: () => Navigator.pushNamed(context, '/calendar'),
+          // ),
           ListTile(
             leading: const Icon(Icons.pest_control),
             title: const Text('Pests and Diseases'),

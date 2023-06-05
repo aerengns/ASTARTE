@@ -1,6 +1,8 @@
+import 'package:astarte/create_farm.dart';
 import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
+import 'package:astarte/network_manager/services/calendar_events_service.dart';
 import 'package:astarte/new_post.dart';
 import 'package:astarte/posts.dart';
 import 'package:astarte/serial.dart';
@@ -28,6 +30,7 @@ import 'package:astarte/dynamic_heatmap.dart';
 import 'package:astarte/utils/parameters.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'network_manager/services/farm_data_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,19 +38,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  void sendTokenToServer(String? token) async {
-    var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/send_token'));
-    final tokens = <String, String>{'token': token as String};
-    request.fields.addEntries(tokens.entries);
-
-    http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      print('Token sent successfully!');
-    } else {
-      print('Failed to send token!');
-    }
-  }
 
   // get user permission for sending notifications on iOS
   NotificationSettings settings = await messaging.requestPermission(
@@ -59,9 +49,9 @@ void main() async {
     provisional: false,
     sound: true,
   );
-  messaging.getToken().then((token) {
+  messaging.getToken(vapidKey: NOTIFICATION_VAPID_KEY).then((token) {
     print('Token: $token');
-    sendTokenToServer(token); // Send the token to your Django backend
+    deviceToken = token;
   });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -101,6 +91,15 @@ class Astarte extends StatelessWidget {
           create: (_) => PostsService.create(),
           dispose: (_, PostsService service) => service.client.dispose(),
         ),
+        Provider(
+          create: (_) => FarmDataService.create(),
+          dispose: (_, FarmDataService service) => service.client.dispose(),
+        ),
+        Provider(
+          create: (_) => CalendarEventsService.create(),
+          dispose: (_, CalendarEventsService service) =>
+              service.client.dispose(),
+        )
       ],
       child: MaterialApp(
         title: 'ASTARTE',
@@ -120,13 +119,16 @@ class Astarte extends StatelessWidget {
           '/workers': (context) => const Workers(),
           '/serial': (context) => ExampleApp(),
           '/farms': (context) => const Farms(),
-          '/farm_data_form': (context) => const FarmData(),
-          '/dynamic_heatmap': (context) => HeatmapPage(),
+          //'/farm_data_form': (context) => FarmData(),
           '/photo-upload': (context) => PhotoUpload(),
-          '/calendar': (context) => const Calendar(),
+          // TODO: MAKE IT WORKER SPECIFIC
+          // '/calendar': (context) => Calendar(
+          //       farmId: -1,
+          //     ),
           '/pests-and-diseases': (context) => const PestsAndDiseases(),
           '/posts': (context) => const Posts(),
           '/create-post': (context) => const NewPost(),
+          '/create_farm': (context) => const CreateFarm(),
         },
       ),
     );

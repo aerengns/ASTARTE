@@ -52,6 +52,7 @@ dependencies:
   fl_heatmap: ^0.3.0
   intl: ^0.17.0
   geolocator: ^9.0.2
+  built_collection: ^5.1.0
   usb_serial: ^0.4.0
 
 flutter_icons:

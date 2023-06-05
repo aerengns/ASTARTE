@@ -4,7 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:astarte/utils/parameters.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:table_calendar/table_calendar.dart';
@@ -36,9 +36,8 @@ class Event {
       required this.date,
       this.importance});
 
-  Map<String, dynamic> toDict()
-  {
-    return{
+  Map<String, dynamic> toDict() {
+    return {
       'title': title,
       'type': eventType,
       'date': date.toIso8601String(),
@@ -112,16 +111,21 @@ Color eventMarkerColor(Object? obj) {
   }
 }
 
-Future<void> getCalendarData() async {
+Future<void> getCalendarData(int farmId) async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'POST', Uri.parse('${GENERAL_URL}app/calendar_data'));
+        'POST', Uri.parse('${parameters.GENERAL_URL}app/calendar_data'));
 
     request.headers.addAll(headers);
+    if (farmId != -1) request.fields['farm_ids'] = farmId.toString();
+
+    // TODO: If a worker opens the calendar
+    // else:
+    //   request.fields['farm_ids'] = getRelatedFarms(worker);
 
     http.StreamedResponse response = await request.send();
 
@@ -138,6 +142,7 @@ Future<void> getCalendarData() async {
             importance: event['importance'] as int);
         source[date] != null ? source[date]?.add(temp) : source[date] = [temp];
       }
+      kEvents.clear();
       kEvents.addAll(source);
     } else {
       print(response.reasonPhrase);

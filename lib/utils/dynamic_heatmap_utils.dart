@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
 
 import 'calendar_utils.dart';
@@ -24,14 +25,18 @@ class DynamicHeatmap {
   });
 }
 
-Future<DynamicHeatmap> getHeatmapData() async {
+Future<DynamicHeatmap> getHeatmapData(String heatmap_type, int farm_id) async {
   try {
     var headers = {
-      'Authorization': 'Bearer ' "token",
+      'Authorization': parameters.TOKEN,
     };
     // your endpoint and request method
     var request = http.MultipartRequest(
-        'GET', Uri.parse('http://127.0.0.1:8000/api/v1/get_heatmap/'));
+        'GET',
+        Uri.parse('${parameters.GENERAL_URL}api/v1/get_heatmap/' +
+            farm_id.toString() +
+            '/' +
+            heatmap_type));
 
     request.headers.addAll(headers);
 
