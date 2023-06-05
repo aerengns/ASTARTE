@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 
@@ -30,45 +31,20 @@ class _CalendarState extends State<Calendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   late final ValueNotifier<List<Event>> _selectedEvents;
+  late Future<LinkedHashMap> kEvents;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    // TODO: instead of print it should refresh the calendar
-    getCalendarData(widget.farmId).whenComplete(() => print('Done'));
+    _selectedEvents = ValueNotifier([]);
+    kEvents = getCalendarData(widget.farmId);
   }
 
   @override
   void dispose() {
     _selectedEvents.dispose();
     super.dispose();
-  }
-
-  List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    return kEvents[day] ?? [];
-  }
-
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
-    final days = daysInRange(start, end);
-
-    return [
-      for (final d in days) ..._getEventsForDay(d),
-    ];
-  }
-
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-      });
-
-      _selectedEvents.value = _getEventsForDay(selectedDay);
-    }
   }
 
   @override
@@ -79,57 +55,96 @@ class _CalendarState extends State<Calendar> {
       ),
       body: Column(
         children: [
-          TableCalendar(
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            rowHeight: 42,
-            headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                leftChevronIcon: Icon(Icons.chevron_left_rounded),
-                rightChevronIcon: Icon(Icons.chevron_right_rounded)),
-            shouldFillViewport: false,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            eventLoader: _getEventsForDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: const CalendarStyle(
-              // Use `CalendarStyle` to customize the UI
-              outsideDaysVisible: true,
-              outsideTextStyle: TextStyle(color: Color.fromRGBO(0, 7, 10, 0.2)),
-              todayDecoration: BoxDecoration(
-                  color: CustomColors.astarteBrown, shape: BoxShape.circle),
-              defaultTextStyle: TextStyle(color: Colors.black),
-              weekendTextStyle: TextStyle(color: CustomColors.astarteRed),
-              selectedDecoration: BoxDecoration(
-                  color: CustomColors.astarteOrange, shape: BoxShape.circle),
-            ),
-            calendarBuilders: CalendarBuilders(
-              markerBuilder: (BuildContext context, date, events) {
-                if (events.isEmpty) return const SizedBox();
-                return ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: events.length < 3 ? events.length : 3,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(top: 23),
-                        padding: const EdgeInsets.all(1),
-                        child: Container(
-                          // height: 7, // for vertical axis
-                          width: 8, // for horizontal axis
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: eventMarkerColor(events[index])),
-                        ),
-                      );
+          FutureBuilder<LinkedHashMap>(
+            future: kEvents,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                LinkedHashMap events = snapshot.data!;
+                print(events);
+
+                List<Event> _getEventsForDay(DateTime day) {
+                  // Implementation example
+                  return events[day] ?? [];
+                }
+
+                List<Event> _getEventsForRange(DateTime start, DateTime end) {
+                  // Implementation example
+                  final days = daysInRange(start, end);
+
+                  return [
+                    for (final d in days) ..._getEventsForDay(d),
+                  ];
+                }
+
+                void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+                  if (!isSameDay(_selectedDay, selectedDay)) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
                     });
-              },
-            ),
-            onDaySelected: _onDaySelected,
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+
+                    _selectedEvents.value = _getEventsForDay(selectedDay);
+                  }
+                }
+
+                return TableCalendar(
+                  firstDay: kFirstDay,
+                  lastDay: kLastDay,
+                  focusedDay: _focusedDay,
+                  calendarFormat: _calendarFormat,
+                  rowHeight: 42,
+                  headerStyle: const HeaderStyle(
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      leftChevronIcon: Icon(Icons.chevron_left_rounded),
+                      rightChevronIcon: Icon(Icons.chevron_right_rounded)),
+                  shouldFillViewport: false,
+                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                  eventLoader: _getEventsForDay,
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  calendarStyle: const CalendarStyle(
+                    // Use `CalendarStyle` to customize the UI
+                    outsideDaysVisible: true,
+                    outsideTextStyle:
+                        TextStyle(color: Color.fromRGBO(0, 7, 10, 0.2)),
+                    todayDecoration: BoxDecoration(
+                        color: CustomColors.astarteBrown,
+                        shape: BoxShape.circle),
+                    defaultTextStyle: TextStyle(color: Colors.black),
+                    weekendTextStyle: TextStyle(color: CustomColors.astarteRed),
+                    selectedDecoration: BoxDecoration(
+                        color: CustomColors.astarteOrange,
+                        shape: BoxShape.circle),
+                  ),
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (BuildContext context, date, events) {
+                      if (events.isEmpty) return const SizedBox();
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: events.length < 3 ? events.length : 3,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.only(top: 23),
+                              padding: const EdgeInsets.all(1),
+                              child: Container(
+                                // height: 7, // for vertical axis
+                                width: 8, // for horizontal axis
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: eventMarkerColor(events[index])),
+                              ),
+                            );
+                          });
+                    },
+                  ),
+                  onDaySelected: _onDaySelected,
+                  onPageChanged: (focusedDay) {
+                    _focusedDay = focusedDay;
+                  },
+                );
+              }
+              return const CircularProgressIndicator();
             },
           ),
           Padding(
