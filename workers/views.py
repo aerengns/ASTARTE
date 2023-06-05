@@ -1,6 +1,7 @@
 import base64
 import io
 import json
+import datetime
 
 from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -13,7 +14,7 @@ from backendcore.models import Farm
 from backendcore.utils.core_utils import send_notification
 from calendarapp.models import Event
 from firebase_auth.authentication import FirebaseAuthentication
-from workers.models import Worker
+from workers.models import Worker, WorkerActivityLog
 from PIL import Image
 
 
@@ -59,6 +60,8 @@ class JobDataAPI(APIView):
     def post(self, request, *args, **kwargs):
         worker = json.loads(request.data['worker'])
         event = json.loads(request.data['event'])
+        date_string = event['date'].split('T')[0]
+        event['date'] = datetime.datetime.strptime(date_string, '%Y-%m-%d')
         try:
             worker = Worker.objects.get(name=worker['name'], surname=worker['surname'], email=worker['email'])
             event = Event.objects.get(**event)
@@ -92,6 +95,10 @@ class JobFinishAPI(APIView):
                 # TODO: send notification to farm owner
                 pass
             event = worker.event
+            log = WorkerActivityLog.objects.create(worker_id=worker.id, title=event.title, type=event.type,
+                                                   date_finished=datetime.datetime.today(), assigner=assigner,
+                                                   farm=event.farm, description=event.description)
+            log.save()
             worker.event = None
             worker.save()
             event.delete()
@@ -116,3 +123,37 @@ class WorkerRelatedFarmsAPI(APIView):
         return JsonResponse(farm_ids, safe=False)
 
 
+class ActivityLogSenderAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        farm_id = int(kwargs.get('farm_id'))
+        try:
+            farm = Farm.objects.get(id=farm_id)
+        except Farm.DoesNotExist:
+            return Response(status=404)
+
+        user = request.user
+        log_values = WorkerActivityLog.objects.filter(
+            farm__owner__username=user,
+            farm_id=farm_id,
+        ).order_by('-date_finished')
+
+        if 'start_date' in request.GET and 'end_date' in request.GET:
+            start_date = datetime.datetime.strptime(request.GET['start_date'], '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(request.GET['end_date'], '%Y-%m-%d').date()
+            log_values = log_values.filter(date_finished__range=(start_date, end_date))
+
+        logs = log_values.values(
+            'id',
+            'farm__name',
+            'worker__profile__name',
+            'worker__profile__surname',
+            'tittle',
+            'type',
+            'description',
+            'date_finished',
+        )
+
+        return Response(data=logs)
