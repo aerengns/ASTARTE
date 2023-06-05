@@ -1,4 +1,5 @@
 import 'package:astarte/sidebar.dart';
+import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/auth_validator.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,7 @@ class _SignInFormState extends State<SignInForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _success = false;
   String _userEmail = '';
+  bool isLoading = false;
 
   void _handleTap() {
     setState(() {
@@ -47,7 +49,7 @@ class _SignInFormState extends State<SignInForm> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelStyle: TextStyle(
-                        color: Colors.red,
+                        color: CustomColors.astarteRed,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Email',
@@ -66,7 +68,7 @@ class _SignInFormState extends State<SignInForm> {
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
                     labelStyle: const TextStyle(
-                        color: Colors.red,
+                        color: CustomColors.astarteRed,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                     labelText: 'Password',
@@ -84,25 +86,38 @@ class _SignInFormState extends State<SignInForm> {
             Container(
               padding: const EdgeInsets.only(top: 30),
               child: TextButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _signInWithEmailAndPassword(currentUser);
-                  }
-                },
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await _signInWithEmailAndPassword(currentUser);
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      },
                 child: Container(
                   alignment: Alignment.center,
                   height: 50,
                   width: 300,
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: CustomColors.astarteRed,
                     borderRadius: BorderRadius.all(
                       Radius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Sign In',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(CustomColors.astarteWhite),
+                        ) // Display the loading animation
+                      : const Text(
+                          'Sign In',
+                          style: TextStyle(color: CustomColors.astarteWhite, fontSize: 25),
+                        ),
                 ),
               ),
             ),
@@ -117,7 +132,7 @@ class _SignInFormState extends State<SignInForm> {
     super.dispose();
   }
 
-  void _signInWithEmailAndPassword(currentUser) async {
+  Future<User?> _signInWithEmailAndPassword(currentUser) async {
     User? user;
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
@@ -260,7 +275,7 @@ class MyApp extends StatelessWidget {
                       onPressed: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
+                        children: [
                           Icon(
                             FontAwesomeIcons.twitter,
                             color: Colors.white,
@@ -289,7 +304,7 @@ class MyApp extends StatelessWidget {
                       onPressed: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
+                        children: [
                           FaIcon(
                             FontAwesomeIcons.facebook,
                             color: Colors.white,
@@ -331,7 +346,7 @@ class MyApp extends StatelessWidget {
                     child: const Text(
                       'Sign Up',
                       style: TextStyle(
-                          color: Colors.red,
+                          color: CustomColors.astarteRed,
                           fontWeight: FontWeight.bold,
                           fontSize: 17),
                     ),
