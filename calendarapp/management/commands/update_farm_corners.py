@@ -139,3 +139,4 @@ class Command(BaseCommand):
                                       date_collected=timezone.now())
 
         calendar_event_create(users[0], farm_id=2)
+        worker_activity_create(farm_id=2)
