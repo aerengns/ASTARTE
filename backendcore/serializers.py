@@ -75,6 +75,7 @@ class FarmSerializer(serializers.ModelSerializer):
 
 def get_average_report(latest_report):
     reports_same_day_avgs = FarmReport.objects.filter(
+        farm_id=latest_report.farm.id,
         date_collected__day=latest_report.date_collected.day,
         date_collected__month=latest_report.date_collected.month,
         date_collected__year=latest_report.date_collected.year

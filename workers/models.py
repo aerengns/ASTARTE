@@ -9,7 +9,7 @@ from calendarapp.models import Event, EVENT_TYPE_CHOICES
 
 class Worker(AbstractProfile):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.PROTECT, null=True)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
     permission_level = models.IntegerField(default=0)
 
 
