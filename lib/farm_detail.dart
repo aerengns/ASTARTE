@@ -93,8 +93,11 @@ class _FarmDetailState extends State<FarmDetail> {
         } else {
           final data = snapshot.data!;
           double? phVal = data.latest_farm_report?.ph;
-          if (phVal == null) phVal = 6.5;
-          if (phVal > 7) {
+          if (phVal == null){
+            fertilizationMessage = "No report data.";
+            fertilizationColor = CustomColors.astarteBlue;
+          }
+          else if (phVal > 7) {
             fertilizationMessage =
                 'The soil is too alkaline, you can add elemental sulfur or acidifying agents according to the recommended rates. Mix them into the soil well.';
             fertilizationColor = CustomColors.astarteBlue;
@@ -111,333 +114,335 @@ class _FarmDetailState extends State<FarmDetail> {
               getStatus(snapshot.data?.latest_farm_report?.date_collected);
           return Scaffold(
             appBar: AstarteAppBar(title: data.name.toString()),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Create links to reports and photos pages.
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          HeatmapPage(farmId: widget.farmId)),
-                                );
-                              },
-                              child: const Text('HeatMap'),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Create links to reports and photos pages.
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            HeatmapPage(farmId: widget.farmId)),
+                                  );
+                                },
+                                child: const Text('HeatMap'),
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Calendar(farmId: widget.farmId)),
-                                );
-                              },
-                              child: const Text('Calendar'),
+                            const SizedBox(
+                              width: 5,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      // Display temperature of air and soil.
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: CustomColors.astarteGrey,
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Calendar(farmId: widget.farmId)),
+                                  );
+                                },
+                                child: const Text('Calendar'),
+                              ),
+                            ),
+                          ],
                         ),
-                        padding: const EdgeInsets.all(16),
-                        child: FutureBuilder<WeatherData>(
-                            future: getWeather(
-                                snapshot.data!.farm_corner.latitude,
-                                snapshot.data!.farm_corner.longitude),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                WeatherData currentWeatherData = snapshot.data!;
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Wrap(
-                                      children: [
-                                        Icon(
-                                          weatherCodeMapping[currentWeatherData
-                                              .weatherCode]!["icon"],
-                                          size: 28,
-                                          color: CustomColors
-                                              .astarteRed, // Customize the icon color as needed
-                                        ),
-                                        SizedBox(width: 5),
-                                        const Text(
-                                          'Weather',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: CustomColors.astarteRed,
+                        const SizedBox(height: 12),
+                        // Display temperature of air and soil.
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: CustomColors.astarteGrey,
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: FutureBuilder<WeatherData>(
+                              future: getWeather(
+                                  snapshot.data!.farm_corner.latitude,
+                                  snapshot.data!.farm_corner.longitude),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  WeatherData currentWeatherData = snapshot.data!;
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Wrap(
+                                        children: [
+                                          Icon(
+                                            weatherCodeMapping[currentWeatherData
+                                                .weatherCode]!["icon"],
+                                            size: 28,
+                                            color: CustomColors
+                                                .astarteRed, // Customize the icon color as needed
                                           ),
+                                          SizedBox(width: 5),
+                                          const Text(
+                                            'Weather',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color: CustomColors.astarteRed,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        '${weatherCodeMapping[currentWeatherData.weatherCode]!["description"]}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      '${weatherCodeMapping[currentWeatherData.weatherCode]!["description"]}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Air Temperature: ${currentWeatherData.temperature} °C',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Air Temperature: ${currentWeatherData.temperature} °C',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Wind Speed: ${currentWeatherData.windSpeed} km/h',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Wind Speed: ${currentWeatherData.windSpeed} km/h',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Relative Humidity: ${currentWeatherData.relativeHumidity} %',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Relative Humidity: ${currentWeatherData.relativeHumidity} %',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Soil Moisture: ${currentWeatherData.soilMoisture}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Soil Moisture: ${currentWeatherData.soilMoisture}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }
-                              return const CircularProgressIndicator();
-                            }),
-                      ),
-                      const SizedBox(height: 10),
-                      // Display current values.
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: CustomColors.astarteGrey,
+                                    ],
+                                  );
+                                }
+                                return const CircularProgressIndicator();
+                              }),
                         ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Wrap(
-                              children: const [
-                                Icon(
-                                  Icons.account_tree_rounded,
-                                  size: 28,
-                                  color: CustomColors.astarteRed,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Soil',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: CustomColors.astarteRed,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Humidity: ${NumberFormat("0.##").format(data.latest_farm_report?.moisture ?? -1)} %',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Nitrogen: ${NumberFormat("0.##").format(data.latest_farm_report?.nitrogen ?? -1)} mg/L',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Phosphorus: ${NumberFormat("0.##").format(data.latest_farm_report?.phosphorus ?? -1)} mg/L',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Potassium: ${NumberFormat("0.##").format(data.latest_farm_report?.potassium ?? -1)} mg/L',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'PH: ${NumberFormat("0.##").format(data.latest_farm_report?.ph ?? -1)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Collected at: ${data.latest_farm_report?.date_collected?.substring(0, 10)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      // Display suggestion on fertilization.
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: CustomColors.astarteGrey,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Wrap(
-                              children: const [
-                                Icon(
-                                  Icons.grass,
-                                  size: 28,
-                                  color: CustomColors.astarteRed,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Fertilization',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: CustomColors.astarteRed,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              fertilizationMessage,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: fertilizationColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Display brief information about status of farm.
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: CustomColors.astarteGrey,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Wrap(
-                              children: const [
-                                Icon(
-                                  Icons.house_rounded,
-                                  size: 28,
-                                  color: CustomColors.astarteRed,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Farm Status',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: CustomColors.astarteRed,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              '${farmStatusMapping[status]}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: farmStatusColorMapping[status],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Navigate to reports page.
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          FarmData(farmId: widget.farmId)),
-                                );
-                              },
-                              child: const Text('Add new report data'),
-                            ),
+                        const SizedBox(height: 10),
+                        // Display current values.
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: CustomColors.astarteGrey,
                           ),
-                          const SizedBox(
-                            width: 5,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Wrap(
+                                children: const [
+                                  Icon(
+                                    Icons.account_tree_rounded,
+                                    size: 28,
+                                    color: CustomColors.astarteRed,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Soil',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: CustomColors.astarteRed,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Humidity: ${NumberFormat("0.##").format(data.latest_farm_report?.moisture ?? -1)} %',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Nitrogen: ${NumberFormat("0.##").format(data.latest_farm_report?.nitrogen ?? -1)} mg/L',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Phosphorus: ${NumberFormat("0.##").format(data.latest_farm_report?.phosphorus ?? -1)} mg/L',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Potassium: ${NumberFormat("0.##").format(data.latest_farm_report?.potassium ?? -1)} mg/L',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'PH: ${NumberFormat("0.##").format(data.latest_farm_report?.ph ?? -1)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Collected at: ${data.latest_farm_report?.date_collected?.substring(0, 10)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          // Button action
-                          _showDeleteConfirmationDialog(context);
-                        },
-                        child: const Text('Delete Farm'),
+                        ),
+                        const SizedBox(height: 10),
+                        // Display suggestion on fertilization.
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: CustomColors.astarteGrey,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Wrap(
+                                children: const [
+                                  Icon(
+                                    Icons.grass,
+                                    size: 28,
+                                    color: CustomColors.astarteRed,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Fertilization',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: CustomColors.astarteRed,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Text(
+                                fertilizationMessage,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: fertilizationColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Display brief information about status of farm.
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: CustomColors.astarteGrey,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Wrap(
+                                children: const [
+                                  Icon(
+                                    Icons.house_rounded,
+                                    size: 28,
+                                    color: CustomColors.astarteRed,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Farm Status',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: CustomColors.astarteRed,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Text(
+                                '${farmStatusMapping[status]}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: farmStatusColorMapping[status],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Navigate to reports page.
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            FarmData(farmId: widget.farmId)),
+                                  );
+                                },
+                                child: const Text('Add new report data'),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Button action
+                            _showDeleteConfirmationDialog(context);
+                          },
+                          child: const Text('Delete Farm'),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

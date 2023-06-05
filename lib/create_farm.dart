@@ -131,6 +131,7 @@ class _CreateFarmFormState extends State<CreateFarmForm> {
                   content: Text('Data Saved Successfully'),
                 ),
               );
+              Navigator.of(context).pop();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => FarmDetail(farmId: response.body['farm_id'])),
