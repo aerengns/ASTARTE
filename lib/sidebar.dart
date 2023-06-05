@@ -124,12 +124,21 @@ class _NavBarState extends State<NavBar> {
               onTap: () => Navigator.pushNamed(context, '/farms'),
             ),
           if (currentUser.userType != 'Worker')
-            ListTile(
-              leading: const Icon(Icons.attach_file),
-              title: const Text('Logs'),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded),
-              onTap: () => Navigator.pushNamed(context, '/logs'),
-            ),
+            MyExpansionTile(
+                title: const Text('Logs'),
+                leading: const Icon(Icons.attach_file),
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('Worker Activity Logs'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () => Navigator.pushNamed(context, '/activity_logs'),
+                  ),
+                  ListTile(
+                    title: const Text('Soil Values Logs'),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    onTap: () => Navigator.pushNamed(context, '/logs'),
+                  ),
+                ]),
           ListTile(
             leading: const Icon(Icons.calendar_month_rounded),
             title: const Text('Calendar'),

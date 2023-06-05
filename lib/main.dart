@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
+import 'activity_log_page.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:astarte/homepage.dart';
@@ -115,6 +116,7 @@ class Astarte extends StatelessWidget {
           '/temperature_report': (context) => TemperatureReport(),
           '/ph_report': (context) => PHReport(),
           '/logs': (context) => Logs(),
+          '/activity_logs': (context) => ActivityLogs(),
           '/workers': (context) => const Workers(),
           '/farms': (context) => const Farms(),
           //'/farm_data_form': (context) => FarmData(),
