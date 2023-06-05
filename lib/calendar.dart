@@ -157,7 +157,18 @@ class _CalendarState extends State<Calendar> {
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      child: value[index].get(),
+                      child: InkWell(
+                        child: value[index].get(),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EventEditPage(
+                                event: value[index],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 );
@@ -425,6 +436,138 @@ class _AddEventButtonState extends State<AddEventButton> {
   }
 }
 
+class EventEditPage extends StatefulWidget {
+  const EventEditPage({Key? key, required this.event}) : super(key: key);
+  final Event event;
+
+  @override
+  State<EventEditPage> createState() => _EventEditPageState();
+}
+
+class _EventEditPageState extends State<EventEditPage> {
+  late final TextEditingController _titleController =
+      TextEditingController(text: widget.event.title);
+  late final TextEditingController _descriptionController =
+      TextEditingController(text: widget.event.description ?? '');
+  late final TextEditingController _importanceController =
+      TextEditingController(
+          text: eventImportanceTypes[widget.event.importance]);
+  late final TextEditingController _eventTypeController =
+      TextEditingController(text: eventTypes[widget.event.eventType]);
+
+  @override
+  void dispose() {
+    // Dispose of the text controllers when the page is disposed
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _importanceController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _saveChanges() async {
+    try {
+      // Update the properties of the event with the modified values
+      var headers = {
+        'Authorization': parameters.TOKEN,
+      };
+
+      String title = _titleController.text;
+      String? description = _descriptionController.text;
+      int eventType = 0;
+      int importance = 0;
+
+      for (var elem in eventTypes.entries) {
+        if (elem.value == _eventTypeController.text) {
+          eventType = elem.key;
+        }
+      }
+      for (var elem in eventImportanceTypes.entries) {
+        if (elem.value == _importanceController.text) {
+          importance = elem.key;
+        }
+      }
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('${parameters.GENERAL_URL}app/edit_event'))
+        ..headers.addAll(headers)
+        ..fields['title'] = title
+        ..fields['description'] = description
+        ..fields['type'] = eventType.toString()
+        ..fields['importance'] = importance.toString()
+        ..fields['event'] = jsonEncode(widget.event.toDict());
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print(response.reasonPhrase);
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const AstarteAppBar(
+        title: 'Edit Event',
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Title',
+              ),
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+              ),
+            ),
+            EventDropdownWidget(
+              selectedOptionController: _eventTypeController,
+              itemsList: eventTypes.keys.toList(),
+              itemDisplayDict: eventTypes,
+            ),
+            EventDropdownWidget(
+              selectedOptionController: _importanceController,
+              itemsList: eventImportanceTypes.keys.toList(),
+              itemDisplayDict: eventImportanceTypes,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (await _saveChanges()) {
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Event edited successfully'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Event edit failed. Please try again.'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Save Changes'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class EventDropdownWidget extends StatefulWidget {
   EventDropdownWidget(
       {Key? key,
@@ -441,7 +584,9 @@ class EventDropdownWidget extends StatefulWidget {
 }
 
 class _EventDropdownWidgetState extends State<EventDropdownWidget> {
-  late String selectedOption = widget.itemDisplayDict[widget.itemsList.first]!;
+  late String selectedOption = widget.selectedOptionController.text == ''
+      ? widget.itemDisplayDict[widget.itemsList.first]!
+      : widget.selectedOptionController.text;
 
   @override
   void initState() {

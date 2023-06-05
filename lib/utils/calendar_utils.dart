@@ -49,8 +49,8 @@ const Map<int, String> eventImportanceTypes = {
 
 /// Event class.
 class Event {
-  final String title;
-  final String? description;
+  late final String title;
+  late final String? description;
   final int eventType;
   final DateTime date;
   int? importance;
@@ -96,6 +96,8 @@ class Event {
         importance = map['importance'],
         description = map['description'];
 }
+
+/* Calendar Stuff */
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
   equals: isSameDay,
