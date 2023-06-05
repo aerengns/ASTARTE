@@ -333,7 +333,7 @@ class GetDynamicHeatmap(APIView):
 
             sensor_locations = find_rows_and_columns_of(farm_corners.copy(), sensorsph.copy(), number_of_rows=number_of_rows)
 
-            img_bufph = plot_heatmap(zi_heatmapph, sensorsph.copy(), farm_corners.copy(), color='RdPu', heatmap_type=heatmap_type)
+            img_bufph = plot_heatmap(zi_heatmapph, sensorsph.copy(), farm_corners.copy(), color='Blues', heatmap_type=heatmap_type)
 
             img_byte_arrph = img_bufph.getvalue()
             encoded_imageph = base64.b64encode(img_byte_arrph).decode('utf-8')
