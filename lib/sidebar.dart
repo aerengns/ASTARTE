@@ -130,13 +130,12 @@ class _NavBarState extends State<NavBar> {
               trailing: const Icon(Icons.arrow_forward_ios_rounded),
               onTap: () => Navigator.pushNamed(context, '/logs'),
             ),
-          // TODO: MAKE IT WORKER SPECIFIC
-          // ListTile(
-          //   leading: const Icon(Icons.calendar_month_rounded),
-          //   title: const Text('Calendar'),
-          //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
-          //   onTap: () => Navigator.pushNamed(context, '/calendar'),
-          // ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month_rounded),
+            title: const Text('Calendar'),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            onTap: () => Navigator.pushNamed(context, '/calendar'),
+          ),
           ListTile(
             leading: const Icon(Icons.pest_control),
             title: const Text('Pests and Diseases'),
@@ -404,7 +403,7 @@ class _EditProfileState extends State<EditProfile> {
         backgroundColor: CustomColors.astarteRed,
         title: const Text('Edit Profile'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -455,10 +454,16 @@ class _EditProfileState extends State<EditProfile> {
                 label: 'Name',
                 hint: 'Enter your name',
               ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
+              ),
               CustomTextFormField(
                 controller: _surnameController,
                 label: 'Surname',
                 hint: 'Enter your surname',
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
               ),
               CustomTextFormField(
                 controller: _emailController,
@@ -480,11 +485,17 @@ class _EditProfileState extends State<EditProfile> {
                   return null;
                 },
               ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
+              ),
               CustomTextFormField(
                 controller: _aboutController,
                 label: 'About',
                 hint: 'Who are you?',
                 validator: (value) => null,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
               ),
               ElevatedButton(
                 onPressed: () async {
