@@ -31,7 +31,7 @@ class Event(models.Model):
 
     title = models.CharField(max_length=255)
     type = models.IntegerField(choices=EVENT_TYPE_CHOICES)
-    date = models.DateTimeField()
+    date = models.DateField()
     importance = models.IntegerField(choices=EVENT_IMPORTANCE_CHOICES)
     assigner = models.ForeignKey(Profile, on_delete=models.PROTECT, null=True)
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE)

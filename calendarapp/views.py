@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from firebase_admin import messaging
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -40,3 +40,25 @@ class CreateEventAPI(APIView):
         event = Event(**event_dict)
         event.save()
         return Response({'message': 'Event created'}, status=status.HTTP_201_CREATED)
+
+
+class EditEventAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [FirebaseAuthentication]
+
+    def post(self, request):
+        event_dict = json.loads(request.data['event'])
+        date_string = event_dict['date'].split('T')[0]
+        event_dict['date'] = datetime.strptime(date_string, '%Y-%m-%d')
+        event_dict.pop('description', None)
+        try:
+            event_instance = Event.objects.get(**event_dict)
+        except Event.DoesNotExist:
+            return HttpResponseBadRequest("Failed!")
+        event_instance.title = request.data.get('title')
+        event_instance.description = request.data.get('description')
+        event_instance.type = int(request.data.get('type'))
+        event_instance.importance = int(request.data.get('importance'))
+        event_instance.save()
+
+        return Response({'message': 'Event edited'}, status=status.HTTP_200_OK)
