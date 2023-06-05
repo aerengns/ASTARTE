@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:fl_heatmap/fl_heatmap.dart';
@@ -7,18 +8,24 @@ import 'package:astarte/utils/dynamic_heatmap_utils.dart';
 import 'package:astarte/sidebar.dart';
 
 const List<Color> colorPalettePH = [
-  Color.fromRGBO(255, 109, 109, 1),
-  Color.fromRGBO(255, 153, 154, 1),
-  Color.fromRGBO(255, 197, 196, 1),
-  Color.fromRGBO(200, 199, 255, 1),
-  Color.fromRGBO(120, 119, 255, 1),
-  Color.fromRGBO(41, 40, 255, 1),
+  // Color(0xff0000ff),
+  // Color(0xFF3300FF),
+  Color(0xFF6600FF),
+  Color(0xFFCC00FF),
+  Color(0xCCFF00FF),
+  Color(0x66FF00FF),
+  Color(0x33FF00FF),
+  Color(0x00FF33FF),
 ];
+
+bool isPlaceholderWidget(Widget widget) {
+  return widget.runtimeType == Placeholder;
+}
 
 bool isExist(List<List<int>> sensorLocations, List<int> currLocation) {
   for (int i = 0; i < sensorLocations.length; i++) {
-    if (sensorLocations[i][0] == currLocation[0] &&
-        sensorLocations[i][1] == currLocation[1]) return true;
+    if (sensorLocations[i][1] == currLocation[0] &&
+        sensorLocations[i][0] == currLocation[1]) return true;
   }
   return false;
 }
@@ -36,11 +43,22 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   bool isTrue = true;
 
   late Widget dynamic_heatmap;
+  List<Widget> allHeatmaps = [];
+  int currentIndex = 0;
   late Image heatmap_image;
+  Widget? dynHmap;
+  double multCoefficient = 100;
+  double sumValue = 0;
+  List<String> heatmapTypes = ['moisture', 'n', 'p', 'k', 'temperature', 'ph'];
+  String? heatmapType;
 
   @override
   void initState() {
-    dynamic_heatmap = _initExampleData('moisture');
+    for (heatmapType in heatmapTypes) {
+      dynHmap = _initExampleData(heatmapType!);
+      allHeatmaps.add(dynHmap!);
+    }
+    dynamic_heatmap = allHeatmaps[currentIndex];
     super.initState();
   }
 
@@ -71,7 +89,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             'assets/icons/launcher_icon.png',
             fit: BoxFit.cover,
           );
-          return Placeholder();
+          return const Placeholder();
         }
 
         for (int row = 0; row < rows.length; row++) {
@@ -92,18 +110,32 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             }
           }
         }
-        List<Color> color = colorPaletteBlue;
-        if (heatmapType == 'moisture')
+        List<Color>? color = colorPaletteBlue;
+        if (heatmapType == 'moisture') {
           color = colorPaletteBlue;
-        else if (heatmapType == 'n')
+          multCoefficient = 100;
+          sumValue = 0;
+        } else if (heatmapType == 'n') {
           color = colorPaletteGreen;
-        else if (heatmapType == 'p')
+          multCoefficient = 2000;
+          sumValue = 0;
+        } else if (heatmapType == 'p') {
           color = colorPaletteRed;
-        else if (heatmapType == 'k')
+          multCoefficient = 2000;
+          sumValue = 0;
+        } else if (heatmapType == 'k') {
           color = colorPaletteDeepOrange;
-        else if (heatmapType == 'temperature')
-          color = colorPaletteTemperature;
-        else if (heatmapType == 'ph') color = colorPalettePH;
+          multCoefficient = 2000;
+          sumValue = 0;
+        } else if (heatmapType == 'temperature') {
+          color = colorPaletteRed;
+          multCoefficient = 120;
+          sumValue = -40;
+        } else if (heatmapType == 'ph') {
+          color = colorPalettePH;
+          multCoefficient = 6;
+          sumValue = 3;
+        }
 
         heatmapDataPower = HeatmapData(
           rows: rows,
@@ -135,7 +167,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
   @override
   Widget build(BuildContext context) {
     final title = selectedItem != null
-        ? '${(selectedItem!.value * 100).toStringAsFixed(2)} ${selectedItem!.unit}'
+        ? '${(selectedItem!.value * multCoefficient + sumValue).toStringAsFixed(2)} ${selectedItem!.unit}'
         : '---';
     final subtitle = selectedItem != null
         ? '${selectedItem!.xAxisLabel} ${selectedItem!.yAxisLabel}'
@@ -152,7 +184,12 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
             isTrue ? dynamic_heatmap : heatmap_image,
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _switchImage,
+              onPressed: () {
+                setState(() {
+                  isTrue = !isTrue;
+                });
+                dynamic_heatmap = allHeatmaps[currentIndex];
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red, // Background color
                 foregroundColor: Colors.white, // Text color
@@ -170,8 +207,10 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 0;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('moisture');
+                      isTrue = true;
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -189,8 +228,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 1;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('n');
                       isTrue = true;
                     });
                   },
@@ -209,8 +249,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 2;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('p');
                       isTrue = true;
                     });
                   },
@@ -229,8 +270,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 3;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('k');
                       isTrue = true;
                     });
                   },
@@ -253,8 +295,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 4;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('temperature');
                       isTrue = true;
                     });
                   },
@@ -274,8 +317,9 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
+                    currentIndex = 5;
+                    dynamic_heatmap = allHeatmaps[currentIndex];
                     setState(() {
-                      dynamic_heatmap = _initExampleData('ph');
                       isTrue = true;
                     });
                   },
