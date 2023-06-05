@@ -231,8 +231,8 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Wrap(
-                              children: [
+                            Wrap(
+                              children: const [
                                 Icon(
                                   Icons.account_tree_rounded,
                                   size: 28,
@@ -311,8 +311,8 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Wrap(
-                              children: [
+                            Wrap(
+                              children: const [
                                 Icon(
                                   Icons.house_rounded,
                                   size: 28,
