@@ -305,7 +305,7 @@ class Command(BaseCommand):
                         continue
                     # TODO: hours integration
                     res['hours'] = intervals
-                    res['type'] = 0
+                    res['type'] = 4
                     res['reason'] = alert_type[type]
                     res['importance'] = round(2 * importance_avg)
                     self.notifications[farm_id][current_day].append(res)
