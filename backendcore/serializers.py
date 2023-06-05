@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.fields import CurrentUserDefault
 
@@ -46,9 +47,10 @@ class FarmSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_latest_farm_report(self, obj):
-        latest_report = obj.farmreport_set.order_by('-created_at').first()
+        latest_report = obj.farmreport_set.order_by('-date_collected').first()
         if latest_report:
-            return FarmReportSerializer(latest_report).data
+            average_report = get_average_report(latest_report)
+            return FarmReportSerializer(average_report).data
         return None
 
     def get_farmcornerpoint_set(self, obj):
@@ -69,3 +71,28 @@ class FarmSerializer(serializers.ModelSerializer):
         for corner_point_data in corner_points_data:
             FarmCornerPoint.objects.create(farm=farm, **corner_point_data)
         return farm
+
+
+def get_average_report(latest_report):
+    reports_same_day_avgs = FarmReport.objects.filter(
+        date_collected__day=latest_report.date_collected.day,
+        date_collected__month=latest_report.date_collected.month,
+        date_collected__year=latest_report.date_collected.year
+    ).aggregate(
+        Avg('moisture'),
+        Avg('phosphorus'),
+        Avg('potassium'),
+        Avg('nitrogen'),
+        Avg('ph'))
+    return FarmReport(
+        farm=latest_report.farm,
+        moisture=reports_same_day_avgs['moisture__avg'],
+        phosphorus=reports_same_day_avgs['phosphorus__avg'],
+        potassium=reports_same_day_avgs['potassium__avg'],
+        nitrogen=reports_same_day_avgs['nitrogen__avg'],
+        ph=reports_same_day_avgs['ph__avg'],
+        temperature=latest_report.temperature,
+        latitude=latest_report.latitude,
+        longitude=latest_report.longitude,
+        date_collected=latest_report.date_collected,
+    )
