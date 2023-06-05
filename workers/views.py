@@ -110,9 +110,9 @@ class WorkerRelatedFarmsAPI(APIView):
         worker = request.user.profile.worker
         farm_ids = []
         if worker.event:
-            farm_ids = [worker.event.farm.id]
+            farm_ids = [(worker.event.farm.id, worker.event.farm.name)]
         if request.user.profile.user_type == Profile.UserTypes.FARM_OWNER:
-            farm_ids += list(Farm.objects.filter(owner=request.user).values_list('id', flat=True))
+            farm_ids += list(Farm.objects.filter(owner=request.user).values_list('id', 'name'))
         return JsonResponse(farm_ids, safe=False)
 
 

@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from calendarapp.models import Event, CustomEvent
+from calendarapp.models import Event
 from firebase_auth.authentication import FirebaseAuthentication
 from backendcore.models import Farm
 
@@ -20,7 +20,7 @@ class CalendarDataAPI(APIView):
     def post(self, request, *args, **kwargs):
         farm_ids = json.loads(request.POST.get('farm_ids'))
         events = [{'title': event.title, 'event_type': event.type, 'date': event.date.strftime('%Y-%m-%d'),
-                   'importance': event.importance} for event in
+                   'importance': event.importance, 'description': event.description} for event in
                   Event.objects.filter(date__gte=datetime.now() - timedelta(weeks=12), farm_id__in=farm_ids)]
         return Response(data={'events': events})
 
@@ -29,15 +29,14 @@ class CreateEventAPI(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
-    def get(self, request):
-        date = request.data.get('date')
-        date = datetime.strptime(date, '%Y-%m-%d')
-        events = Event.objects.filter(date=date)
-        return Response(data={'events': events.values()})
-
     def post(self, request):
-        description = request.data.get('description')
-        date = request.data.get('date')
-        date = datetime.strptime(date, '%Y-%m-%d')
-        CustomEvent.objects.create(description=description, date=date)
+        event_dict = json.loads(request.data['event'])
+        event_dict['assigner'] = request.user.profile
+        date_string = event_dict['date'].split('T')[0]
+        event_dict['date'] = datetime.strptime(date_string, '%Y-%m-%d')
+        event_dict['farm_id'] = int(request.data.get('farm_id'))
+        if event_dict['description'] == '':
+            event_dict['description'] = None
+        event = Event(**event_dict)
+        event.save()
         return Response({'message': 'Event created'}, status=status.HTTP_201_CREATED)
