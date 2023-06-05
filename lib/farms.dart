@@ -103,22 +103,27 @@ class DataList extends StatelessWidget {
                                 Row(
                                   children: [
                                     FutureBuilder<String>(
-                                      future: getLocation(data[index].farm_corner.latitude.toString(), data[index].farm_corner.longitude.toString()),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                         return
-                                           Text(
-                                             snapshot.data!,
-                                             style: const TextStyle(
-                                               fontSize: 14,
-                                               fontWeight: FontWeight.bold,
-                                               color: CustomColors.astarteBlack,
-                                              )
-                                         );
-                                        }
-                                        return const CircularProgressIndicator();
-                                      }
-                                    ),
+                                        future: getLocation(
+                                            data[index]
+                                                .farm_corner
+                                                .latitude
+                                                .toString(),
+                                            data[index]
+                                                .farm_corner
+                                                .longitude
+                                                .toString()),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(snapshot.data!,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      CustomColors.astarteBlack,
+                                                ));
+                                          }
+                                          return const CircularProgressIndicator();
+                                        }),
                                     Icon(Icons.location_pin),
                                   ],
                                 ),
@@ -149,17 +154,9 @@ class FormData {
   double nitrogen;
   double ph;
 
-  FormData(
-      this.farmName,
-      this.date,
-      this.moisture,
-      this.temperature,
-      this.phosphorus,
-      this.potassium,
-      this.nitrogen,
-      this.ph);
+  FormData(this.farmName, this.date, this.moisture, this.temperature,
+      this.phosphorus, this.potassium, this.nitrogen, this.ph);
 }
-
 
 Future<String> getLocation(String latitude, String longitude) async {
   try {
@@ -171,7 +168,7 @@ Future<String> getLocation(String latitude, String longitude) async {
     http.StreamedResponse response = await request.send();
     String jsonAsString = await response.stream.bytesToString();
     var data = jsonDecode(jsonAsString);
-    return "${data["principalSubdivision"]}";
+    return "${data['city']}/${data["principalSubdivision"]}";
   } catch (e) {
     print(e);
   }

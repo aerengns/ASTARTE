@@ -130,9 +130,11 @@ Future<List<Event>> getAvailableJobs() async {
       for (dynamic event in data) {
         DateTime date = DateTime.parse(event['date']);
         Event temp = Event(
+            id: event['id'],
             title: event['title'],
             eventType: event['type'] as int,
             date: date,
+            description: event['description'],
             importance: event['importance'] as int);
         source.add(temp);
       }

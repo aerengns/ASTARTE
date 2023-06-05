@@ -49,6 +49,7 @@ const Map<int, String> eventImportanceTypes = {
 
 /// Event class.
 class Event {
+  final int id;
   late final String title;
   late final String? description;
   final int eventType;
@@ -56,6 +57,7 @@ class Event {
   int? importance;
 
   Event({
+    required this.id,
     required this.title,
     required this.eventType,
     required this.date,
@@ -65,9 +67,10 @@ class Event {
 
   Map<String, dynamic> toDict() {
     return {
+      'id': id,
       'title': title,
       'type': eventType,
-      'date': date.toIso8601String(),
+      'date': date.toIso8601String().split('T')[0],
       'importance': importance,
       'description': description,
     };
@@ -90,7 +93,8 @@ class Event {
   getImage() => eventImages[eventType];
 
   Event.fromMap(Map<String, dynamic> map)
-      : title = map['title'],
+      : id = map['id'],
+        title = map['title'],
         eventType = map['type'],
         date = DateTime.parse(map['date']),
         importance = map['importance'],
@@ -161,6 +165,7 @@ Future<void> getCalendarData(int farmId) async {
       for (dynamic event in data['events']) {
         DateTime date = DateTime.parse(event['date']);
         Event temp = Event(
+          id: event['id'],
           title: event['title'],
           eventType: event['event_type'] as int,
           date: date,

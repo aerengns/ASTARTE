@@ -14,6 +14,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:astarte/utils/parameters.dart' as parameters;
 
+import 'farm_detail.dart';
+
 class Calendar extends StatefulWidget {
   Calendar({Key? key, required this.farmId}) : super(key: key);
 
@@ -409,6 +411,7 @@ class _AddEventButtonState extends State<AddEventButton> {
       }
 
       Event event = Event(
+          id: -1,
           title: titleController.text,
           eventType: eventType,
           date: date,
@@ -509,11 +512,61 @@ class _EventEditPageState extends State<EventEditPage> {
     }
   }
 
+  Future<void> _deleteEvent() async {
+    try {
+      // Update the properties of the event with the modified values
+      var headers = {
+        'Authorization': parameters.TOKEN,
+      };
+
+      var request = http.MultipartRequest(
+          'DELETE', Uri.parse('${parameters.GENERAL_URL}app/edit_event'))
+        ..headers.addAll(headers)
+        ..fields['event'] = jsonEncode(widget.event.toDict());
+
+      http.StreamedResponse response = await request.send();
+
+      void showSnackBar(String message) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
+      }
+
+      switch (response.statusCode) {
+        case 204:
+          showSnackBar('Event has been deleted.');
+          Navigator.of(context).pop();
+          break;
+        default:
+          showSnackBar('Unknown error. Farm could not have been deleted.');
+          break;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteConfirmationDialog(
+          onDeleteConfirmed: _deleteEvent,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AstarteAppBar(
+      appBar: AstarteAppBar(
         title: 'Edit Event',
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => showDeleteConfirmationDialog(context),
+            icon: const Icon(Icons.delete_forever_rounded),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
