@@ -97,8 +97,8 @@ class JobFinishAPI(APIView):
                 # TODO: send notification to farm owner
                 pass
             event = worker.event
-            log = WorkerActivityLog.objects.create(worker_id=worker.id, title=event.title, type=event.type,
-                                                   date_finished=datetime.datetime.today(), assigner=assigner,
+            log = WorkerActivityLog.objects.create(worker_id=worker.id, tittle=event.title, type=event.type,
+                                                   date_finished=datetime.datetime.today(),
                                                    farm=event.farm, description=event.description)
             log.save()
             worker.event = None
