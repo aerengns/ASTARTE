@@ -7,6 +7,7 @@ import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'calendar.dart';
@@ -77,6 +78,8 @@ class _FarmDetailState extends State<FarmDetail> {
 
   @override
   Widget build(BuildContext context) {
+    String fertilizationMessage;
+    Color fertilizationColor;
     return FutureBuilder<FarmDataModel.FarmData>(
       future: Provider.of<FarmDataService>(context, listen: false)
           .getFarm(widget.farmId)
@@ -89,6 +92,20 @@ class _FarmDetailState extends State<FarmDetail> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           final data = snapshot.data!;
+          double? phVal = data.latest_farm_report?.ph;
+          if (phVal! > 7) {
+            fertilizationMessage =
+                'The soil is too alkaline, you can add elemental sulfur or acidifying agents according to the recommended rates. Mix them into the soil well.';
+            fertilizationColor = CustomColors.astarteBlue;
+          } else if (phVal < 6) {
+            fertilizationMessage =
+                'The soil is too acidic, you can add agricultural lime according to the recommended application rates. Mix the lime into the soil thoroughly.';
+            fertilizationColor = CustomColors.astarteBlue;
+          } else {
+            fertilizationMessage =
+                'The soil values are at optimal interval. Try to maintain this level.';
+            fertilizationColor = CustomColors.astarteGreen;
+          }
           String status =
               getStatus(snapshot.data?.latest_farm_report?.date_collected);
           return Scaffold(
@@ -231,8 +248,8 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Wrap(
-                              children: [
+                            Wrap(
+                              children: const [
                                 Icon(
                                   Icons.account_tree_rounded,
                                   size: 28,
@@ -251,7 +268,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Humidity: ${data.latest_farm_report?.moisture}',
+                              'Humidity: ${NumberFormat("0.##").format(data.latest_farm_report?.moisture)} %',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -259,7 +276,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Nitrogen: ${data.latest_farm_report?.nitrogen}',
+                              'Nitrogen: ${NumberFormat("0.##").format(data.latest_farm_report?.nitrogen)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -267,7 +284,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Phosphorus: ${data.latest_farm_report?.phosphorus}',
+                              'Phosphorus: ${NumberFormat("0.##").format(data.latest_farm_report?.phosphorus)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -275,7 +292,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Potassium: ${data.latest_farm_report?.potassium}',
+                              'Potassium: ${NumberFormat("0.##").format(data.latest_farm_report?.potassium)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -283,7 +300,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'PH: ${data.latest_farm_report?.ph}',
+                              'PH: ${NumberFormat("0.##").format(data.latest_farm_report?.ph)}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -301,6 +318,47 @@ class _FarmDetailState extends State<FarmDetail> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      // Display suggestion on fertilization.
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: CustomColors.astarteGrey,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Wrap(
+                              children: const [
+                                Icon(
+                                  Icons.grass,
+                                  size: 28,
+                                  color: CustomColors.astarteRed,
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Fertilization',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: CustomColors.astarteRed,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              fertilizationMessage,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: fertilizationColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       // Display brief information about status of farm.
                       Container(
                         padding: const EdgeInsets.all(16),
@@ -311,8 +369,8 @@ class _FarmDetailState extends State<FarmDetail> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Wrap(
-                              children: [
+                            Wrap(
+                              children: const [
                                 Icon(
                                   Icons.house_rounded,
                                   size: 28,
