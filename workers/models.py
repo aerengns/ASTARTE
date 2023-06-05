@@ -3,8 +3,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from accounts.models import Profile, AbstractProfile
-from backendcore.models import Farm
-from calendarapp.models import Event
+from backendcore.models import Farm, BaseAbstractModel
+from calendarapp.models import Event, EVENT_TYPE_CHOICES
 
 
 class Worker(AbstractProfile):
@@ -29,3 +29,13 @@ def save_user_profile(sender, instance, **kwargs):
     worker.about = instance.about
     worker.profile_photo = instance.profile_photo
     worker.save()
+
+
+class WorkerActivityLog(BaseAbstractModel):
+
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    tittle = models.CharField(max_length=255)
+    type = models.TextField(choices=EVENT_TYPE_CHOICES, max_length=255)
+    date_finished = models.DateField()
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    description = models.CharField(null=True, blank=True, max_length=255)
