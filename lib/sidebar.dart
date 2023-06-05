@@ -149,12 +149,6 @@ class _NavBarState extends State<NavBar> {
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
             onTap: () => Navigator.pushNamed(context, '/posts'),
           ),
-          ListTile(
-            leading: const Icon(Icons.help_rounded),
-            title: const Text('Sensor'),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
-            onTap: () => Navigator.pushNamed(context, '/serial'),
-          ),
           const Divider(),
           ListTile(
             title: const Text('Sign Out'),
