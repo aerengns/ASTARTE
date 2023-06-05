@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
 import 'package:provider/provider.dart';
 import 'package:astarte/farm_sensor_data.dart';
+import 'dart:async';
+import 'dart:ffi';
+import 'dart:typed_data';
+import 'package:usb_serial/usb_serial.dart';
 
 import 'network_manager/services/sensor_data_service.dart';
 
@@ -46,18 +50,85 @@ class _FarmDataFormState extends State<FarmDataForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _dateController =
       TextEditingController(text: "");
+  late TextEditingController _temperatureController =
+      TextEditingController(text: "");
+  late TextEditingController _moistureController =
+      TextEditingController(text: "");
+  late TextEditingController _phController = TextEditingController(text: "");
+  late TextEditingController _phosphorusController =
+      TextEditingController(text: "");
+  late TextEditingController _potassiumController =
+      TextEditingController(text: "");
+  late TextEditingController _nitrogenController =
+      TextEditingController(text: "");
 
+  UsbPort? _port;
+  StreamSubscription<Uint8List>? _subscription;
   late String _date;
-  late String _temperature;
-  late String _moisture;
-  late String _phosphorus;
-  late String _potassium;
-  late String _nitrogen;
-  late String _ph;
+  String _temperature = "";
+  String _moisture = "";
+  String _phosphorus = "";
+  String _potassium = "";
+  String _nitrogen = "";
+  String _ph = "";
 
   @override
   void initState() {
     super.initState();
+    connectToUSBDevice();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _port?.close();
+    super.dispose();
+  }
+
+  Future<void> connectToUSBDevice() async {
+    List<UsbDevice> devices = await UsbSerial.listDevices();
+    if (devices.isEmpty) {
+      // No USB device found
+      return;
+    }
+
+    UsbDevice device = devices[0];
+
+    _port = await device.create();
+    _port?.open();
+    _port?.setPortParameters(
+        4800, UsbPort.DATABITS_8, UsbPort.STOPBITS_1, UsbPort.PARITY_NONE);
+
+    // Send command to request data from register
+    Uint8List command = Uint8List.fromList([
+      0x01, // Address
+      0x03, // Function Code
+      0x00, // Start Address (Hi)
+      0x00, // Start Address (Lo)
+      0x00, // Number of Points (Hi)
+      0x07, // Number of Registers (Lo)
+      0x04, // Error Check (Lo)
+      0x08, // Error Check (Hi)
+    ]);
+
+    _port?.write(command);
+
+    _subscription = _port!.inputStream!.listen((Uint8List data) {
+      setState(() {
+        _moisture = (_parseRegisterValue(data, 3) / 10).toString();
+        _moistureController = TextEditingController(text: _moisture);
+        _temperature = (s16(_parseRegisterValue(data, 5)) / 10.0).toString();
+        _temperatureController = TextEditingController(text: _temperature);
+        _ph = (_parseRegisterValue(data, 9) / 10.0).toString();
+        _phController = TextEditingController(text: _ph);
+        _nitrogen = (_parseRealValue(data, 11)).toString();
+        _nitrogenController = TextEditingController(text: _nitrogen);
+        _phosphorus = (_parseRealValue(data, 13)).toString();
+        _phosphorusController = TextEditingController(text: _phosphorus);
+        _potassium = (_parseRealValue(data, 15)).toString();
+        _potassiumController = TextEditingController(text: _potassium);
+      });
+    });
   }
 
   Future<void> _selectDate() async {
@@ -157,7 +228,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _temperature,
+                  //initialValue: _temperature,
+                  controller: _temperatureController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -174,7 +246,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _moisture,
+                  //initialValue: _moisture,
+                  controller: _moistureController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -191,7 +264,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _phosphorus,
+                  //initialValue: _phosphorus,
+                  controller: _phosphorusController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -208,7 +282,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _potassium,
+                  //initialValue: _potassium,
+                  controller: _potassiumController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -225,7 +300,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _nitrogen,
+                  //initialValue: _nitrogen,
+                  controller: _nitrogenController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -242,7 +318,8 @@ class _FarmDataFormState extends State<FarmDataForm> {
                   ),
                 ),
                 TextFormField(
-                  // initialValue: _ph,
+                  //initialValue: _ph,
+                  controller: _phController,
                   validator: (value) {
                     return _validateNumericalField(value);
                   },
@@ -289,16 +366,18 @@ class _FarmDataFormState extends State<FarmDataForm> {
                         final response = await Provider.of<SensorDataService>(
                                 context,
                                 listen: false)
-                            .saveSensorData(SensorData((b) => b
-                              ..formDate = _date
-                              ..temperature = double.parse(_temperature)
-                              ..moisture = double.parse(_moisture)
-                              ..phosphorus = double.parse(_phosphorus)
-                              ..potassium = double.parse(_potassium)
-                              ..nitrogen = double.parse(_nitrogen)
-                              ..ph = double.parse(_ph)
-                              ..latitude = _position.latitude
-                              ..longitude = _position.longitude), widget.farmId as int);
+                            .saveSensorData(
+                                SensorData((b) => b
+                                  ..formDate = _date
+                                  ..temperature = double.parse(_temperature)
+                                  ..moisture = double.parse(_moisture)
+                                  ..phosphorus = double.parse(_phosphorus)
+                                  ..potassium = double.parse(_potassium)
+                                  ..nitrogen = double.parse(_nitrogen)
+                                  ..ph = double.parse(_ph)
+                                  ..latitude = _position.latitude
+                                  ..longitude = _position.longitude),
+                                widget.farmId as int);
                         if (response.isSuccessful) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -336,4 +415,35 @@ String? _validateNumericalField(String? value) {
     return 'Please enter a valid number';
   }
   return null;
+}
+
+double parseData(Uint8List data) {
+  ByteData byteData = ByteData.view(data.buffer);
+  double value = byteData.getFloat32(0, Endian.little);
+  return value;
+}
+
+int _parseRegisterValue(Uint8List data, int startIndex) {
+  int valueHi = data[startIndex];
+  int valueLo = data[startIndex + 1];
+  return (valueHi << 8 | valueLo);
+}
+
+double _parseRealValue(Uint8List data, int startIndex) {
+  int valueHi = data[startIndex];
+  int valueLo = data[startIndex + 1];
+  Uint8List valueBytes = Uint8List.fromList([valueHi, valueLo]);
+  ByteData byteData = ByteData.view(valueBytes.buffer);
+  int value = byteData.getUint16(0, Endian.big);
+  return value.toDouble();
+}
+
+int s16(int value) {
+  const int mask = 0xFFFF; // Mask for 16 bits
+  if (value & (1 << 15) != 0) {
+    // Check if the most significant bit is set
+    return -(value & mask) | (~mask); // Apply two's complement
+  } else {
+    return value & mask; // Positive value, no need for conversion
+  }
 }
