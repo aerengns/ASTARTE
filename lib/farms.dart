@@ -24,15 +24,17 @@ class _FarmsState extends State<Farms> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AstarteAppBar(title: 'Farms'),
-      body: Column(
-        children: [
-          const Padding(padding: EdgeInsets.only(bottom: 20)),
-          const DataList(),
-          ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, '/create_farm'),
-            child: const Text('Add New Farm', style: TextStyle(fontSize: 20)),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const Padding(padding: EdgeInsets.only(bottom: 20)),
+            const DataList(),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/create_farm'),
+              child: const Text('Add New Farm', style: TextStyle(fontSize: 20)),
+            ),
+          ],
+        ),
       ),
       drawer: NavBar(context),
     );

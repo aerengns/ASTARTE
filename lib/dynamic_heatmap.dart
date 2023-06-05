@@ -8,13 +8,15 @@ import 'package:astarte/utils/dynamic_heatmap_utils.dart';
 import 'package:astarte/sidebar.dart';
 
 const List<Color> colorPalettePH = [
-  // Color(0xff0000ff),
-  // Color(0xFF3300FF),
+  Color(0xff0000ff),
+  Color(0xFF3300FF),
   Color(0xFF6600FF),
   Color(0xFFCC00FF),
   Color(0xCCFF00FF),
   Color(0x66FF00FF),
   Color(0x33FF00FF),
+  Color(0x00FF33FF),
+  Color(0x00FF33FF),
   Color(0x00FF33FF),
 ];
 
@@ -132,7 +134,7 @@ class _DynamicHeatmapState extends State<HeatmapPage> {
           multCoefficient = 120;
           sumValue = -40;
         } else if (heatmapType == 'ph') {
-          color = colorPalettePH;
+          color = colorPaletteBlue;
           multCoefficient = 6;
           sumValue = 3;
         }
