@@ -8,6 +8,15 @@ from matplotlib import use
 use('agg')
 from PIL import Image
 
+def set_number_of_dimensions(farm_width, farm_height, number_of_rows=None, number_of_columns=None):
+    if number_of_rows is None and number_of_columns is None:
+        raise "Please enter number of columns or rows"
+    elif number_of_columns is None:
+        number_of_columns = (number_of_rows*farm_width)//farm_height
+    else:
+        number_of_rows = (number_of_columns*farm_height)//farm_width
+    return number_of_rows, number_of_columns
+
 def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_of_columns=None):
 
     min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
@@ -16,15 +25,11 @@ def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_
     farm_width = max_width - min_width
     farm_height = max_height - min_height
 
-    if number_of_rows is None and number_of_columns is None:
-        raise "Please enter number of columns or rows"
-    elif number_of_columns is None:
-        number_of_columns = (number_of_rows*farm_height)//farm_width
-    else:
-        number_of_rows = (number_of_columns*farm_width)//farm_height
-
-    row_interval = (max_width-min_width)/number_of_rows
-    columns_interval = (max_height-min_height)/number_of_columns
+    number_of_rows, number_of_columns = set_number_of_dimensions(farm_width=farm_width, farm_height=farm_height,
+                                                                 number_of_rows=number_of_rows,
+                                                                 number_of_columns=number_of_columns)
+    row_interval = (max_width-min_width)/number_of_columns
+    columns_interval = (max_height-min_height)/number_of_rows
 
     sensor_locations = []
     for sensor in sensors:
@@ -33,25 +38,38 @@ def find_rows_and_columns_of(farm_corners, sensors, number_of_rows=None, number_
     return sensor_locations
 
 
-def plot_heatmap(zi, sensors, farm_corners, color='Blues'):
+def plot_heatmap(zi, sensors, farm_corners, color='Blues', heatmap_type='moisture'):
 
     min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
     min_height, max_height = np.min(farm_corners[:,0]), np.max(farm_corners[:,0])
 
+    if heatmap_type == 'moisture': 
+        mult_coefficient = 10
+        sum_val = 0
+    elif heatmap_type == 'n' or heatmap_type == 'p' or heatmap_type == 'k': 
+        mult_coefficient = 200
+        sum_val = 0
+    elif heatmap_type == 'temperature':
+        mult_coefficient = 12
+        sum_val = -40
+    elif heatmap_type == 'ph':
+        mult_coefficient = 0.6
+        sum_val = 3
+
     # Plot the interpolated data with red dots at the sensor locations
     fig, ax = plt.subplots()
-    im = ax.imshow(zi*10, extent=[min_width, max_width, min_height, max_height], origin='lower')
+    im = ax.imshow(zi.T*mult_coefficient+sum_val, extent=[min_width, max_width, min_height, max_height], origin='lower')
     im.set_cmap(color)
 
-    plt.scatter(sensors[:,0], sensors[:,1], c='red')
+    plt.scatter(sensors[:,1], sensors[:,0], c='red')
 
     for i in range(len(sensors)):
-        ax.annotate(f"{sensors[i,2]:.2f}", (sensors[i, 0], sensors[i, 1]), textcoords="offset points", xytext=(0,10), ha='center', color=(0,0,1))
+        ax.annotate(f"{sensors[i,2]*mult_coefficient+sum_val:.2f}", (sensors[i, 1], sensors[i, 0]), textcoords="offset points", xytext=(0,10), ha='center', color=(0,0,1))
 
     fig.subplots_adjust(left=0.03, bottom=0.08, right=0.99, top=0.94, wspace=0, hspace=0)
     
     # Set the colorbar range to be between 0 and 100
-    im.set_clim(0, 100)
+    im.set_clim(sum_val, int(mult_coefficient*10+sum_val))
     fig.colorbar(im)
 
     img_buf = io.BytesIO()
@@ -76,21 +94,18 @@ Returns:
 
 def dynamic_heatmap(farm_corners: np.array, sensors: np.array, number_of_rows=None, number_of_columns=None):
 
-    sensors[:,2] /= 10
+    # sensors[:,2] /= 10
 
     min_width, max_width = np.min(farm_corners[:,1]), np.max(farm_corners[:,1])
     min_height, max_height = np.min(farm_corners[:,0]), np.max(farm_corners[:,0])
     max_val, min_val = np.max(farm_corners), np.min(farm_corners)
     
-    farm_width = max_val - min_val
+    farm_width = max_width - min_width
     farm_height = max_height - min_height
 
-    if number_of_rows is None and number_of_columns is None:
-        raise "Please enter number of columns or rows"
-    elif number_of_columns is None:
-        number_of_columns = (number_of_rows*farm_width)//farm_height
-    else:
-        number_of_rows = (number_of_columns*farm_height)//farm_width
+    number_of_rows, number_of_columns = set_number_of_dimensions(farm_width=farm_width, farm_height=farm_height,
+                                                                 number_of_rows=number_of_rows,
+                                                                 number_of_columns=number_of_columns)
 
     x_linspace = np.linspace(min_height, max_height, number_of_rows)
     y_linspace = np.linspace(min_width, max_width, number_of_columns)
@@ -147,5 +162,4 @@ if __name__ == '__main__':
     im = Image.open(img_buf)
     im.show(title="My Image")
     
-    print(img_buf)
     
