@@ -197,7 +197,7 @@ Future<bool> finishJob() async {
   }
 }
 
-Future<List<int>> getRelatedFarms() async {
+Future<List<dynamic>> getRelatedFarms() async {
   try {
     var headers = {
       'Authorization': parameters.TOKEN,
@@ -213,7 +213,7 @@ Future<List<int>> getRelatedFarms() async {
     if (response.statusCode == 200) {
       String newMessage = await response.stream.bytesToString();
       List<dynamic> data = jsonDecode(newMessage);
-      return data.whereType<int>().toList();
+      return data;
     } else {
       print(response.reasonPhrase);
       return [];

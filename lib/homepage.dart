@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:astarte/sidebar.dart';
+import 'package:provider/provider.dart';
+import 'package:astarte/utils/parameters.dart' as parameters;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<parameters.CurrentUser>(context);
     return Scaffold(
       appBar: const AstarteAppBar(title: 'ASTARTE'),
       body: Container(
@@ -34,22 +37,23 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/farms'),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0, vertical: 16.0),
-                  textStyle: const TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+              if (currentUser.userType != 'Worker')
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/farms'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32.0, vertical: 16.0),
+                    textStyle: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  child: const Text('Manage Farms'),
                 ),
-                child: const Text('Manage Farms'),
-              ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed:  () => Navigator.pushNamed(context, '/workers'),
+                onPressed: () => Navigator.pushNamed(context, '/workers'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   padding: const EdgeInsets.symmetric(
