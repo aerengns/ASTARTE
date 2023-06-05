@@ -61,7 +61,9 @@ class JobDataAPI(APIView):
         event = json.loads(request.data['event'])
         try:
             worker = Worker.objects.get(name=worker['name'], surname=worker['surname'], email=worker['email'])
-            event = Event.objects.get(**event)
+            event = Event.objects.get(id=event['id'])
+            event.assigner = request.user.profile
+            event.save()
             worker.event = event
             worker.save()
             notification_msg = {
