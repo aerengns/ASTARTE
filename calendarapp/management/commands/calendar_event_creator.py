@@ -361,8 +361,8 @@ class Command(BaseCommand):
             for i in self.notifications[farm.id]:
                 for j in self.notifications[farm.id][i]:
                     importance = j['importance']
-                    if importance==2:
-                        self.send_notification(j['reason'])
+                    # if importance==2:
+                    #     self.send_notification(j['reason'])
                     events.append(Event(title=j['reason'], type=j['type'], date=i, importance=importance, farm_id=farm.id))
         
         Event.objects.bulk_create(events)
