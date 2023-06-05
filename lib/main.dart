@@ -1,4 +1,5 @@
 import 'package:astarte/create_farm.dart';
+import 'package:astarte/forgot_password.dart';
 import 'package:astarte/log_page.dart';
 import 'package:astarte/network_manager/services/posts_service.dart';
 import 'package:astarte/network_manager/services/sensor_data_service.dart';
@@ -110,6 +111,7 @@ class Astarte extends StatelessWidget {
           '/': (context) => const HomePage(),
           '/sign_in': (context) => const MyApp(),
           '/sign_up': (context) => const SignUp(),
+          '/forgot_password': (context) => const ForgotPassword(),
           // When navigating to the "/second" route, build the SecondScreen widget.
           '/humidity_report': (context) => HumidityReport(),
           '/npk_report': (context) => NPKReport(),

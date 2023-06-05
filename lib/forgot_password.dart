@@ -1,33 +1,27 @@
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:astarte/utils/auth_validator.dart';
+import 'package:astarte/utils/firebase_exceptions.dart';
 import 'package:astarte/utils/parameters.dart' as parameters;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-class SignInForm extends StatefulWidget {
-  const SignInForm({super.key});
+class ForgotPasswordForm extends StatefulWidget {
+  const ForgotPasswordForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  State<ForgotPasswordForm> createState() => _ForgotPasswordFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   bool _isHidden = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   bool _success = false;
   String _userEmail = '';
   bool isLoading = false;
-
-  void _handleTap() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,49 +50,35 @@ class _SignInFormState extends State<SignInForm> {
                     hintText: 'example@email.com',
                   ),
                 )),
-            SizedBox(
-              width: 300,
-              child: SizedBox(
-                width: 300,
-                child: TextFormField(
-                  controller: _passwordController,
-                  validator: (value) =>
-                      Validator.validatePassword(password: value ?? ''),
-                  obscureText: _isHidden,
-                  decoration: InputDecoration(
-                    border: const UnderlineInputBorder(),
-                    labelStyle: const TextStyle(
-                        color: CustomColors.astarteRed,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                    labelText: 'Password',
-                    suffix: IconButton(
-                      onPressed: _handleTap,
-                      icon: const Icon(
-                        Icons.remove_red_eye_sharp,
-                        color: Colors.black26,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
             Container(
               padding: const EdgeInsets.only(top: 30),
               child: TextButton(
                 onPressed: isLoading
                     ? null
                     : () async {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          await _signInWithEmailAndPassword(currentUser);
-                          setState(() {
-                            isLoading = false;
-                          });
-                        }
-                      },
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                      final status = await _handlePasswordSubmit(_emailController.text.trim());
+                      if (status == AuthStatus.successful) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Email has been sent. Please look in your mail box.'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(AuthExceptionHandler.generateErrorMessage(status)),
+                          ),
+                        );
+                      }
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                },
                 child: Container(
                   alignment: Alignment.center,
                   height: 50,
@@ -111,13 +91,13 @@ class _SignInFormState extends State<SignInForm> {
                   ),
                   child: isLoading
                       ? const CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(CustomColors.astarteWhite),
-                        ) // Display the loading animation
+                    valueColor:
+                    AlwaysStoppedAnimation<Color>(CustomColors.astarteWhite),
+                  ) // Display the loading animation
                       : const Text(
-                          'Sign In',
-                          style: TextStyle(color: CustomColors.astarteWhite, fontSize: 25),
-                        ),
+                    'Submit',
+                    style: TextStyle(color: CustomColors.astarteWhite, fontSize: 25),
+                  ),
                 ),
               ),
             ),
@@ -128,57 +108,23 @@ class _SignInFormState extends State<SignInForm> {
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<User?> _signInWithEmailAndPassword(currentUser) async {
-    User? user;
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      user = (await auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      ))
-          .user;
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-      ));
-    }
+  Future<AuthStatus> _handlePasswordSubmit(String email) async {
+    late AuthStatus status;
+    await FirebaseAuth.instance
+        .sendPasswordResetEmail(email: email)
+        .then((value) => status = AuthStatus.successful)
+        .catchError(
+            (e) => status = AuthExceptionHandler.handleAuthException(e));
 
-    if (user != null) {
-      final token = await user.getIdToken();
-      final newCurrentUser = await parameters.requestCurrentUser(token);
-      setState(() {
-        _success = true;
-        _userEmail = user?.email ?? '';
-        parameters.TOKEN = token;
-        currentUser.setUser(newCurrentUser);
-        parameters.sendTokenToServer(context);
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-        if (newCurrentUser['email'] == '') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const Profile(),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Welcome ${currentUser.username}'),
-          ));
-        }
-      });
-    } else {
-      setState(() {
-        _success = false;
-      });
-    }
+    return status;
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ForgotPassword extends StatelessWidget {
+  const ForgotPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -214,19 +160,12 @@ class MyApp extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Sign In',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                            fontSize: 25),
-                      ),
                       Container(
                         padding: const EdgeInsets.only(top: 15),
                         child: Text(
-                          'Hi there! Nice to see you again.',
+                          'Please enter your email address so we can send you an email to reset your password.',
                           style:
-                              TextStyle(color: Colors.grey[500], fontSize: 15),
+                          TextStyle(color: Colors.grey[500], fontSize: 15),
                         ),
                       )
                     ],
@@ -242,7 +181,7 @@ class MyApp extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SignInForm(),
+            const ForgotPasswordForm(),
             Container(
               padding: const EdgeInsets.only(top: 35),
               width: 300,
@@ -251,10 +190,10 @@ class MyApp extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/forgot_password');
+                      Navigator.pushNamed(context, '/sign_in');
                     },
                     child: const Text(
-                      'Forgot Password?',
+                      'Return back to sign in',
                       style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -281,19 +220,19 @@ class MyApp extends StatelessWidget {
 
     return Scaffold(
         body: Container(
-      color: const Color.fromRGBO(237, 230, 231, 1),
-      child: ListView(
-        children: [
-          Image.asset(
-            'assets/icons/launcher_icon.png',
-            width: 200,
-            height: 200,
-            fit: BoxFit.contain,
+          color: const Color.fromRGBO(237, 230, 231, 1),
+          child: ListView(
+            children: [
+              Image.asset(
+                'assets/icons/launcher_icon.png',
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+              titleSection,
+              credentialsSection,
+            ],
           ),
-          titleSection,
-          credentialsSection,
-        ],
-      ),
-    ));
+        ));
   }
 }
