@@ -4,6 +4,8 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_collection/built_collection.dart';
 
+import 'farm.dart';
+
 part 'farm_data.g.dart';
 
 abstract class FarmReportData implements Built<FarmReportData, FarmReportDataBuilder> {
@@ -13,6 +15,7 @@ abstract class FarmReportData implements Built<FarmReportData, FarmReportDataBui
   double? get nitrogen;
   double? get temperature;
   double? get ph;
+  String? get date_collected;
 
   FarmReportData._();
 
@@ -31,6 +34,7 @@ abstract class FarmData implements Built<FarmData, FarmDataBuilder> {
   double? get area;
   int get owner;
   FarmReportData? get latest_farm_report;
+  CornerPoint get farm_corner;
   FarmData._();
 
   factory FarmData([updates(FarmDataBuilder b)]) = _$FarmData;

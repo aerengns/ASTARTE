@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:astarte/network_manager/models/farm_data.dart' as f;
 import 'package:astarte/sidebar.dart';
 import 'package:astarte/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:astarte/utils/parameters.dart' as parameters;
 
 import 'farm_detail.dart';
 import 'network_manager/services/farm_data_service.dart';
@@ -96,14 +101,23 @@ class DataList extends StatelessWidget {
                                   ),
                                 ),
                                 Row(
-                                  children: const [
-                                    Text(
-                                      'Location',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: CustomColors.astarteBlack,
-                                      ),
+                                  children: [
+                                    FutureBuilder<String>(
+                                      future: getLocation(data[index].farm_corner.latitude.toString(), data[index].farm_corner.longitude.toString()),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                         return
+                                           Text(
+                                             snapshot.data!,
+                                             style: const TextStyle(
+                                               fontSize: 14,
+                                               fontWeight: FontWeight.bold,
+                                               color: CustomColors.astarteBlack,
+                                              )
+                                         );
+                                        }
+                                        return const CircularProgressIndicator();
+                                      }
                                     ),
                                     Icon(Icons.location_pin),
                                   ],
@@ -144,4 +158,22 @@ class FormData {
       this.potassium,
       this.nitrogen,
       this.ph);
+}
+
+
+Future<String> getLocation(String latitude, String longitude) async {
+  try {
+    var request = http.MultipartRequest(
+        'GET',
+        Uri.parse(
+            '${parameters.GEOLOCATOR_API_URL}?latitude=$latitude&longitude=$longitude'));
+
+    http.StreamedResponse response = await request.send();
+    String jsonAsString = await response.stream.bytesToString();
+    var data = jsonDecode(jsonAsString);
+    return "${data["principalSubdivision"]}";
+  } catch (e) {
+    print(e);
+  }
+  return "Ankara"; // TODO: Default should be changed after demo.
 }
