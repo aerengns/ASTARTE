@@ -69,13 +69,15 @@ class Command(BaseCommand):
         FarmReport.objects.filter(farm__owner=users[0]).delete()
         Farm.objects.filter(owner=users[0]).delete()
 
-        Farm.objects.create(id=1, name='domates', area=1, owner=users[0])
+        farm1 = Farm.objects.create(name='domates', area=1, owner=users[0])
+
+        farm_id1 = farm1.id
         
         farm_corners1 = [[29.9999,39.9999],[30.009,40.0073], [30.0072,40.00018], 
                         [30.0049,40.009], [29.99, 40.015]]
         
         for farm in farm_corners1:
-            FarmCornerPoint.objects.create(farm_id=1, latitude=farm[1], longitude=farm[0])
+            FarmCornerPoint.objects.create(farm_id=farm_id1, latitude=farm[1], longitude=farm[0])
 
         
 
@@ -87,20 +89,21 @@ class Command(BaseCommand):
                          {'longitude': 29.993, 'latitude': 40.0085,'moisture': 50+50*random(), 'p': 2000*random(), 'k': 2000*random(), 'n': 2000*random(), 'temp': 20+10*random(), 'ph': 5+3*random()},]
         
         for sensor in sensors1:
-            FarmReport.objects.create(farm_id=1, moisture=sensor['moisture'], phosphorus=sensor['p'],
+            FarmReport.objects.create(farm_id=farm_id1, moisture=sensor['moisture'], phosphorus=sensor['p'],
                                       potassium=sensor['k'], nitrogen=sensor['n'], temperature=sensor['temp'],
                                       ph=sensor['ph'], latitude=sensor['latitude'], longitude=sensor['longitude'],
                                       date_collected=timezone.now())
             
-            FarmReportLog.objects.create(farm_id=1, moisture=sensor['moisture'], phosphorus=sensor['p'],
+            FarmReportLog.objects.create(farm_id=farm_id1, moisture=sensor['moisture'], phosphorus=sensor['p'],
                                         potassium=sensor['k'], nitrogen=sensor['n'], temperature=sensor['temp'],
                                         ph=sensor['ph'], latitude=sensor['latitude'], longitude=sensor['longitude'],
                                         date_collected=timezone.now())
         
-        calendar_event_create(users[0], farm_id=1)
-        worker_activity_create(farm_id=1)
+        calendar_event_create(users[0], farm_id=farm_id1)
+        worker_activity_create(farm_id=farm_id1)
         # 2ND FARM
-        Farm.objects.create(id=2, name='pattes', area=1, owner=users[0])
+        farm2 = Farm.objects.create(name='pattes', area=1, owner=users[0])
+        farm_id2 = farm2.id
         
         hexagon_points = [
         (1, 0),
@@ -119,7 +122,7 @@ class Command(BaseCommand):
         farm_corners2 = [[32+i[1]*0.001, 40+i[0]*0.001] for i in hexagon_points]
         
         for farm in farm_corners2:
-            FarmCornerPoint.objects.create(farm_id=2, latitude=farm[1], longitude=farm[0])
+            FarmCornerPoint.objects.create(farm_id=farm_id2, latitude=farm[1], longitude=farm[0])
 
         
         sensors2 = []
@@ -128,15 +131,15 @@ class Command(BaseCommand):
 
 
         for sensor in sensors2:
-            FarmReport.objects.create(farm_id=2, moisture=sensor['moisture'], phosphorus=sensor['p'],
+            FarmReport.objects.create(farm_id=farm_id2, moisture=sensor['moisture'], phosphorus=sensor['p'],
                                       potassium=sensor['k'], nitrogen=sensor['n'], temperature=sensor['temp'],
                                       ph=sensor['ph'], latitude=sensor['latitude'], longitude=sensor['longitude'],
                                       date_collected=timezone.now())
             
-            FarmReportLog.objects.create(farm_id=2, moisture=sensor['moisture'], phosphorus=sensor['p'],
+            FarmReportLog.objects.create(farm_id=farm_id2, moisture=sensor['moisture'], phosphorus=sensor['p'],
                                       potassium=sensor['k'], nitrogen=sensor['n'], temperature=sensor['temp'],
                                       ph=sensor['ph'], latitude=sensor['latitude'], longitude=sensor['longitude'],
                                       date_collected=timezone.now())
 
-        calendar_event_create(users[0], farm_id=2)
-        worker_activity_create(farm_id=2)
+        calendar_event_create(users[0], farm_id=farm_id2)
+        worker_activity_create(farm_id=farm_id2)
