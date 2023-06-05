@@ -39,4 +39,20 @@ class _$CalendarEventsService extends CalendarEventsService {
     );
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> getActivityLogData(
+    String selectedFarm,
+    String startDate,
+    String endDate,
+  ) {
+    final Uri $url = Uri.parse(
+        '/get_activity_logs/${selectedFarm}?start_date=${startDate}&end_date=${endDate}');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }

@@ -261,62 +261,64 @@ class _AddEventButtonState extends State<AddEventButton> {
                     color: CustomColors.astarteBlack,
                   ),
                 ),
-                content: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.6,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        TextFormField(
-                          controller: titleController,
-                          autovalidateMode: AutovalidateMode.always,
-                          validator: (value) {
-                            if (value?.isEmpty == true) {
-                              return 'Input can not be empty';
-                            }
-                            return null;
-                          },
-                          decoration: const InputDecoration(
-                            labelText: 'Title',
-                            labelStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors.astarteGrey,
-                            ),
-                          ),
-                        ),
-                        TextFormField(
-                          controller: descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            labelStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors.astarteGrey,
-                            ),
-                          ),
-                        ),
-                        EventDropdownWidget(
-                          selectedOptionController: eventTypeController,
-                          itemsList: eventTypes.keys.toList(),
-                          itemDisplayDict: eventTypes,
-                        ),
-                        EventDropdownWidget(
-                          selectedOptionController: importanceController,
-                          itemsList: eventImportanceTypes.keys.toList(),
-                          itemDisplayDict: eventImportanceTypes,
-                        ),
-                        FutureBuilder<EventDropdownWidget>(
-                            future: getFarmDropdownWidget(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<EventDropdownWidget> snapshot) {
-                              if (snapshot.hasData) {
-                                return snapshot.data!;
+                content: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            controller: titleController,
+                            autovalidateMode: AutovalidateMode.always,
+                            validator: (value) {
+                              if (value?.isEmpty == true) {
+                                return 'Input can not be empty';
                               }
-                              return const CircularProgressIndicator();
-                            }),
-                      ],
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Title',
+                              labelStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: CustomColors.astarteGrey,
+                              ),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: descriptionController,
+                            decoration: const InputDecoration(
+                              labelText: 'Description',
+                              labelStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: CustomColors.astarteGrey,
+                              ),
+                            ),
+                          ),
+                          EventDropdownWidget(
+                            selectedOptionController: eventTypeController,
+                            itemsList: eventTypes.keys.toList(),
+                            itemDisplayDict: eventTypes,
+                          ),
+                          EventDropdownWidget(
+                            selectedOptionController: importanceController,
+                            itemsList: eventImportanceTypes.keys.toList(),
+                            itemDisplayDict: eventImportanceTypes,
+                          ),
+                          FutureBuilder<EventDropdownWidget>(
+                              future: getFarmDropdownWidget(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<EventDropdownWidget> snapshot) {
+                                if (snapshot.hasData) {
+                                  return snapshot.data!;
+                                }
+                                return const CircularProgressIndicator();
+                              }),
+                        ],
+                      ),
                     ),
                   ),
                 ),
