@@ -93,7 +93,8 @@ class _FarmDetailState extends State<FarmDetail> {
         } else {
           final data = snapshot.data!;
           double? phVal = data.latest_farm_report?.ph;
-          if (phVal! > 7) {
+          if (phVal == null) phVal = 6.5;
+          if (phVal > 7) {
             fertilizationMessage =
                 'The soil is too alkaline, you can add elemental sulfur or acidifying agents according to the recommended rates. Mix them into the soil well.';
             fertilizationColor = CustomColors.astarteBlue;
@@ -268,7 +269,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Humidity: ${NumberFormat("0.##").format(data.latest_farm_report?.moisture)} %',
+                              'Humidity: ${NumberFormat("0.##").format(data.latest_farm_report?.moisture ?? -1)} %',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -276,7 +277,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Nitrogen: ${NumberFormat("0.##").format(data.latest_farm_report?.nitrogen)} mg/L',
+                              'Nitrogen: ${NumberFormat("0.##").format(data.latest_farm_report?.nitrogen ?? -1)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -284,7 +285,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Phosphorus: ${NumberFormat("0.##").format(data.latest_farm_report?.phosphorus)} mg/L',
+                              'Phosphorus: ${NumberFormat("0.##").format(data.latest_farm_report?.phosphorus ?? -1)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -292,7 +293,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Potassium: ${NumberFormat("0.##").format(data.latest_farm_report?.potassium)} mg/L',
+                              'Potassium: ${NumberFormat("0.##").format(data.latest_farm_report?.potassium ?? -1)} mg/L',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -300,7 +301,7 @@ class _FarmDetailState extends State<FarmDetail> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'PH: ${NumberFormat("0.##").format(data.latest_farm_report?.ph)}',
+                              'PH: ${NumberFormat("0.##").format(data.latest_farm_report?.ph ?? -1)}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
