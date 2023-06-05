@@ -135,7 +135,7 @@ Color eventMarkerColor(Object? obj) {
   }
 }
 
-Future<void> getCalendarData(int farmId) async {
+Future<LinkedHashMap<DateTime, List<Event>>> getCalendarData(int farmId) async {
   try {
     var headers = {
       'Authorization': parameters.TOKEN,
@@ -158,6 +158,11 @@ Future<void> getCalendarData(int farmId) async {
 
     http.StreamedResponse response = await request.send();
 
+    final src = LinkedHashMap<DateTime, List<Event>>(
+      equals: isSameDay,
+      hashCode: getHashCode,
+    );
+
     if (response.statusCode == 200) {
       String newMessage = await response.stream.bytesToString();
       dynamic data = jsonDecode(newMessage);
@@ -174,14 +179,15 @@ Future<void> getCalendarData(int farmId) async {
         );
         source[date] != null ? source[date]?.add(temp) : source[date] = [temp];
       }
-      kEvents.clear();
-      kEvents.addAll(source);
+      src.addAll(source);
+      return src;
     } else {
       print(response.reasonPhrase);
     }
   } catch (e) {
     print(e);
   }
+  return LinkedHashMap<DateTime, List<Event>>();
 }
 
 final kToday = DateTime.now();
