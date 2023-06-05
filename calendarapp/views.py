@@ -19,9 +19,10 @@ class CalendarDataAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         farm_ids = json.loads(request.POST.get('farm_ids'))
-        events = [{'title': event.title, 'event_type': event.type, 'date': event.date.strftime('%Y-%m-%d'),
-                   'importance': event.importance, 'description': event.description} for event in
-                  Event.objects.filter(date__gte=datetime.now() - timedelta(weeks=12), farm_id__in=farm_ids)]
+        events = [
+            {'id': event.id, 'title': event.title, 'event_type': event.type, 'date': event.date.strftime('%Y-%m-%d'),
+             'importance': event.importance, 'description': event.description} for event in
+            Event.objects.filter(date__gte=datetime.now() - timedelta(weeks=12), farm_id__in=farm_ids)]
         return Response(data={'events': events})
 
 
@@ -31,6 +32,7 @@ class CreateEventAPI(APIView):
 
     def post(self, request):
         event_dict = json.loads(request.data['event'])
+        event_dict.pop('id', None)
         event_dict['assigner'] = request.user.profile
         date_string = event_dict['date'].split('T')[0]
         event_dict['date'] = datetime.strptime(date_string, '%Y-%m-%d')
@@ -46,14 +48,23 @@ class EditEventAPI(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [FirebaseAuthentication]
 
-    def post(self, request):
+    def get_event(self, request):
         event_dict = json.loads(request.data['event'])
-        date_string = event_dict['date'].split('T')[0]
-        event_dict['date'] = datetime.strptime(date_string, '%Y-%m-%d')
-        event_dict.pop('description', None)
         try:
-            event_instance = Event.objects.get(**event_dict)
+            return Event.objects.get(id=event_dict['id'])
         except Event.DoesNotExist:
+            return None
+
+    def delete(self, request):
+        event_instance = self.get_event(request)
+        if not event_instance:
+            return HttpResponseBadRequest("Failed!")
+        event_instance.delete()
+        return HttpResponse('Success', status=status.HTTP_204_NO_CONTENT)
+
+    def post(self, request):
+        event_instance = self.get_event(request)
+        if not event_instance:
             return HttpResponseBadRequest("Failed!")
         event_instance.title = request.data.get('title')
         event_instance.description = request.data.get('description')
