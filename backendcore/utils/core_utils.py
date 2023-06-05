@@ -7,7 +7,10 @@ def send_notification(arg, msg):
     if isinstance(arg, str):
         send_notification_by_token(arg, msg)
     else:
-        device_token = DeviceToken.objects.get(user=arg)
+        try:
+            device_token = DeviceToken.objects.filter(user=arg).latest('date')
+        except DeviceToken.DoesNotExist:
+            raise Exception("Token does not exist! Unable to send notification!")
         send_notification_by_token(device_token.token, msg)
 
 

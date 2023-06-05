@@ -7,7 +7,7 @@ from django.utils import timezone
 from firebase_admin import messaging
 from backendcore.models import Farm, FarmCornerPoint
 
-from accounts.models import DeviceToken
+from backendcore.utils.core_utils import send_notification
 from calendarapp.models import Event
 
 
@@ -25,7 +25,7 @@ def get_given_percentile(array, number):
     if len(sorted_arr) != 0:
         for i in range(len(sorted_arr)):
             if sorted_arr[i] > number:
-                return i/len(sorted_arr)
+                return i / len(sorted_arr)
     return 1
 
 
@@ -40,7 +40,7 @@ def get_max_importance_hour(notification, type):
         if element['type'] == type and element['importance'] >= max_import:
             max_import = element['importance']
             curr_hours = hour(element['hours'][0][1]) - \
-                hour(element['hours'][0][0])
+                         hour(element['hours'][0][0])
             if max_hours < curr_hours:
                 max_hours = curr_hours
 
@@ -104,18 +104,18 @@ def investigate_one_day(day_message, alert_importance=None):
                 alert_importance_intervals.append((current_first_i, i))
 
             current_first_end = day_message[i + 1]
-            current_first_i = i+1
+            current_first_i = i + 1
         i += 1
     importance_avgs = []
-    if(alert_importance is not None):
+    if (alert_importance is not None):
         for i in alert_importance_intervals:
             avg = 0
             for importance in alert_importance[i[0]:i[1]]:
                 avg += importance
-            importance_avgs.append(avg/(i[1]-i[0]))
+            importance_avgs.append(avg / (i[1] - i[0]))
 
     try:
-        avg = sum(importance_avgs)/len(importance_avgs)
+        avg = sum(importance_avgs) / len(importance_avgs)
     except:
         avg = -1
     return message_intervals, avg
@@ -159,7 +159,7 @@ class Command(BaseCommand):
         for farm in Farm.objects.all():
             # TODO: do stuff
             self.notifications[farm.id] = dict()
-            for i in range(1, 8): 
+            for i in range(1, 8):
                 self.notifications[farm.id][current_day + timedelta(days=i - 1)] = []
 
             corner_points = FarmCornerPoint.objects.filter(farm=farm)
@@ -172,15 +172,17 @@ class Command(BaseCommand):
                 'latitude': corner_points[0].latitude,
                 'longitude': corner_points[0].longitude,
                 'timezone': 'auto',
-                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
-                        'winddirection_10m', 'soil_moisture_9_27cm', 'cloudcover']
+                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain',
+                           'windspeed_10m',
+                           'winddirection_10m', 'soil_moisture_9_27cm', 'cloudcover']
             }
 
             HISTORICAL_PARAMS = {
                 'latitude': corner_points[0].latitude,
                 'longitude': corner_points[0].longitude,
-                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain', 'windspeed_10m',
-                        'soil_moisture_7_to_28cm', 'cloudcover']
+                'hourly': ['temperature_2m', 'relativehumidity_2m', 'dewpoint_2m', 'precipitation', 'rain',
+                           'windspeed_10m',
+                           'soil_moisture_7_to_28cm', 'cloudcover']
             }
 
             forecast_r = requests.get(url=FORECAST_URL, params=FORECAST_PARAMS)
@@ -250,7 +252,7 @@ class Command(BaseCommand):
                 res['importance'] = 0
                 self.notifications[farm_id][current_day].append(res)
 
-    def increase_irrigation_alert(self, today=1, farm_id = 1):
+    def increase_irrigation_alert(self, today=1, farm_id=1):
         alerts = {}
         alerts_importance = {}
         alert_type = {'temperature_2m': 'high temperature', 'relativehumidity_2m': 'low humidity',
@@ -258,7 +260,8 @@ class Command(BaseCommand):
         day = 0
 
         for i, row in enumerate(
-                zip(self.forecast_data[farm_id]['hourly']['temperature_2m'], self.forecast_data[farm_id]['hourly']['relativehumidity_2m'],
+                zip(self.forecast_data[farm_id]['hourly']['temperature_2m'],
+                    self.forecast_data[farm_id]['hourly']['relativehumidity_2m'],
                     self.forecast_data[farm_id]['hourly']['windspeed_10m'])):
             if i % 24 == 0:
                 day += 1
@@ -275,19 +278,20 @@ class Command(BaseCommand):
                 alerts[day]['temperature_2m'].append(
                     self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["temperature_2m"].append((get_given_percentile(
-                    self.historical_data[farm_id]['hourly']['temperature_2m'], row[0])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['temperature_2m'], row[0]) - 0.9) * 10)
 
             if row[1] < self.low_thresholds[farm_id]['relativehumidity_2m']:
                 alerts[day]['relativehumidity_2m'].append(
                     self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["relativehumidity_2m"].append(
-                    (0.1-get_given_percentile(self.historical_data[farm_id]['hourly']['relativehumidity_2m'], row[1]))*10)
+                    (0.1 - get_given_percentile(self.historical_data[farm_id]['hourly']['relativehumidity_2m'],
+                                                row[1])) * 10)
 
             if row[2] > self.high_thresholds[farm_id]['windspeed_10m']:
                 alerts[day]['windspeed_10m'].append(
                     self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["windspeed_10m"].append((get_given_percentile(
-                    self.historical_data[farm_id]['hourly']['windspeed_10m'], row[2])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['windspeed_10m'], row[2]) - 0.9) * 10)
 
         for i in range(1, 8):
             current_day = self.int_to_week[(today + i - 2) % 7 + 1]
@@ -303,7 +307,7 @@ class Command(BaseCommand):
                     res['hours'] = intervals
                     res['type'] = 0
                     res['reason'] = alert_type[type]
-                    res['importance'] = round(2*importance_avg)
+                    res['importance'] = round(2 * importance_avg)
                     self.notifications[farm_id][current_day].append(res)
 
     def decrease_irrigation_alert(self, today=1, farm_id=1):
@@ -326,13 +330,13 @@ class Command(BaseCommand):
                 alerts[day]['precipitation'].append(
                     self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["precipitation"].append((get_given_percentile(
-                    self.historical_data[farm_id]['hourly']['precipitation'], row[0])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['precipitation'], row[0]) - 0.9) * 10)
 
             if row[1] > self.high_thresholds[farm_id]['soil_moisture_7_to_28cm']:
                 alerts[day]['soil_moisture_9_27cm'].append(
                     self.forecast_data[farm_id]['hourly']['time'][i])
                 alerts_importance[day]["soil_moisture_9_27cm"].append((get_given_percentile(
-                    self.historical_data[farm_id]['hourly']['soil_moisture_7_to_28cm'], row[1])-0.9)*10)
+                    self.historical_data[farm_id]['hourly']['soil_moisture_7_to_28cm'], row[1]) - 0.9) * 10)
 
         for i in range(1, 8):
             current_day = self.int_to_week[(today + i - 2) % 7 + 1]
@@ -340,45 +344,34 @@ class Command(BaseCommand):
                 res = {}
                 if alerts[i][type]:
                     intervals, importance_avg = investigate_one_day(
-                        alerts[i][type],  alerts_importance[i][type])
+                        alerts[i][type], alerts_importance[i][type])
                     if not intervals:
                         continue
                     res['hours'] = intervals
                     res['type'] = 1
                     res['reason'] = alert_type[type]
-                    res['importance'] = round(2*importance_avg)
+                    res['importance'] = round(2 * importance_avg)
                     self.notifications[farm_id][current_day].append(res)
 
     def handle(self, *args, **kwargs):
 
         events = []
         for farm in Farm.objects.all():
-            self.increase_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id = farm.id)
-            self.decrease_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id = farm.id)
-            self.frost_warning(today=self.week_to_int[self.TODAY], farm_id = farm.id)
+            self.increase_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id=farm.id)
+            self.decrease_irrigation_alert(today=self.week_to_int[self.TODAY], farm_id=farm.id)
+            self.frost_warning(today=self.week_to_int[self.TODAY], farm_id=farm.id)
 
             remove_conflicting_events(self.notifications[farm.id])
             for i in self.notifications[farm.id]:
                 for j in self.notifications[farm.id][i]:
                     importance = j['importance']
-                    # if importance==2:
-                    #     self.send_notification(j['reason'])
-                    events.append(Event(title=j['reason'], type=j['type'], date=i, importance=importance, farm_id=farm.id))
-        
-        Event.objects.bulk_create(events)
+                    if importance == 2:
+                        msg = {
+                            'title': 'Critical Event',
+                            'body': j['reason'] + ' is expected',
+                        }
+                        send_notification(farm.owner.profile, msg)
+                    events.append(
+                        Event(title=j['reason'], type=j['type'], date=i, importance=importance, farm_id=farm.id))
 
-    def send_notification(self, body):
-        # TODO: MAKE NOTIFICATION SPECIFIC TO FARM OWNER
-        device_tokens = DeviceToken.objects.all()
-        for device_token in device_tokens:
-            title = 'Critical Event'
-            message = messaging.Message(
-                notification=messaging.Notification(
-                    title=title,
-                    body=body + ' is expected',
-                    image='https://img.icons8.com/plumpy/512/important-event.png',
-                ),
-                token=device_token.token,
-            )
-            response = messaging.send(message)
-            print('Successfully sent message:', message.notification)
+        Event.objects.bulk_create(events)

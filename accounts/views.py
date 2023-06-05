@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils import timezone
 from firebase_admin import messaging
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -16,27 +17,15 @@ class SendTokenAPI(APIView):
 
     def post(self, request):
         if request.method == 'POST':
-            self.device_token = request.POST.get('device_token')
+            device_token = request.POST.get('device_token')
             user_dict = request.POST.get('user')
             user_dict = json.loads(user_dict)
             user = Profile.objects.get(name=user_dict['name'], surname=user_dict['surname'], email=user_dict['email'])
-            _, created = DeviceToken.objects.get_or_create(token=self.device_token, user=user)
+            device_token, created = DeviceToken.objects.get_or_create(token=device_token, user=user)
             if not created:
+                device_token.date = timezone.now()
+                device_token.save()
                 return HttpResponse('Token already exists!')
             return HttpResponse('Token received!')
         else:
             return HttpResponse('Invalid request method!')
-
-    def send_notification(self):
-        registration_token = self.device_token
-        title = 'Test Notification'
-        body = 'This is a test notification from Django!'
-        message = messaging.Message(
-            notification=messaging.Notification(
-                title=title,
-                body=body,
-            ),
-            token=registration_token,
-        )
-        response = messaging.send(message)
-        print('Successfully sent message:', response)
